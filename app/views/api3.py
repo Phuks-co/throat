@@ -1353,6 +1353,7 @@ def get_own_user():
                     MessageType.USER_TO_USER,
                     MessageType.MOD_TO_USER_AS_MOD,
                     MessageType.MOD_TO_USER_AS_USER,
+                    MessageType.USER_NOTIFICATION,
                 )
             )
         )

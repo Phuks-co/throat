@@ -67,7 +67,6 @@ from ..models import (
     SubBan,
     SubPostCommentHistory,
     InviteCode,
-    Notification,
     SubPostContentHistory,
 )
 from ..models import (
@@ -332,17 +331,35 @@ def delete_post():
                 return jsonify(
                     status="error", error=[_("Cannot delete without reason")]
                 )
-            deletion = 2 if current_user.is_mod(post.sid) else 3
-            # notify user.
-            Notification.create(
-                type="POST_DELETE",
-                sub=post.sid,
-                post=post.pid,
-                content="Reason: " + form.reason.data,
-                sender=current_user.uid,
-                target=post.uid,
-            )
+            as_admin = not current_user.is_mod(post.sid)
+            postlink, sublink = misc.post_and_sub_markdown_links(post)
+            if as_admin:
+                deletion = 3
+                content = _(
+                    "The site administrators deleted your post %(postlink)s from %(sublink)s. "
+                    "Reason: %(reason)s",
+                    sublink=sublink,
+                    postlink=postlink,
+                    reason=form.reason.data,
+                )
+            else:
+                deletion = 2
+                content = _(
+                    "The moderators of %(sublink)s deleted your post %(postlink)s. "
+                    "Reason: %(reason)s",
+                    sublink=sublink,
+                    postlink=postlink,
+                    reason=form.reason.data,
+                )
 
+            misc.create_notification_message(
+                mfrom=current_user.uid,
+                as_admin=as_admin,
+                sub=post.sid.get_id(),
+                to=post.uid.get_id(),
+                subject=_("Moderation action: post deleted"),
+                content=content,
+            )
             misc.create_sublog(
                 misc.LOG_TYPE_SUB_DELETE_POST,
                 current_user.uid,
@@ -355,17 +372,15 @@ def delete_post():
                 target=post.uid,
             )
 
-            related_reports = SubPostReport.select().where(
-                SubPostReport.pid == post.pid
+        related_reports = SubPostReport.select().where(SubPostReport.pid == post.pid)
+        for report in related_reports:
+            misc.create_reportlog(
+                misc.LOG_TYPE_REPORT_POST_DELETED,
+                current_user.uid,
+                report.id,
+                log_type="post",
+                desc=form.reason.data,
             )
-            for report in related_reports:
-                misc.create_reportlog(
-                    misc.LOG_TYPE_REPORT_POST_DELETED,
-                    current_user.uid,
-                    report.id,
-                    log_type="post",
-                    desc=form.reason.data,
-                )
 
         # time limited to prevent socket spam
         if (
@@ -444,14 +459,33 @@ def undelete_post():
         if not form.reason.data:
             return jsonify(status="error", error=[_("Cannot un-delete without reason")])
         deletion = 0
-        # notify user.
-        Notification.create(
-            type="POST_UNDELETE",
-            sub=post.sid,
-            post=post.pid,
-            content="Reason: " + form.reason.data,
-            sender=current_user.uid,
-            target=post.uid,
+        as_admin = not current_user.is_mod(post.sid)
+        postlink, sublink = misc.post_and_sub_markdown_links(post)
+
+        if as_admin:
+            content = _(
+                "The site administrators restored your post %(postlink)s to %(sublink)s. "
+                "Reason: %(reason)s",
+                sublink=sublink,
+                postlink=postlink,
+                reason=form.reason.data,
+            )
+        else:
+            content = _(
+                "The moderators of %(sublink)s restored your post %(postlink)s. "
+                "Reason: %(reason)s",
+                sublink=sublink,
+                postlink=postlink,
+                reason=form.reason.data,
+            )
+
+        misc.create_notification_message(
+            mfrom=current_user.uid,
+            as_admin=as_admin,
+            sub=post.sid.get_id(),
+            to=post.uid.get_id(),
+            subject=_("Moderation action: post restored"),
+            content=content,
         )
 
         misc.create_sublog(
@@ -1501,40 +1535,39 @@ def ban_user_sub(sub):
                     status="error", error=[_("Expiration date is in the past")]
                 )
 
+        if misc.is_sub_banned(sub, uid=user.uid):
+            return jsonify(status="error", error=[_("Already banned")])
+
+        sublink = misc.sub_markdown_link(sub.name)
         if expires is None:
             if not current_user.is_mod(sub.sid, 1):
                 return jsonify(
                     status="error", error=[_("Janitors may only create temporary bans")]
                 )
+            subject = _("Moderation action: permanent ban")
             content = _(
-                "You have been permanently banned. Reason: %(reason)s",
+                "You have been permanently banned from %(sublink)s. Reason: %(reason)s",
+                sublink=sublink,
                 reason=form.reason.data,
             )
         else:
+            subject = _("Moderation action: temporary ban")
             content = ngettext(
-                "You have been banned for %(num)d day. Reason: %(reason)s",
-                "You have been banned for %(num)d days. Reason: %(reason)s",
+                "You have been banned from %(sublink)s for %(num)d day. Reason: %(reason)s",
+                "You have been banned from %(sublink)s for %(num)d days. Reason: %(reason)s",
                 days,
+                sublink=sublink,
                 reason=form.reason.data,
             )
 
-        if misc.is_sub_banned(sub, uid=user.uid):
-            return jsonify(status="error", error=[_("Already banned")])
-
-        Notification.create(
-            type="SUB_BAN",
+        misc.create_notification_message(
+            mfrom=current_user.uid,
+            as_admin=False,
             sub=sub.sid,
-            sender=current_user.uid,
+            to=user.uid,
+            subject=subject,
             content=content,
-            target=user.uid,
         )
-        socketio.emit(
-            "notification",
-            {"count": misc.get_notification_count(user.uid)},
-            namespace="/snt",
-            room="user" + user.uid,
-        )
-
         SubBan.create(
             sid=sub.sid,
             uid=user.uid,
@@ -1665,12 +1698,19 @@ def inv_mod(sub):
                     status="error", error=[_("User can't mod more than 20 subs")]
                 )
 
-            if form.level.data == "1":
-                mtype = "MOD_INVITE"
-            else:
-                mtype = "MOD_INVITE_JANITOR"
-            notifications.send(
-                mtype, sub=sub.sid, sender=current_user.uid, target=user.uid
+            misc.create_notification_message(
+                mfrom=current_user.uid,
+                as_admin=not is_owner,
+                sub=sub.sid,
+                to=user.uid,
+                subject=_("Invitation to become a moderator"),
+                content=_(
+                    "%(userlink)s invited you to moderate %(sublink)s. "
+                    "Please [click here](%(invitelink)s) to accept or reject the invitation.",
+                    userlink=misc.user_markdown_link(current_user.name),
+                    sublink=misc.sub_markdown_link(sub.name),
+                    invitelink=url_for("sub.edit_sub_mods", sub=sub.name),
+                ),
             )
 
             SubMod.create(
@@ -1732,28 +1772,26 @@ def remove_sub_ban(sub, user):
             sb.effective = False
             sb.expires = datetime.datetime.utcnow()
             sb.save()
+            as_admin = not current_user.is_mod(sub.sid, 1) and current_user.is_admin()
 
-            Notification.create(
-                type="SUB_UNBAN", sub=sub.sid, sender=current_user.uid, target=user.uid
-            )
-            socketio.emit(
-                "notification",
-                {"count": misc.get_notification_count(user.uid)},
-                namespace="/snt",
-                room="user" + user.uid,
+            misc.create_notification_message(
+                mfrom=current_user.uid,
+                as_admin=as_admin,
+                sub=sub.sid,
+                to=user.uid,
+                subject=_("Moderation action: ban removed"),
+                content=_(
+                    "You are no longer banned from posting in %(sublink)s.",
+                    sublink=misc.sub_markdown_link(sub.name),
+                ),
             )
 
-            admin = (
-                True
-                if (not current_user.is_mod(sub.sid, 1) and current_user.is_admin())
-                else False
-            )
             misc.create_sublog(
                 misc.LOG_TYPE_SUB_UNBAN,
                 current_user.uid,
                 sub.sid,
                 target=user.uid,
-                admin=admin,
+                admin=as_admin,
             )
 
             related_post_reports = (
@@ -1859,7 +1897,7 @@ def revoke_mod2inv(sub, user):
         isTopMod = current_user.is_mod(sub.sid, 0)
         if isTopMod or current_user.is_admin():
             try:
-                x = SubMod.get(
+                submod = SubMod.get(
                     (SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & SubMod.invite
                 )
             except SubMetadata.DoesNotExist:
@@ -1867,14 +1905,27 @@ def revoke_mod2inv(sub, user):
                     status="error",
                     error=[_("User has not been invited to moderate the sub")],
                 )
-            x.delete_instance()
+
+            misc.create_notification_message(
+                mfrom=current_user.uid,
+                as_admin=not isTopMod,
+                sub=sub.sid,
+                to=user.uid,
+                subject=_("Moderation invitation revoked"),
+                content=_(
+                    "%(userlink)s cancelled your invitation to moderate %(sublink)s.",
+                    userlink=misc.user_markdown_link(current_user.name),
+                    sublink=misc.sub_markdown_link(sub.name),
+                ),
+            )
+            submod.delete_instance()
 
             misc.create_sublog(
                 misc.LOG_TYPE_SUB_MOD_INV_CANCEL,
                 current_user.uid,
                 sub.sid,
                 target=user.uid,
-                admin=True if (not isTopMod and current_user.is_admin()) else False,
+                admin=not isTopMod,
             )
 
             return jsonify(status="ok")
@@ -2804,35 +2855,65 @@ def delete_comment():
         if comment.status:
             return jsonify(status="error", error=_("Comment is already deleted"))
 
-        sub = (
-            Sub.select(Sub.sid, Sub.name)
-            .join(SubPost)
+        post = (
+            SubPost.select(SubPost.pid, SubPost.title, Sub.sid, Sub.name)
+            .join(Sub)
             .where(SubPost.pid == comment.pid)
             .get()
         )
+        sid = post.sid.get_id()
+        sub_name = post.sid.name
 
         if comment.uid_id != current_user.uid and not (
-            current_user.is_admin() or current_user.is_mod(sub.sid)
+            current_user.is_admin() or current_user.is_mod(sid)
         ):
             return jsonify(status="error", error=_("Not authorized"))
 
+        postlink, sublink = misc.post_and_sub_markdown_links(post)
+
         if comment.uid_id != current_user.uid and (
-            current_user.is_admin() or current_user.is_mod(sub.sid)
+            current_user.is_admin() or current_user.is_mod(sid)
         ):
+            as_admin = not current_user.is_mod(sid)
+            if as_admin:
+                comment.status = 3
+                content = _(
+                    "The site administrators deleted a comment you made on the post %(postlink)s. Reason: %(reason)s",
+                    postlink=postlink,
+                    reason=form.reason.data,
+                )
+            else:
+                comment.status = 2
+                content = _(
+                    "The moderators of %(sublink)s deleted a comment you made on the post %(postlink)s. "
+                    "Reason: %(reason)s",
+                    sublink=sublink,
+                    postlink=postlink,
+                    reason=form.reason.data,
+                )
+
+            misc.create_notification_message(
+                mfrom=current_user.uid,
+                as_admin=as_admin,
+                sub=sid,
+                to=comment.uid.get_id(),
+                subject=_("Moderation action: comment deleted"),
+                content=content,
+            )
             misc.create_sublog(
                 misc.LOG_TYPE_SUB_DELETE_COMMENT,
                 current_user.uid,
-                sub.sid,
+                sid,
                 comment=form.reason.data,
                 link=url_for(
                     "sub.view_perm",
-                    sub=sub.name,
-                    pid=comment.pid.get_id(),
+                    sub=sub_name,
+                    pid=post.pid,
                     cid=comment.cid,
                     slug="_",
                 ),
                 admin=True
-                if (not current_user.is_mod(sub.sid) and current_user.is_admin())
+                if (not current_user.is_mod(sid) and current_user.is_admin())
                 else False,
                 target=comment.uid,
             )
@@ -2847,10 +2928,6 @@ def delete_comment():
                     log_type="comment",
                     desc=form.reason.data,
                 )
-            if current_user.is_mod(sub.sid):
-                comment.status = 2
-            else:
-                comment.status = 3
         else:
             comment.status = 1
 
@@ -2870,12 +2947,14 @@ def undelete_comment():
         except SubPostComment.DoesNotExist:
             return jsonify(status="error", error=_("Comment does not exist"))
 
-        sub = (
-            Sub.select(Sub.sid, Sub.name)
-            .join(SubPost)
+        post = (
+            SubPost.select(SubPost.pid, SubPost.title, Sub.sid, Sub.name)
+            .join(Sub)
             .where(SubPost.pid == comment.pid)
             .get()
         )
+        sid = post.sid.get_id()
+        sub_name = post.sid.name
 
         if not comment.status:
             return jsonify(status="error", error=_("Comment is not deleted"))
@@ -2887,24 +2966,51 @@ def undelete_comment():
 
         if not (
             current_user.is_admin()
-            or (comment.status == 2 and current_user.is_mod(sub.sid))
+            or (comment.status == 2 and current_user.is_mod(sid))
         ):
             return jsonify(status="error", error=_("Not authorized"))
 
+        postlink, sublink = misc.post_and_sub_markdown_links(post)
+        as_admin = not current_user.is_mod(sid)
+        if as_admin:
+            content = _(
+                "The site administrators restored a comment you made on the post %(postlink)s in %(sublink)s. "
+                "Reason: %(reason)s",
+                sublink=sublink,
+                postlink=postlink,
+                reason=form.reason.data,
+            )
+        else:
+            content = _(
+                "The moderators of %(sublink)s restored a comment you made on the post %(postlink)s. "
+                "Reason: %(reason)s",
+                sublink=sublink,
+                postlink=postlink,
+                reason=form.reason.data,
+            )
+
+        misc.create_notification_message(
+            mfrom=current_user.uid,
+            as_admin=as_admin,
+            sub=sid,
+            to=comment.uid.get_id(),
+            subject=_("Moderation action: comment restored"),
+            content=content,
+        )
         misc.create_sublog(
             misc.LOG_TYPE_SUB_UNDELETE_COMMENT,
             current_user.uid,
-            sub.sid,
+            sid,
             comment=form.reason.data,
             link=url_for(
                 "sub.view_perm",
-                sub=sub.name,
+                sub=sub_name,
                 pid=comment.pid.get_id(),
                 cid=comment.cid,
                 slug="_",
             ),
             admin=True
-            if (not current_user.is_mod(sub.sid) and current_user.is_admin())
+            if (not current_user.is_mod(sid) and current_user.is_admin())
             else False,
             target=comment.uid,
         )
