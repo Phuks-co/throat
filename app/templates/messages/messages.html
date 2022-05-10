@@ -35,7 +35,7 @@
               {% endif %}
             </p>
             <p class="container">
-              {% if message.username or message.sub %}
+              {% if message.username or (message.sub and config.site.enable_modmail) %}
                 <a href="#msg-form" data-mid="{{message.mid}}" class="replymsg">reply</a>
               {% endif %}
               {% if not message.read %}

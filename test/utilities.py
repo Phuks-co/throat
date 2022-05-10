@@ -138,7 +138,8 @@ def create_sub(client, name="test", allow_polls=False):
     data = {"csrf_token": csrf_token(rv.data), "subname": name, "title": "Testing"}
 
     rv = client.post(url_for("subs.create_sub"), data=data, follow_redirects=True)
-    assert b"/s/test" in rv.data
+
+    assert b"/s/" + name.encode("utf-8") in rv.data
 
 
 def promote_user_to_admin(client, user_info):

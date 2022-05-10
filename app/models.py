@@ -856,6 +856,8 @@ class Notification(BaseModel):
     # Notification type. Can be one of:
     # - POST_REPLY, COMMENT_REPLY
     # - POST_MENTION, COMMENT_MENTION
+
+    # These were used in old notifications, but are now sent as messages.
     # - SUB_BAN, SUB_UNBAN
     # - MOD_INVITE, MOD_INVITE_JANITOR, MOD_INVITE_OWNER
     # - POST_DELETE, POST_UNDELETE
@@ -891,7 +893,7 @@ class MessageType(IntEnum):
     MOD_TO_USER_AS_USER = 102
     MOD_TO_USER_AS_MOD = 103
     MOD_DISCUSSION = 104
-    USER_BAN_APPEAL = 105
+    USER_NOTIFICATION = 105
     MOD_NOTIFICATION = 106
 
 

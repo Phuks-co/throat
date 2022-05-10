@@ -549,6 +549,28 @@ def our_markdown(text):
     return html
 
 
+def post_and_sub_markdown_links(post):
+    """Construct links to a post and to its sub in markdown format."""
+    sub_name = Sub.get(Sub.sid == post.sid).name
+    posturl = url_for("sub.view_post", sub=sub_name, pid=post.pid)
+    postlink = f"[{post.title}]({posturl})"
+    return postlink, sub_markdown_link(sub_name)
+
+
+def sub_markdown_link(sub_name):
+    """Construct a link to to a sub in markdown format, given its name."""
+    suburl = url_for("sub.view_sub", sub=sub_name)
+    sublink = f"[{suburl}]({suburl})"
+    return sublink
+
+
+def user_markdown_link(user_name):
+    """Construct a link to to a user in markdown format, given the name."""
+    userurl = url_for("user.view", user=user_name)
+    userlink = f"[userurl]({userurl})"
+    return userlink
+
+
 @cache.memoize(5)
 def is_sub_banned(sub, user=None, uid=None):
     """ Returns True if 'user' is banned 'sub' """
@@ -1769,7 +1791,10 @@ def process_msgs(msgs):
     """Prepare message dictionaries for use in templates."""
 
     def process_msg(msg):
-        if msg["mtype"] == MessageType.MOD_TO_USER_AS_MOD:
+        if msg["mtype"] == MessageType.MOD_TO_USER_AS_MOD or (
+            msg["mtype"] == MessageType.USER_NOTIFICATION
+            and config.site.anonymous_modding
+        ):
             msg["username"] = None
             msg["sentby"] = None
         if not msg["first"]:
@@ -2113,17 +2138,44 @@ def create_message(mfrom, to, subject, content, mtype):
     return msg
 
 
+def create_notification_message(mfrom, as_admin, sub, to, subject, content):
+    """ Create a message to notify a user of a mod action. """
+    posted = datetime.utcnow()
+    if as_admin and config.site.admin_sub != "":
+        sub = Sub.get(fn.Lower(Sub.name) == config.site.admin_sub.lower()).sid
+    msg_thread = MessageThread.create(subject=subject, sub=sub)
+    msg = Message.create(
+        sentby=mfrom,
+        receivedby=to,
+        first=True,
+        thread=msg_thread.mtid,
+        content=content,
+        posted=posted,
+        mtype=MessageType.USER_NOTIFICATION,
+    )
+    UserUnreadMessage.create(uid=to, mid=msg.mid)
+    UserMessageMailbox.create(uid=to, mid=msg.mid, mailbox=MessageMailbox.INBOX)
+    SubMessageMailbox.create(thread=msg_thread.mtid, mailbox=MessageMailbox.INBOX)
+    socketio.emit(
+        "notification",
+        {"count": get_notification_count(to)},
+        namespace="/snt",
+        room="user" + to,
+    )
+    return msg
+
+
 def create_message_reply(message, content):
     """ Creates a reply to a message. """
     posted = datetime.utcnow()
     sender = message.receivedby.uid
     thread = message.thread.mtid
-    if message.mtype == MessageType.USER_TO_USER:
-        mtype = MessageType.USER_TO_USER
-        recipient = message.sentby.uid
-    else:
+    if message.mtype != MessageType.USER_TO_USER and config.site.enable_modmail:
         mtype = MessageType.USER_TO_MODS
         recipient = None
+    else:
+        mtype = MessageType.USER_TO_USER
+        recipient = message.sentby.uid
 
     msg = Message.create(
         sentby=sender,
