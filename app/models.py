@@ -906,6 +906,7 @@ class MessageMailbox(IntEnum):
     ARCHIVED = 203  # Modmail only.
     TRASH = 204
     DELETED = 205
+    PENDING = 206  # Modmail only.
 
 
 class MessageThread(BaseModel):

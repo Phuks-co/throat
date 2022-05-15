@@ -2155,7 +2155,7 @@ def create_notification_message(mfrom, as_admin, sub, to, subject, content):
     )
     UserUnreadMessage.create(uid=to, mid=msg.mid)
     UserMessageMailbox.create(uid=to, mid=msg.mid, mailbox=MessageMailbox.INBOX)
-    SubMessageMailbox.create(thread=msg_thread.mtid, mailbox=MessageMailbox.INBOX)
+    SubMessageMailbox.create(thread=msg_thread.mtid, mailbox=MessageMailbox.PENDING)
     socketio.emit(
         "notification",
         {"count": get_notification_count(to)},
