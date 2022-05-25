@@ -56,7 +56,7 @@ psycopg2==2.8.6
 pyasn1==0.4.8
 pycparser==2.20
 pyfcm==1.5.1
-PyJWT==1.7.1
+PyJWT==2.4.0
 pyOpenSSL==20.0.1
 pyotp==2.4.1
 python-dateutil==2.8.1
