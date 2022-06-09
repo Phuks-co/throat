@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2022-06-09 10:12-0300\n"
-"PO-Revision-Date: 2022-06-09 13:16\n"
+"PO-Revision-Date: 2022-06-09 19:17\n"
 "Last-Translator: \n"
 "Language-Team: Czech\n"
 "MIME-Version: 1.0\n"
@@ -220,7 +220,7 @@ msgstr "If enabled, show the post score next to its title in the list of top pos
 
 #: app/config.py:452
 msgid "If set, and site.enable_modmail is also set, when an admin removes a user's content, a reply by the user to the notification message will be sent to the modmail of this sub. If this is left empty, replies will go to the modmail of the sub in which the removed content was posted."
-msgstr ""
+msgstr "If set, and site.enable_modmail is also set, when an admin removes a user's content, a reply by the user to the notification message will be sent to the modmail of this sub. If this is left empty, replies will go to the modmail of the sub in which the removed content was posted."
 
 #: app/config.py:468
 msgid "Max storage for image uploads for subs' stylesheets (in MiB)."
@@ -2413,11 +2413,11 @@ msgstr "Změnil(a) řazení komentářů sticky příspěvku"
 
 #: app/html/sub/log.html:76
 msgid "Locked comments on a post"
-msgstr ""
+msgstr "Zamknutí komentářů k příspěvku"
 
 #: app/html/sub/log.html:78
 msgid "Unlocked comments on a post"
-msgstr ""
+msgstr "Odemknutí komentářů k příspěvku"
 
 #: app/html/sub/log.html:80
 #, python-format
@@ -3749,16 +3749,16 @@ msgstr "Musíš udat důvod"
 #: app/views/do.py:338
 #, python-format
 msgid "The site administrators deleted your post %(postlink)s from %(sublink)s. Reason: %(reason)s"
-msgstr ""
+msgstr "Administrátor vymazal(a) tvůj příspěvek %(postlink)s ve skupině %(sublink)s. Důvod: %(reason)s"
 
 #: app/views/do.py:347
 #, python-format
 msgid "The moderators of %(sublink)s deleted your post %(postlink)s. Reason: %(reason)s"
-msgstr ""
+msgstr "Moderátor skupiny %(sublink)s vymazal(a) tvůj příspěvek %(postlink)s. Důvod: %(reason)s"
 
 #: app/views/do.py:360
 msgid "Moderation action: post deleted"
-msgstr ""
+msgstr "Moderování: příspěvek vymazán"
 
 #: app/views/do.py:446
 msgid "Post is not deleted"
@@ -3775,16 +3775,16 @@ msgstr "Pro obnovení je nutné zadat důvod"
 #: app/views/do.py:466
 #, python-format
 msgid "The site administrators restored your post %(postlink)s to %(sublink)s. Reason: %(reason)s"
-msgstr ""
+msgstr "Administrátor obnovil(a) tvůj příspěvek %(postlink)s ve skupině %(sublink)s. Důvod: %(reason)s"
 
 #: app/views/do.py:474
 #, python-format
 msgid "The moderators of %(sublink)s restored your post %(postlink)s. Reason: %(reason)s"
-msgstr ""
+msgstr "Moderátor skupiny %(sublink)s obnovil(a) tvůj příspěvek %(postlink)s. Důvod: %(reason)s"
 
 #: app/views/do.py:487
 msgid "Moderation action: post restored"
-msgstr ""
+msgstr "Moderování: příspěvek obnoven"
 
 #: app/views/do.py:575
 msgid "At least one kind of post must be permitted"
@@ -3914,16 +3914,16 @@ msgstr "Jako čistič můžeš vydávat pouze dočasné bany"
 
 #: app/views/do.py:1547
 msgid "Moderation action: permanent ban"
-msgstr ""
+msgstr "Moderování: permanentní ban"
 
 #: app/views/do.py:1548
 #, python-format
 msgid "You have been permanently banned from %(sublink)s. Reason: %(reason)s"
-msgstr ""
+msgstr "Dostal(a) jsi permanentní ban ve skupině %(sublink)s. Důvod: %(reason)s"
 
 #: app/views/do.py:1554
 msgid "Moderation action: temporary ban"
-msgstr ""
+msgstr "Moderování: dočasný ban"
 
 #: app/views/do.py:1555
 #, python-format
@@ -3932,7 +3932,7 @@ msgid_plural "You have been banned from %(sublink)s for %(num)d days. Reason: %(
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
-msgstr[3] ""
+msgstr[3] "Dostal(a) jsi ban ve skupině %(sublink)s na %(num)d dnů. Důvod: %(reason)s"
 
 #: app/views/do.py:1605
 #, python-format
@@ -3962,12 +3962,12 @@ msgstr "Uživatel nesmí moderovat více než 20 skupin"
 
 #: app/views/do.py:1706
 msgid "Invitation to become a moderator"
-msgstr ""
+msgstr "Pozvání moderovat"
 
 #: app/views/do.py:1712
 #, python-format
 msgid "%(userlink)s invited you to moderate %(sublink)s. Please [click here](%(invitelink)s) to accept or reject the invitation."
-msgstr ""
+msgstr "%(userlink)s tě pozval(a) moderovat skupinu %(sublink)s. [Kliknutím zde](%(invitelink)s) můžeš pozvání přijmout nebo odmítnout."
 
 #: app/views/do.py:1761 app/views/do.py:3546
 msgid "User is not banned"
@@ -3979,12 +3979,12 @@ msgstr "Jako čistič můžeš rušit jen ty bany, které jsi vydal(a) ty"
 
 #: app/views/do.py:1782
 msgid "Moderation action: ban removed"
-msgstr ""
+msgstr "Moderování: ban zrušen"
 
 #: app/views/do.py:1785
 #, python-format
 msgid "You are no longer banned from posting in %(sublink)s."
-msgstr ""
+msgstr "Už nejsi zabanovaný/á ve skupině %(sublink)s."
 
 #: app/views/do.py:1828
 msgid "Ban removed"
@@ -4004,12 +4004,12 @@ msgstr "Uživatel nebyl pozván moderovat tuto skupinu"
 
 #: app/views/do.py:1914
 msgid "Moderation invitation revoked"
-msgstr ""
+msgstr "Pozvánka moderovat zamítnuta"
 
 #: app/views/do.py:1918
 #, python-format
 msgid "%(userlink)s cancelled your invitation to moderate %(sublink)s."
-msgstr ""
+msgstr "%(userlink)s zrušil(a) tvé pozvání moderovat %(sublink)s."
 
 #: app/views/do.py:1957 app/views/do.py:2012
 msgid "You have not been invited to mod this sub"
@@ -4107,16 +4107,16 @@ msgstr "Komentář je již smazán"
 #: app/views/do.py:2880
 #, python-format
 msgid "The site administrators deleted a comment you made on the post %(postlink)s. Reason: %(reason)s"
-msgstr ""
+msgstr "Administrátor vymazal(a) tvůj komentář k příspěvku %(postlink)s. Důvod: %(reason)s"
 
 #: app/views/do.py:2887
 #, python-format
 msgid "The moderators of %(sublink)s deleted a comment you made on the post %(postlink)s. Reason: %(reason)s"
-msgstr ""
+msgstr "Moderátor skupiny %(sublink)s vymazal(a) tvůj komentář k příspěvku %(postlink)s. Důvod: %(reason)s"
 
 #: app/views/do.py:2900
 msgid "Moderation action: comment deleted"
-msgstr ""
+msgstr "Moderování: komentář vymazán"
 
 #: app/views/do.py:2960
 msgid "Comment is not deleted"
@@ -4129,16 +4129,16 @@ msgstr "Samo-vymazaný komentář nelze obnovit"
 #: app/views/do.py:2976
 #, python-format
 msgid "The site administrators restored a comment you made on the post %(postlink)s in %(sublink)s. Reason: %(reason)s"
-msgstr ""
+msgstr "Administrátor obnovil(a) tvůj komentář k příspěvku %(postlink)s ve skupině %(sublink)s. Důvod: %(reason)s"
 
 #: app/views/do.py:2984
 #, python-format
 msgid "The moderators of %(sublink)s restored a comment you made on the post %(postlink)s. Reason: %(reason)s"
-msgstr ""
+msgstr "Moderátor skupiny %(sublink)s obnovil(a) tvůj komentář k příspěvku %(postlink)s. Důvod: %(reason)s"
 
 #: app/views/do.py:2997
 msgid "Moderation action: comment restored"
-msgstr ""
+msgstr "Moderování: komentář obnoven"
 
 #: app/views/do.py:3042 app/views/do.py:3055
 msgid "Not authenticated"
