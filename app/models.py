@@ -819,7 +819,7 @@ class InviteCode(BaseModel):
         return (
             InviteCode.select()
             .join(User)
-            .where(InviteCode.code == invite_code)
+            .where(InviteCode.code == invite_code.strip())
             .where(
                 (
                     InviteCode.expires.is_null()
@@ -832,7 +832,7 @@ class InviteCode(BaseModel):
         )
 
     def __repr__(self):
-        return f"<InviteCode {self.code}>"
+        return f"<InviteCode {self.code}>".strip()
 
     class Meta:
         table_name = "invite_code"
