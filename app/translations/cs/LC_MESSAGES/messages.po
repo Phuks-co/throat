@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2022-06-09 10:12-0300\n"
-"PO-Revision-Date: 2022-06-09 19:17\n"
+"PO-Revision-Date: 2022-07-05 21:16\n"
 "Last-Translator: \n"
 "Language-Team: Czech\n"
 "MIME-Version: 1.0\n"
@@ -1570,7 +1570,7 @@ msgstr "není https"
 
 #: app/html/shared/post.html:62
 msgid "Embed video"
-msgstr "Vložiť video"
+msgstr "Ukázat video"
 
 #: app/html/shared/post.html:64
 msgid "Show image"
