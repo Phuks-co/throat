@@ -160,6 +160,15 @@ blockquote {
   .th-body {
     position: relative;
   }
+
+  #chpop {
+    min-width: 50%;
+  }
+
+  #chpop.chexpanded {
+    min-width: 98%;
+    right: 0.2em;
+  }
 }
 
 /* /mobile menu */
@@ -1985,7 +1994,7 @@ table td {
   bottom: 0;
   background: #eee;
   border-radius: 2px 2px 0 0;
-  max-height: 20em;
+  /*max-height: 20em;*/
   height: 50%;
 }
 
@@ -2804,4 +2813,37 @@ li.mod-table-header {
     .mod-table .last-elem {
         margin-bottom: 0px;
     }
+}
+
+
+/* Fix Hydrogen shenanigans */
+:root {
+    font-size: unset !important;
+}
+
+.RoomView {
+  height: calc(100% - 1.8em);
+  font-size: 14px;
+}
+
+#chpop.hydrogen {
+  font-size: unset;
+}
+#chpop.hydrogen .menu button {
+  font-size: 15px
+}
+
+#chpop.hydrogen .popupContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 90000;
+}
+
+.logocont .logo {
+  background: none;
+}
+
+#chloading {
+  padding: 1em;
 }

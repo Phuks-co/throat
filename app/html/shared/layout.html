@@ -132,7 +132,7 @@
       </div>
     </div>
   </div>
-  
+
   @def content():
   <div class="th-body pure-g">
     @def sidebar():
@@ -180,13 +180,9 @@
     @def chat():
       @#...
       @if not current_user.is_anonymous and 'nochat' not in current_user.prefs:
-      <div id="chpop" style="height: 1.65em">
+      <div id="chpop" class="hydrogen" style="height: 1.65em">
         <div id="chtitle" hid="true"><span id="cht-text">@{_('Chat')}</span> <div class="glyphbutton"><a href="/chat"><span class="p-icon " data-icon="resize"></span></a></div></div>
-        <div id="chcont"></div>
-        <div id="chbott" style="display: none">
-          <div id="chstatus">&nbsp;</div>
-          <input type="text" id="chsend" maxlength="250" placeholder="@{_('Type here')}"/>
-        </div>
+        <div id="chloading">Loading....</div>
       </div>
       <label id="throat-chat" name="true" style="display: none;"></label>
       @if config.matrix.enabled:

@@ -32,6 +32,7 @@ defaults = {  # key => default value
             "instaud.io",
             "player.vimeo.com",
         ],
+        "extra_connect_src": [],
         "footer": {"links": {"ToS": "/wiki/tos", "Privacy": "/wiki/privacy"}},
         "trusted_proxy_count": 0,
         "custom_hot_sort": False,

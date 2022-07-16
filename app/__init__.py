@@ -69,10 +69,10 @@ def create_app(config=None):
         "default-src": ["'self'"],
         "child-src": ["'self'"]
         + [f"https://{url}" for url in config.site.expando_sites],
-        "img-src": ["'self'", "data:", "https:"],
+        "img-src": ["'self'", "data:", "https:", "blob:"],
         "media-src": ["'self'", "https:"],
         "style-src": ["'self'", "'unsafe-inline'"],
-        "connect-src": ["'self'"],
+        "connect-src": ["'self'"] + config.site.extra_connect_src,
     }
 
     if "server_name" in config.site.keys():
