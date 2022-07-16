@@ -5,6 +5,8 @@
         <div title="Upvote" class="upvote{%if post.positive == 1%} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
         <div class="score">{{post.score}}</div>
         <div title="Downvote" class="downvote{%if post.positive == 0%} downvoted{%endif%}" data-pid="{{post.pid}}" data-icon="downvote"></div>
+        {% else %}
+        <div class="score archived">{{post.score}}</div>
         {%endif%}
       </div>
       <div class="thcontainer">
