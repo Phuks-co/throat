@@ -24,10 +24,19 @@ u.sub('#chtitle', 'click', function () {
     this.parentNode.style.width = '25%';
     this.parentNode.classList.remove("chexpanded")
     this.setAttribute('hid', true);
+    if(!matrixEnabled) {
+      document.getElementById('chbott').style.display='none';
+    }
   } else {
     this.parentNode.style.height = '60%';
     this.parentNode.style.width = '40%';
     this.parentNode.classList.add("chexpanded")
     this.removeAttribute('hid');
+
+    if(!matrixEnabled) {
+      document.getElementById('chbott').style.display='block';
+      const x = document.getElementById('chcont');
+      x.scrollTop = x.scrollHeight
+    }
   }
 })
