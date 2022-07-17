@@ -148,6 +148,12 @@ async function main(homeServerUrl, roomId) {
   urlRouter.attach();
   const client = new Client(platform);
 
+  if(!window.indexedDB) {
+    document.getElementById('chloading').innerHTML = '<p>Fatal error: Your browser does not support IndexedDB</p>'
+    document.getElementById('chloading').innerHTML += '<p>Cannot load chat client.</p>'
+    return
+  }
+
   // Check if we're already logged in.....
   const sessions = await client._platform.sessionInfoStorage.getAll();
 
