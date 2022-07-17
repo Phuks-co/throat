@@ -925,7 +925,10 @@ def getSubOfTheDay():
     if not daysub:
         try:
             daysub = (
-                Sub.select(Sub.sid, Sub.name, Sub.title).order_by(db.random()).get()
+                Sub.select(Sub.sid, Sub.name, Sub.title)
+                .where(Sub.status == 0)
+                .order_by(db.random())
+                .get()
             )
         except Sub.DoesNotExist:  # No subs
             return False
@@ -1179,6 +1182,8 @@ def postListQueryBase(
             )
         elif not current_user.is_admin():
             posts = posts.where(SubPost.deleted << [0, 2, 3])
+            # Also hide posts from suspended subs
+            posts = posts.where(Sub.status == 0)
     else:
         posts = posts.where(SubPost.deleted == 0)
 
