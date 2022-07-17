@@ -1171,7 +1171,12 @@ def search_sub():
         return jsonify(results=[])
 
     query = "%" + query + "%"
-    subs = Sub.select(Sub.name).where(Sub.name ** query).limit(10).dicts()
+    subs = (
+        Sub.select(Sub.name)
+        .where((Sub.name ** query) & (Sub.status == 0))
+        .limit(10)
+        .dicts()
+    )
 
     return jsonify(results=list(subs))
 
