@@ -1185,7 +1185,7 @@ def postListQueryBase(
             # Also hide posts from suspended subs
             posts = posts.where(Sub.status == 0)
     else:
-        posts = posts.where(SubPost.deleted == 0)
+        posts = posts.where((SubPost.deleted == 0) & (Sub.status == 0))
 
     if not noAllFilter and not nofilter:
         if current_user.is_authenticated and current_user.blocksid:
@@ -1854,6 +1854,7 @@ def getUserComments(uid, page, include_deleted_comments=False):
                 )
         else:
             com = com.where(SubPostComment.status.is_null())
+            com = com.where(Sub.status == 0)
 
         if "nsfw" not in current_user.prefs:
             com = com.where(SubPost.nsfw == 0)
