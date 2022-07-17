@@ -976,6 +976,7 @@ def getSinglePost(pid):
         SubPost.link,
         User.name.alias("user"),
         Sub.name.alias("sub"),
+        Sub.sid,
         SubPost.flair,
         SubPost.edited,
         SubPost.comments,

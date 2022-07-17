@@ -200,7 +200,7 @@ class Sub(BaseModel):
     nsfw = BooleanField(default=False)
     sid = CharField(primary_key=True, max_length=40)
     sidebar = TextField(default="")
-    status = IntegerField(null=True)
+    status = IntegerField(null=False, default=0)
     title = CharField(null=True, max_length=50)
     sort = CharField(null=True, max_length=32)
     creation = DateTimeField(default=datetime.datetime.utcnow)
