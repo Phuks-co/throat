@@ -148,8 +148,16 @@ async function main(homeServerUrl, roomId) {
   urlRouter.attach();
   const client = new Client(platform);
 
-  if(!window.indexedDB) {
-    document.getElementById('chloading').innerHTML = '<p>Fatal error: Your browser does not support IndexedDB</p>'
+  let db = indexedDB.open("test");
+  let can_use_indexeddb = true;
+  db.onerror = () => {
+    can_use_indexeddb = false;
+  }
+  await new Promise(r => setTimeout(r, 10));
+
+  if(!can_use_indexeddb) {
+    document.getElementById('chloading').innerHTML = '<p>Fatal error: Cannot use IndexedDB.</p>'
+    document.getElementById('chloading').innerHTML += '<p>(this is a known bug on private mode in Firefox)</p>'
     document.getElementById('chloading').innerHTML += '<p>Cannot load chat client.</p>'
     return
   }
