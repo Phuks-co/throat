@@ -29,9 +29,8 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
-    # xxx: This migration might break on non postgres databases
-    migrator.sql("UPDATE sub SET status=0 WHERE status IS NULL")
-    migrator.sql('ALTER TABLE "sub" ALTER COLUMN "status" SET DEFAULT 0')
+    migrator.remove_fields("sub", "status")
+    migrator.add_fields("sub", status=pw.IntegerField(default=0, null=False))
 
     migrator.add_not_null("sub", "status")
 

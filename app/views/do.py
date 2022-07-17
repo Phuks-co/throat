@@ -2940,8 +2940,9 @@ def delete_comment():
         )
         sid = post.sid.get_id()
         sub_name = post.sid.name
+        sub = Sub.get(Sub.sid == post.sid.get_id())
 
-        if post.sid.status != 0 and not current_user.is_admin():
+        if sub.status != 0 and not current_user.is_admin():
             return jsonify(status="error", error=[_("Sub is disabled")])
 
         if comment.uid_id != current_user.uid and not (
@@ -3035,8 +3036,9 @@ def undelete_comment():
         )
         sid = post.sid.get_id()
         sub_name = post.sid.name
+        sub = Sub.get(Sub.sid == post.sid.get_id())
 
-        if post.sid.status != 0 and not current_user.is_admin():
+        if sub.status != 0 and not current_user.is_admin():
             return jsonify(status="error", error=[_("Sub is disabled")])
 
         if not comment.status:
