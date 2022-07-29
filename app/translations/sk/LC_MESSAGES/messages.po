@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2022-07-17 14:33-0300\n"
-"PO-Revision-Date: 2022-07-28 22:48\n"
+"PO-Revision-Date: 2022-07-29 04:44\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -2170,7 +2170,7 @@ msgstr "<a href=\"%(url)s\">Skupina /%(prefix)s/%(sub)s</a> nie je dostupná."
 
 #: app/html/sub/blocked.html:11
 msgid "The sub has been banned by the administration due to ToS/rule violations."
-msgstr "Skupina bola zabanovaná kvôli porušenie pravidiel."
+msgstr "Skupina bola zabanovaná kvôli porušeniu pravidiel."
 
 #: app/html/sub/blocked.html:13
 msgid "The sub is temporally quarantined and will be back soon."
@@ -3741,7 +3741,7 @@ msgstr "Skupina neexistuje"
 #: app/views/do.py:3040 app/views/do.py:3154 app/views/do.py:3386
 #: app/views/do.py:3513
 msgid "Sub is disabled"
-msgstr ""
+msgstr "Skupina je vypnutá"
 
 #: app/views/do.py:323
 msgid "Post was already deleted"
