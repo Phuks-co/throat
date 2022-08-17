@@ -15,7 +15,7 @@ A phoxy link and discussion aggregator with snek (python3)
 
 ## Setup:
 
-We recommend using a virtualenv or Pyenv
+We recommend using a virtualenv or Pyenv and setting it up to use Python 3.7 for best compatibility (higher versions might fail to build dependencies). See for e.g. [pyenv](https://github.com/pyenv/pyenv) to learn how to install multiple Python versions on your workstation. Refer to your virtual environment manager for documentation on selecting specific Python versions. 
 
 1. Install Python dependencies with `pip install -r requirements.txt`
 2. Install Node dependencies with `npm install`
