@@ -212,25 +212,6 @@ def search(page, term):
     )
 
 
-@bp.route("/search/<term>/.rss")
-def search_and_build_feed(page, term):
-    """ Posts matching search keywords rendered as web feed """
-    term = re.sub(r'[^A-Za-z0-9.,\-_\'" ]+', "", term)
-    posts = misc.getPostList(
-        misc.postListQueryBase().where(SubPost.title ** ("%" + term + "%")), "new", page
-    )
-    posts = misc.getPostList(misc.postListQueryBase(), "new", 1)
-    fg = FeedGenerator()
-    fg.id(request.url)
-    fg.title(f"Search results matching {term}")
-    fg.link(href=request.url_root, rel="alternate")
-    fg.link(href=request.url, rel="self")
-    return Response(
-        misc.populate_feed(fg, posts).atom_str(pretty=True),
-        mimetype="application/atom+xml",
-    )
-
-
 @bp.route("/all/top", defaults={"page": 1})
 @bp.route("/all/top/<int:page>")
 def all_top(page):
