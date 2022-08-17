@@ -227,7 +227,7 @@ def search_and_build_feed(page, term):
     fg.link(href=request.url, rel="self")
     return Response(
         misc.populate_feed(fg, posts).atom_str(pretty=True),
-        mimetype="application/atom+xml"
+        mimetype="application/atom+xml",
     )
 
 
