@@ -115,6 +115,14 @@ configurable_defaults = {
                 ),
                 "value": False,
             },
+            "allow_search_feeds": {
+                "type": "bool",
+                "doc": _l(
+                    "Allow the application to expose a single endpoint offering results "
+                    "to global keyword searches in the form of web feeds."
+                ),
+                "value": False,
+            },
             "allow_uploads": {
                 "type": "bool",
                 "doc": _l(
