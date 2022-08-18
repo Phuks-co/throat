@@ -216,6 +216,8 @@ def search(page, term):
 @bp.route("/search/<term>/.rss")
 def search_and_build_feed(page, term):
     """ Posts matching search keywords rendered as web feed """
+    if not config.allow_search_feeds:
+        return
     term = re.sub(r'[^A-Za-z0-9.,\-_\'" ]+', "", term)
     posts = misc.getPostList(
         misc.postListQueryBase().where(SubPost.title ** ("%" + term + "%")), "new", page
