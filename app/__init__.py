@@ -35,6 +35,7 @@ from .notifications import notifications
 from .socketio import socketio
 from .misc import SiteAnon, engine, re_amention, mail, talisman, limiter
 from .misc import logging_init_app, get_locale, babel
+from .email_manager import EmailManager
 
 # /!\ FOR DEBUGGING ONLY /!\
 # from werkzeug.middleware.profiler import ProfilerMiddleware
@@ -160,6 +161,10 @@ def create_app(config=None):
 
     if config.site.trusted_proxy_count != 0:
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=config.site.trusted_proxy_count)
+
+    # Start running email manager unless the config says otherwise
+    if config.app.allow_email_forwarded_notifications:
+        EmailManager()
 
     # Don't let Werkzeug make the Location header into a full URL, because relative
     # paths are legal in Location and because Werkzeug gets it wrong if the app is

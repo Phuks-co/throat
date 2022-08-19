@@ -69,6 +69,7 @@ defaults = {  # key => default value
         "max_content_length": 10485760,  # 10mb
         "fallback_language": "en",
         "testing": False,
+        "allow_email_forwarded_notifications": False,
     },
     "aws": {},
     "database": {"autoconnect": False},

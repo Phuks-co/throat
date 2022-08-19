@@ -1,5 +1,6 @@
 """ Misc helper function and classes. """
 import hashlib
+from typing import List, NamedTuple
 from urllib.parse import urlparse, parse_qs
 import json
 import math
@@ -290,11 +291,11 @@ class SiteUser(object):
             return name in self.subscriptions
 
     def has_blocked(self, sid):
-        """ Returns True if the current user has blocked sub """
+        """Returns True if the current user has blocked sub """
         return sid in self.blocksid
 
     def likes_scroll(self):
-        """ Returns true if user likes scroll """
+        """Returns true if user likes scroll"""
         return "noscroll" not in self.prefs
 
     def block_styles(self):
@@ -550,7 +551,7 @@ def our_markdown(text):
 
 
 def post_and_sub_markdown_links(post):
-    """Construct links to a post and to its sub in markdown format."""
+    """ Construct links to a post and to its sub in markdown format. """
     sub_name = Sub.get(Sub.sid == post.sid).name
     posturl = url_for("sub.view_post", sub=sub_name, pid=post.pid)
     postlink = f"[{post.title}]({posturl})"
@@ -558,14 +559,14 @@ def post_and_sub_markdown_links(post):
 
 
 def sub_markdown_link(sub_name):
-    """Construct a link to to a sub in markdown format, given its name."""
+    """ Construct a link to a sub in markdown format, given its name. """
     suburl = url_for("sub.view_sub", sub=sub_name)
     sublink = f"[{suburl}]({suburl})"
     return sublink
 
 
 def user_markdown_link(user_name):
-    """Construct a link to to a user in markdown format, given the name."""
+    """ Construct a link to a user in markdown format, given the name. """
     userurl = url_for("user.view", user=user_name)
     userlink = f"[userurl]({userurl})"
     return userlink
@@ -689,28 +690,41 @@ def getInviteCodeInfo(uid):
     return info
 
 
+class SMTPEmail(NamedTuple):
+    sender: str
+    recipients: List[str]
+    subject: str
+    text_content: str
+    html_content: str
+
+
+class SendgridEmail(NamedTuple):
+    sender: str
+    to: List[str]
+    subject: str
+    html_content: str
+
+
 def send_email(to, subject, text_content, html_content, sender=None):
     if "server" in config.mail:
         if sender is None:
             sender = config.mail.default_from
-        send_email_with_smtp(sender, to, subject, text_content, html_content)
+        send_email_with_smtp(SMTPEmail(sender, to, subject, text_content, html_content))
     elif "sendgrid" in config:
         if sender is None:
             sender = config.sendgrid.default_from
-        send_email_with_sendgrid(sender, to, subject, html_content)
+        send_email_with_sendgrid(SendgridEmail(sender, to, subject, html_content))
     else:
         raise RuntimeError("Email not configured")
 
 
-def send_email_with_smtp(sender, recipients, subject, text_content, html_content):
-    if not isinstance(recipients, list):
-        recipients = [recipients]
+def send_email_with_smtp(email: SMTPEmail):
     msg = EmailMessage(
-        subject,
-        sender=sender,
-        recipients=recipients,
-        body=text_content,
-        html=html_content,
+        email.subject,
+        sender=email.sender,
+        recipients=email.recipients,
+        body=email.text_content,
+        html=email.html_content,
     )
     if config.app.testing:
         send_smtp_email_async(current_app, msg)
@@ -723,20 +737,21 @@ def send_smtp_email_async(app, msg):
         mail.send(msg)
 
 
-def send_email_with_sendgrid(sender, to, subject, html_content):
-    """ Send a mail through sendgrid """
+def send_email_with_sendgrid(email: SendgridEmail):
+    """Send a mail through sendgrid"""
     sg = sendgrid.SendGridAPIClient(api_key=config.sendgrid.api_key)
-
     mail = sendgrid.helpers.mail.Mail(
-        from_email=sender, to_emails=to, subject=subject, html_content=html_content
+        from_email=email.sender,
+        to_emails=email.to,
+        subject=email.subject,
+        html_content=email.html_content,
     )
-
     sg.send(mail)
 
 
 # TODO: Make all these functions one.
 def getYoutubeID(url):
-    """ Returns youtube ID for a video. """
+    """Returns youtube ID for a video."""
     url = urlparse(url)
     if url.hostname == "youtu.be":
         return url.path[1:]
@@ -835,7 +850,7 @@ def isVideo(link):
 
 @cache.memoize(10)
 def get_user_level(uid, score=None):
-    """ Returns the user's level and XP as a tuple (level, xp) """
+    """Returns the user's level and XP as a tuple (level, xp)"""
     if not score:
         user = User.get(User.uid == uid)
         xp = user.score
@@ -1256,7 +1271,7 @@ def getAnnouncementPid():
 
 @cache.memoize(600)
 def getAnnouncement():
-    """ Returns sitewide announcement post or False """
+    """Returns sitewide announcement post or False"""
     ann = getAnnouncementPid()
     if not ann:
         return False
@@ -1267,7 +1282,7 @@ def getAnnouncement():
 
 @cache.memoize(5)
 def getWikiPid(sid):
-    """ Returns a list of wickied SubPosts """
+    """Returns a list of wickied SubPosts"""
     x = (
         SubMetadata.select(SubMetadata.value)
         .where(SubMetadata.sid == sid)
@@ -1279,7 +1294,7 @@ def getWikiPid(sid):
 
 @cache.memoize(60)
 def getStickyPid(sid):
-    """ Returns a list of stickied SubPosts """
+    """Returns a list of stickied SubPosts"""
     x = (
         SubMetadata.select(SubMetadata.value)
         .where(SubMetadata.sid == sid)
@@ -1566,7 +1581,7 @@ def get_notification_count(uid):
 
 
 def select_unread_messages(user_id, *args):
-    """Construct a query to get the unread and non-blocked messages in a user inbox."""
+    """ Construct a query to get the unread and non-blocked messages in a user inbox. """
     return (
         Message.select(*args)
         .join(
@@ -1794,7 +1809,7 @@ def get_messages_saved(page, uid=None):
 
 
 def process_msgs(msgs):
-    """Prepare message dictionaries for use in templates."""
+    """ Prepare message dictionaries for use in templates. """
 
     def process_msg(msg):
         if msg["mtype"] == MessageType.MOD_TO_USER_AS_MOD or (
@@ -2074,7 +2089,7 @@ def iter_validate_css(obj, uris):
 
 
 def validate_css(css, sid):
-    """ Validates CSS. Returns parsed stylesheet or (errcode, col, line)"""
+    """ Validates CSS. Returns parsed stylesheet or (errcode, col, line) """
     st = tinycss2.parse_stylesheet(css, skip_comments=True, skip_whitespace=True)
     # create a map for uris.
     uris = {}
@@ -2297,7 +2312,7 @@ def metadata_to_dict(metadata):
 
 
 def get_postmeta_dicts(pids):
-    """Get the metadata for multiple posts."""
+    """ Get the metadata for multiple posts. """
     pids = set(pids)
     postmeta_query = SubPostMetadata.select(
         SubPostMetadata.pid, SubPostMetadata.key, SubPostMetadata.value
@@ -2510,7 +2525,7 @@ def get_comment_tree(
     include_history=False,
     postmeta=None,
 ):
-    """Returns a fully paginated and expanded comment tree.
+    """ Returns a fully paginated and expanded comment tree.
 
     TODO: Move to misc and implement globally
     @param include_history:
@@ -2533,7 +2548,7 @@ def get_comment_tree(
     sticky_cid = postmeta.get("sticky_cid")
 
     def build_tree(tuff, rootcid=None):
-        """ Builds a comment tree """
+        """Builds a comment tree"""
         res = []
         for i in tuff[::]:
             if i["parentcid"] == rootcid:
@@ -2549,7 +2564,7 @@ def get_comment_tree(
     if root:
 
         def select_branch(commentslst, rootcid):
-            """ Finds a branch with a certain root and returns a new tree """
+            """Finds a branch with a certain root and returns a new tree"""
             for i in commentslst:
                 if i["cid"] == rootcid:
                     return i
@@ -2583,7 +2598,7 @@ def get_comment_tree(
     trimmed = False
 
     def recursive_check(tree, depth=0, trimmedtree=None, pcid=""):
-        """ Recursively checks tree to apply pagination limits """
+        """Recursively checks tree to apply pagination limits"""
         or_len = len(tree)
         if only_after and not trimmedtree:
             imf = list(filter(lambda x: x["cid"] == only_after, tree))
@@ -2803,7 +2818,7 @@ def get_notif_count():
 
 
 def anti_double_post(func):
-    """ This decorator attempts to leverage Redis to prevent double-submissions to some endpoints. """
+    """This decorator attempts to leverage Redis to prevent double-submissions to some endpoints."""
 
     def wrapper(*args, **kwargs):
         parms = str(args) + str(kwargs)
@@ -3051,8 +3066,8 @@ def cast_vote(uid, target_type, pcid, value):
 
 
 def best_score(upvotes, downvotes, views):
-    """Calculate the lower bound of the Wilson score confidence
-    interval for a Bernoulli parameter."""
+    """ Calculate the lower bound of the Wilson score confidence
+    interval for a Bernoulli parameter. """
     n = max(views, 1)
     # Add 1 to keep new comments from sorting at the bottom of the list.
     score = upvotes - downvotes + 1
@@ -3502,15 +3517,15 @@ def get_sub_flair_choices(sid):
 
 @cache.memoize(3600)
 def get_best_comment_sort_init_date():
-    """Posts created before this date can only sort comments by top and new."""
+    """ Posts created before this date can only sort comments by top and new. """
     smd = SiteMetadata.get(SiteMetadata.key == "best_comment_sort_init")
     return datetime.strptime(smd.value, "%Y-%m-%UdT%H:%M:%SZ")
 
 
 def gevent_required(f):
-    """Decorator to enforce that a route should only be run when gevent
+    """ Decorator to enforce that a route should only be run when gevent
     monkey-patching has been done.  Rather than run code that might do
-    something broken without gevent, raise an error."""
+    something broken without gevent, raise an error. """
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
