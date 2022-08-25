@@ -2525,7 +2525,7 @@ def get_comment_tree(
     include_history=False,
     postmeta=None,
 ):
-    """ Returns a fully paginated and expanded comment tree.
+    """Returns a fully paginated and expanded comment tree.
 
     TODO: Move to misc and implement globally
     @param include_history:
@@ -3066,8 +3066,8 @@ def cast_vote(uid, target_type, pcid, value):
 
 
 def best_score(upvotes, downvotes, views):
-    """ Calculate the lower bound of the Wilson score confidence
-    interval for a Bernoulli parameter. """
+    """Calculate the lower bound of the Wilson score confidence
+    interval for a Bernoulli parameter."""
     n = max(views, 1)
     # Add 1 to keep new comments from sorting at the bottom of the list.
     score = upvotes - downvotes + 1
@@ -3523,9 +3523,9 @@ def get_best_comment_sort_init_date():
 
 
 def gevent_required(f):
-    """ Decorator to enforce that a route should only be run when gevent
+    """Decorator to enforce that a route should only be run when gevent
     monkey-patching has been done.  Rather than run code that might do
-    something broken without gevent, raise an error. """
+    something broken without gevent, raise an error."""
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
