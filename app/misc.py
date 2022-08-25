@@ -706,6 +706,8 @@ class SendgridEmail(NamedTuple):
 
 
 def send_email(to, subject, text_content, html_content, sender=None):
+    if not isinstance(to, list):
+        to = [to]
     if "server" in config.mail:
         if sender is None:
             sender = config.mail.default_from
@@ -720,7 +722,7 @@ def send_email(to, subject, text_content, html_content, sender=None):
 
 def send_email_with_smtp(email: SMTPEmail):
     msg = EmailMessage(
-        email.subject,
+        subject=email.subject,
         sender=email.sender,
         recipients=email.recipients,
         body=email.text_content,
