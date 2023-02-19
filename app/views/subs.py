@@ -134,7 +134,7 @@ def create_post(ptype, sub):
         return error_response(_("Please select a flair for your post."))
 
     flair = None
-    if form.flair.data != "":
+    if form.flair.data:
         flair = [f.text for f in flairs if str(f.xid) == form.flair.data]
         if (user_must_flair or user_can_flair) and not flair:
             return error_response(_("Invalid flair."))

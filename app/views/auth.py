@@ -1,6 +1,6 @@
 """ Authentication endpoints and functions """
 from urllib.parse import urlparse
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import uuid
 import re
 import requests
@@ -303,7 +303,7 @@ def fix_registration_email():
 
     user = None
     reg = session.get("reg")
-    if reg is not None and datetime.utcnow() - reg["now"] < timedelta(hours=8):
+    if reg is not None and datetime.now(timezone.utc) - reg["now"] < timedelta(hours=8):
         try:
             user = User.get(
                 (User.uid == reg["uid"])

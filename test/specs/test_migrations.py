@@ -29,6 +29,6 @@ def test_migrations(app_before_init_db):
     for m in applied_migrations:
         if m == "029_message_read":
             break
-        router.rollback(m)
+        router.rollback()
 
     dbp.close()

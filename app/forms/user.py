@@ -6,7 +6,7 @@ from wtforms import StringField, PasswordField, TextAreaField
 from wtforms import BooleanField, HiddenField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 from wtforms.validators import Optional, Regexp, ValidationError
-from wtforms.fields.html5 import EmailField
+from wtforms.fields import EmailField
 from flask_babel import lazy_gettext as _l
 from app.config import config
 
@@ -129,7 +129,7 @@ class EditAccountForm(FlaskForm):
     email_optional = EmailField(
         _l("Email Address (optional)"),
         validators=[
-            OptionalIfFieldIsEmpty("email_optional"),
+            Optional(),
             Email(_l("Invalid email address.")),
         ],
     )

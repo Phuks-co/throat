@@ -13,8 +13,6 @@ from flask_jwt_extended import (
     create_refresh_token,
     get_jwt_identity,
     verify_jwt_in_request,
-    jwt_refresh_token_required,
-    jwt_optional,
 )
 from .. import misc
 from .. import tasks
@@ -208,7 +206,7 @@ def register():
 
 
 @API.route("/refresh", methods=["POST"])
-@jwt_refresh_token_required
+@jwt_required(refresh=True)
 def refresh():
     """Returns a new access token. Requires providing a refresh token"""
     current_user = get_jwt_identity()
@@ -246,7 +244,7 @@ def fresh_login():
 
 
 @API.route("/post/<target>", methods=["GET"])
-@jwt_optional
+@jwt_required(optional=True)
 def get_post_list(target):
     """Same as v2, but `content` is returned as parsed markdown and the `sort` can be `default`
     when `target` is a sub"""
@@ -361,8 +359,8 @@ def get_post_list(target):
     return jsonify(posts=postList, sort=sort, continues=True if cnt > 0 else False)
 
 
-@API.route("/post/<sub>/<int:pid>", methods=["GET"])
-@jwt_optional
+@API.get("/post/<sub>/<int:pid>")
+@jwt_required(optional=True)
 def get_post(sub, pid):
     """Returns information for a post"""
     uid = get_jwt_identity()
@@ -442,8 +440,8 @@ def get_post(sub, pid):
     return jsonify(post=post)
 
 
-@API.route("/post/<sub>/<int:pid>", methods=["PATCH"])
-@jwt_required
+@API.patch("/post/<sub>/<int:pid>")
+@jwt_required()
 def edit_post(sub, pid):
     uid = get_jwt_identity()
     if not request.is_json:
@@ -482,8 +480,8 @@ def edit_post(sub, pid):
     return get_post(sub, pid)
 
 
-@API.route("/post/<sub>/<int:pid>", methods=["DELETE"])
-@jwt_required
+@API.delete("/post/<sub>/<int:pid>")
+@jwt_required()
 def delete_post(sub, pid):
     uid = get_jwt_identity()
     try:
@@ -549,7 +547,7 @@ def delete_post(sub, pid):
 
 
 @API.route("/post/<_sub>/<int:pid>/vote", methods=["POST"])
-@jwt_required
+@jwt_required()
 def vote_post(_sub, pid):
     """Logs an upvote to a post."""
     uid = get_jwt_identity()
@@ -563,7 +561,7 @@ def vote_post(_sub, pid):
 
 
 @API.route("/post/<_sub>/<int:pid>/comment", methods=["GET"])
-@jwt_optional
+@jwt_required(optional=True)
 def get_post_comments(_sub, pid):
     """Returns comment tree
 
@@ -603,7 +601,7 @@ def get_post_comments(_sub, pid):
 
 
 @API.route("/post/<sub>/<int:pid>/comment", methods=["POST"])
-@jwt_required
+@jwt_required()
 @ratelimit(POSTING_LIMIT)
 def create_comment(sub, pid):
     uid = get_jwt_identity()
@@ -784,7 +782,7 @@ def create_comment(sub, pid):
 
 
 @API.route("/post/<_sub>/<int:pid>/comment/<cid>", methods=["PATCH"])
-@jwt_required
+@jwt_required()
 def edit_comment(_sub, pid, cid):
     """Edits a comment"""
     uid = get_jwt_identity()
@@ -854,7 +852,7 @@ def edit_comment(_sub, pid, cid):
 
 
 @API.route("/post/<_sub>/<int:pid>/comment/<cid>", methods=["DELETE"])
-@jwt_required
+@jwt_required()
 def delete_comment(_sub, pid, cid):
     uid = get_jwt_identity()
 
@@ -883,7 +881,7 @@ def delete_comment(_sub, pid, cid):
 
 
 @API.route("/post/<_sub>/<int:_pid>/comment/<cid>/vote", methods=["POST"])
-@jwt_required
+@jwt_required()
 def vote_comment(_sub, _pid, cid):
     """Logs an upvote to a post."""
     uid = get_jwt_identity()
@@ -980,7 +978,7 @@ def get_challenge():
 
 @API.route("/post", methods=["POST"])
 @gevent_required  # Starts async task (thumbnail).
-@jwt_required
+@jwt_required()
 @ratelimit(POSTING_LIMIT)
 def create_post():
     uid = get_jwt_identity()
@@ -1338,7 +1336,7 @@ def user_overview(username):
 
 
 @API.route("/user", methods=["GET"])
-@jwt_required
+@jwt_required()
 def get_own_user():
     """Return user info and notifications count for the current user"""
     uid = get_jwt_identity()
@@ -1377,7 +1375,7 @@ def get_own_user():
 
 
 @API.route("/notifications", methods=["GET"])
-@jwt_required
+@jwt_required()
 def get_notifications():
     uid = get_jwt_identity()
     page = request.args.get("page", default=1, type=int)
@@ -1410,7 +1408,7 @@ def get_notifications():
 
 
 @API.route("/notifications", methods=["DELETE"])
-@jwt_required
+@jwt_required()
 def delete_notification():
     uid = get_jwt_identity()
     if not request.is_json:
@@ -1432,7 +1430,7 @@ def delete_notification():
 
 
 @API.route("/notifications/ignore", methods=["GET"])
-@jwt_required
+@jwt_required()
 def get_ignored():
     """Lists all the users the user has blocked."""
     uid = get_jwt_identity()
@@ -1447,7 +1445,7 @@ def get_ignored():
 
 
 @API.route("/notifications/ignore", methods=["POST"])
-@jwt_required
+@jwt_required()
 def ignore_notifications():
     """Ignores all notifications coming from a certain user."""
     uid = get_jwt_identity()
@@ -1512,7 +1510,7 @@ def ignore_notifications():
 
 
 @API.route("/notifications/ignore", methods=["DELETE"])
-@jwt_required
+@jwt_required()
 def unignore_notifications():
     """Removes an ignore."""
     uid = get_jwt_identity()
@@ -1553,7 +1551,7 @@ def unignore_notifications():
 
 
 @API.route("/messages", methods=["GET"])
-@jwt_required
+@jwt_required()
 def get_messages():
     """Returns an array of received messages"""
     uid = get_jwt_identity()
@@ -1566,7 +1564,7 @@ def get_messages():
 
 
 @API.route("/messages", methods=["DELETE"])
-@jwt_required
+@jwt_required()
 def delete_message():
     uid = get_jwt_identity()
     if not request.is_json:
@@ -1592,7 +1590,7 @@ def delete_message():
 
 
 @API.route("/messages", methods=["POST"])
-@jwt_required
+@jwt_required()
 def send_message():
     uid = get_jwt_identity()
     if not request.is_json:
@@ -1626,7 +1624,7 @@ def send_message():
 
 
 @API.route("/messages/sent", methods=["GET"])
-@jwt_required
+@jwt_required()
 def get_sent_messages():
     """Returns an array of sent messages"""
     uid = get_jwt_identity()
@@ -1637,7 +1635,7 @@ def get_sent_messages():
 
 
 @API.route("/messages/<int:mid>/read", methods=["POST"])
-@jwt_required
+@jwt_required()
 def read_message(mid):
     """Marks a message as read"""
     uid = get_jwt_identity()
@@ -1682,7 +1680,7 @@ def message_fields_for_api(m):
 
 
 @API.route("/user/settings", methods=["GET"])
-@jwt_required
+@jwt_required()
 def get_settings():
     """Returns account settings"""
     uid = get_jwt_identity()
@@ -1703,7 +1701,7 @@ def get_settings():
 
 
 @API.route("/user/settings", methods=["POST"])
-@jwt_required
+@jwt_required()
 def set_settings():
     """Changes accounts settings (excl. password/email)
     Required post parameters: settings (dict of setting options and values).
@@ -1747,7 +1745,7 @@ def set_settings():
 @API.route("/grabtitle", methods=["GET"])
 @gevent_required  # Starts async task (external HTTP request).
 @ratelimit(POSTING_LIMIT)
-@jwt_required
+@jwt_required()
 def grab_title():
     url = request.args.get("url", None)
     if not url:
@@ -1757,7 +1755,7 @@ def grab_title():
 
 @API.route("/push", methods=["POST"])
 @gevent_required  # Uses notification service if configured.
-@jwt_required
+@jwt_required()
 def inform_push_token():
     """Informs a new push token"""
     # 1. Verify if the token is valid

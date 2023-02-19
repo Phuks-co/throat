@@ -551,7 +551,7 @@ def our_markdown(text):
 
 
 def post_and_sub_markdown_links(post):
-    """ Construct links to a post and to its sub in markdown format. """
+    """Construct links to a post and to its sub in markdown format."""
     sub_name = Sub.get(Sub.sid == post.sid).name
     posturl = url_for("sub.view_post", sub=sub_name, pid=post.pid)
     postlink = f"[{post.title}]({posturl})"
@@ -559,14 +559,14 @@ def post_and_sub_markdown_links(post):
 
 
 def sub_markdown_link(sub_name):
-    """ Construct a link to a sub in markdown format, given its name. """
+    """Construct a link to a sub in markdown format, given its name."""
     suburl = url_for("sub.view_sub", sub=sub_name)
     sublink = f"[{suburl}]({suburl})"
     return sublink
 
 
 def user_markdown_link(user_name):
-    """ Construct a link to a user in markdown format, given the name. """
+    """Construct a link to a user in markdown format, given the name."""
     userurl = url_for("user.view", user=user_name)
     userlink = f"[userurl]({userurl})"
     return userlink
@@ -769,7 +769,9 @@ def getYoutubeID(url):
 
 def workWithMentions(data, receivedby, post, _sub, cid=None, c_user=current_user):
     """Does all the job for mentions"""
-    mts = re.findall(re_amention.LINKS, data)
+    if not data:
+        return
+    mts = re_amention.LINKS.findall(data)
     if mts:
         mts = list(set(mts))  # Removes dupes
         clean_mts = []
@@ -1583,7 +1585,7 @@ def get_notification_count(uid):
 
 
 def select_unread_messages(user_id, *args):
-    """ Construct a query to get the unread and non-blocked messages in a user inbox. """
+    """Construct a query to get the unread and non-blocked messages in a user inbox."""
     return (
         Message.select(*args)
         .join(
@@ -1811,7 +1813,7 @@ def get_messages_saved(page, uid=None):
 
 
 def process_msgs(msgs):
-    """ Prepare message dictionaries for use in templates. """
+    """Prepare message dictionaries for use in templates."""
 
     def process_msg(msg):
         if msg["mtype"] == MessageType.MOD_TO_USER_AS_MOD or (
@@ -2091,7 +2093,7 @@ def iter_validate_css(obj, uris):
 
 
 def validate_css(css, sid):
-    """ Validates CSS. Returns parsed stylesheet or (errcode, col, line) """
+    """Validates CSS. Returns parsed stylesheet or (errcode, col, line)"""
     st = tinycss2.parse_stylesheet(css, skip_comments=True, skip_whitespace=True)
     # create a map for uris.
     uris = {}
@@ -2314,7 +2316,7 @@ def metadata_to_dict(metadata):
 
 
 def get_postmeta_dicts(pids):
-    """ Get the metadata for multiple posts. """
+    """Get the metadata for multiple posts."""
     pids = set(pids)
     postmeta_query = SubPostMetadata.select(
         SubPostMetadata.pid, SubPostMetadata.key, SubPostMetadata.value
@@ -3486,7 +3488,7 @@ def recent_activity(sidebar=True):
             parsed = BeautifulSoup(our_markdown(rec["content"]), features="lxml")
             for spoiler in parsed.findAll("spoiler"):
                 spoiler.string.replace_with("█" * len(spoiler.string))
-            stripped = parsed.findAll(text=True)
+            stripped = parsed.findAll(string=True)
             rec["content"] = word_truncate("".join(stripped).replace("\n", " "), 350)
         add_blur(rec)
 
@@ -3519,7 +3521,7 @@ def get_sub_flair_choices(sid):
 
 @cache.memoize(3600)
 def get_best_comment_sort_init_date():
-    """ Posts created before this date can only sort comments by top and new. """
+    """Posts created before this date can only sort comments by top and new."""
     smd = SiteMetadata.get(SiteMetadata.key == "best_comment_sort_init")
     return datetime.strptime(smd.value, "%Y-%m-%UdT%H:%M:%SZ")
 

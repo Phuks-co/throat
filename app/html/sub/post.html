@@ -20,7 +20,7 @@
 @def meta_description():
 
     @if post['content'] and post['deleted'] == 0:
-        <meta name="description" content="@{func.word_truncate(''.join(BeautifulSoup(markdown(post['content']), features='lxml').findAll(text=True)).replace('\n', ' '), 250)}"/>
+        <meta name="description" content="@{func.word_truncate(''.join(BeautifulSoup(markdown(post['content']), features='lxml').findAll(string=True)).replace('\n', ' '), 250)}"/>
     @else:
         <meta name="description" content="@{sub['title']}" />
     @end
