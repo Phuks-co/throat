@@ -71,11 +71,16 @@ def test_send_and_receive_pm(client, user_info, user2_info):
         data=dict(csrf_token=csrf_token(rv.data)),
     )
 
+    # Re-logging to re-read the current_user data (in development mode this happens when reloading the page)
+    log_out_current_user(client, verify=True)
+    log_in_user(client, user_info, expect_success=True)
+
     # User returns to home page; notifications count now 0.
     rv = client.get(url_for("home.index"), follow_redirects=True)
     assert rv.status == "200 OK"
     soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     link = soup.find(href=url_for("messages.inbox_sort"))
+
     assert link.get_text().strip() == "0"
 
 
@@ -109,6 +114,9 @@ def test_block_pm(client, user_info, user2_info):
         data=dict(csrf_token=csrf_token(rv.data)),
     )
 
+    log_out_current_user(client, verify=True)
+    log_in_user(client, user_info, expect_success=True)
+
     # User doesn't have a notification for blocked message.
     rv = client.get(url_for("home.index"), follow_redirects=True)
     assert rv.status == "200 OK"
@@ -133,6 +141,9 @@ def test_block_pm(client, user_info, user2_info):
         url_for("do.ignore_user", uid=user2.uid),
         data=dict(csrf_token=csrf_token(rv.data)),
     )
+
+    log_out_current_user(client, verify=True)
+    log_in_user(client, user_info, expect_success=True)
 
     # User now has a notification for message.
     rv = client.get(url_for("home.index"), follow_redirects=True)
@@ -334,6 +345,9 @@ def test_exchange_pm(client, user_info, user2_info):
     # User uses the mark all as read link.
     rv = client.post(url_for("do.readall_msgs"), data={})
     assert b"error" not in rv.data
+
+    log_out_current_user(client, verify=True)
+    log_in_user(client, user_info, expect_success=True)
 
     # User now has no new messages.
     rv = client.get(url_for("home.index"), follow_redirects=True)

@@ -12,7 +12,7 @@ from flask_webpack import Webpack
 from flask_babel import lazy_gettext as _l, _
 from wheezy.html.utils import escape_html
 from werkzeug.middleware.proxy_fix import ProxyFix
-from werkzeug.wrappers import BaseResponse
+from werkzeug.wrappers import Response
 
 from .config import Config
 from .forms import LoginForm, LogOutForm, CreateSubForm
@@ -169,7 +169,7 @@ def create_app(config=None):
     # Don't let Werkzeug make the Location header into a full URL, because relative
     # paths are legal in Location and because Werkzeug gets it wrong if the app is
     # behind a load balancer which terminates SSL.
-    BaseResponse.autocorrect_location_header = False
+    Response.autocorrect_location_header = False
 
     @app.before_request
     def before_request():

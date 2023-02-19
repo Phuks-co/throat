@@ -1,7 +1,7 @@
 # Compile the translations.
 # This is done in its own step as the translations are used by both
 # webpack and Flask.
-FROM python:3.7-slim-buster AS translations
+FROM python:3.9-slim-buster AS translations
 RUN pip install Babel
 COPY app/translations /translations
 RUN pybabel compile --directory=translations
@@ -19,7 +19,7 @@ COPY --from=translations /translations /app/translations
 RUN npm run build
 
 
-FROM python:3.7-slim-buster
+FROM python:3.9-slim-buster
 
 # Install system packages.
 RUN \

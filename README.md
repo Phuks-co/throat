@@ -8,23 +8,23 @@ A phoxy link and discussion aggregator with snek (python3)
 
  - A database server, MySQL, MariaDB and Postgres have been tested. Sqlite should work for messing locally
  - Redis
- - Python >= 3.7
+ - Python >= 3.9
  - A recent node/npm
  - libmagic
  - libpq-dev
 
 ## Setup:
 
-We recommend using a virtualenv or Pyenv and setting it up to use Python 3.7 for best compatibility (higher versions might fail to build dependencies). See for e.g. [pyenv](https://github.com/pyenv/pyenv) to learn how to install multiple Python versions on your workstation. Refer to your virtual environment manager for documentation on selecting specific Python versions.
+We recommend using a virtualenv or Pyenv and setting it up to use Python 3.9 for best compatibility (higher versions might fail to build dependencies). See for e.g. [pyenv](https://github.com/pyenv/pyenv) to learn how to install multiple Python versions on your workstation. Refer to your virtual environment manager for documentation on selecting specific Python versions.
 
-1. Install Python dependencies with `pip install -r requirements.txt`
+1. Install Python dependencies with `poetry install`
 2. Install Node dependencies with `npm install`
 3. Build the bundles with `npm run build`
 4. Copy `example.config.yaml` to `config.yaml` and edit it
-5. Set up the database by executing `./throat.py migration apply`
-6. Compile the translation files with `./throat.py translations compile`
+5. Set up the database by executing `poetry run ./throat.py migration apply`
+6. Compile the translation files with `poetry run ./throat.py translations compile`
 
-And you're done! You can run a test server by executing `./throat.py`. For production instances we recommend setting up `gunicorn`
+And you're done! You can run a test server by executing `poetry run ./throat.py`. For production instances we recommend setting up `gunicorn`
 
 ### Production deployments
 Please read [doc/deploy.md](doc/deploy.md) for instructions to deploy on gunicorn or using docker.

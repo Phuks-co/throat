@@ -1418,7 +1418,7 @@ def create_comment(pid):
         )
         comment_text = BeautifulSoup(
             misc.our_markdown(comment.content.decode()), features="lxml"
-        ).findAll(text=True)
+        ).findAll(string=True)
         comment_res = misc.word_truncate("".join(comment_text).replace("\n", " "), 250)
         defaults = [
             x.value for x in SiteMetadata.select().where(SiteMetadata.key == "default")
@@ -2100,7 +2100,6 @@ def read_pm(mid):
         Message.get(Message.mid == mid)
     except Message.DoesNotExist:
         return jsonify(status="error", error=[_("Message not found")])
-
     try:
         um = UserUnreadMessage.get(
             (UserUnreadMessage.uid == current_user.uid) & (UserUnreadMessage.mid == mid)
