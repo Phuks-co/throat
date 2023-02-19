@@ -77,7 +77,7 @@ def create_thumbnail_async(link, store):
 
 
 def fetch_image_data(link):
-    """ Try to fetch image data from a URL , and return it, or None. """
+    """Try to fetch image data from a URL , and return it, or None."""
     # 1 - Check if it's an image
     try:
         resp, data = safe_request(link, receive_timeout=60)

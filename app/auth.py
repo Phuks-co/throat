@@ -36,6 +36,7 @@ class KeycloakAdmin(KeycloakAdmin_):
                 b"Refresh token expired" in e.response_body
                 or b"Token is not active" in e.response_body
                 or b"Session is not active" in e.response_body
+                or b"No refresh token" in e.response_body
             ):
                 self.get_token()
             else:
@@ -340,7 +341,7 @@ class AuthProvider:
 
     @staticmethod
     def _set_email_verified(user, value=True):
-        """Set the UserMetadata email_verified flag. """
+        """Set the UserMetadata email_verified flag."""
         value = "1" if value else "0"
         try:
             umd = UserMetadata.get(

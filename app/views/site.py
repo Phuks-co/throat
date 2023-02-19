@@ -27,7 +27,7 @@ def chat():
 @bp.route("/sitelog/<int:page>")
 @login_required
 def view_sitelog(page):
-    """ Here we can see a log of admin activity on the site """
+    """Here we can see a log of admin activity on the site"""
 
     if not config.site.sitelog_public and not current_user.can_admin:
         abort(404)
@@ -59,7 +59,7 @@ def view_sitelog(page):
 
 @bp.route("/p/<pid>")
 def view_post_inbox(pid):
-    """ Gets route to post from just pid """
+    """Gets route to post from just pid"""
     try:
         post = SubPost.get(SubPost.pid == pid)
     except SubPost.DoesNotExist:
@@ -69,7 +69,7 @@ def view_post_inbox(pid):
 
 @bp.route("/c/<cid>")
 def view_comment_inbox(cid):
-    """ Gets route to post from just cid """
+    """Gets route to post from just cid"""
     try:
         comm = SubPostComment.get(SubPostComment.cid == cid)
     except SubPostComment.DoesNotExist:
@@ -82,7 +82,7 @@ def view_comment_inbox(cid):
 @bp.route("/m/<sublist>", defaults={"page": 1})
 @bp.route("/m/<sublist>/<int:page>")
 def view_multisub_new(sublist, page=1):
-    """ The multi index page, sorted as most recent posted first """
+    """The multi index page, sorted as most recent posted first"""
     names = sublist.split("+")
     if len(names) > 20:
         names = names[20:]

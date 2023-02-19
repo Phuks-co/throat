@@ -4393,4 +4393,3 @@ msgstr "Link pro reset hesla je neplatný"
 #: app/views/wiki.py:23
 msgid "License file was deleted :("
 msgstr "Licenční soubor byl vymazán :("
-

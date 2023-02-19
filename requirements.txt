@@ -91,6 +91,6 @@ Wheezy-extractor==1.0.1
 pytest
 pytest-flask
 pre-commit==2.10.1
-black==20.8b1
+black==23.1.0
 qrcode==6.1
 pyrsistent==0.17.3

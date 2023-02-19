@@ -171,7 +171,7 @@ talisman = Talisman()
 
 
 class SiteUser(object):
-    """ Representation of a site user. Used on the login manager. """
+    """Representation of a site user. Used on the login manager."""
 
     def __init__(self, userclass=None, subs=(), prefs=()):
         self.user = userclass
@@ -248,12 +248,12 @@ class SiteUser(object):
         return "<SiteUser {0}>".format(self.uid)
 
     def get_id(self):
-        """ Returns the unique user id. Used on load_user """
+        """Returns the unique user id. Used on load_user"""
         return self.uid if self.resets == 0 else f"{self.uid}${self.resets}"
 
     @cache.memoize(1)
     def is_mod(self, sid, power_level=2):
-        """ Returns True if the current user is a mod of 'sub' """
+        """Returns True if the current user is a mod of 'sub'"""
         return is_sub_mod(self.uid, sid, power_level, self.can_admin)
 
     @cache.memoize(1)
@@ -268,11 +268,11 @@ class SiteUser(object):
         return json.dumps(self.mod_notifications())
 
     def is_subban(self, sub):
-        """ Returns True if the current user is banned from 'sub' """
+        """Returns True if the current user is banned from 'sub'"""
         return is_sub_banned(sub, self.user)
 
     def is_modinv(self, sub):
-        """ Returns True if the current user is invited to mod of 'sub' """
+        """Returns True if the current user is invited to mod of 'sub'"""
         try:
             SubMod.get((SubMod.sid == sub) & (SubMod.uid == self.uid) & SubMod.invite)
             return True
@@ -280,18 +280,18 @@ class SiteUser(object):
             return False
 
     def is_admin(self):
-        """ Returns true if the current user is a site admin. """
+        """Returns true if the current user is a site admin."""
         return self.admin
 
     def has_subscribed(self, name):
-        """ Returns True if the current user has subscribed to sub """
+        """Returns True if the current user has subscribed to sub"""
         if len(name) == 36:  # TODO: BAD NASTY HACK REMOVE THIS.
             return name in self.subsid
         else:
             return name in self.subscriptions
 
     def has_blocked(self, sid):
-        """Returns True if the current user has blocked sub """
+        """Returns True if the current user has blocked sub"""
         return sid in self.blocksid
 
     def likes_scroll(self):
@@ -299,12 +299,12 @@ class SiteUser(object):
         return "noscroll" not in self.prefs
 
     def block_styles(self):
-        """ Returns true if user selects to block sub styles """
+        """Returns true if user selects to block sub styles"""
         return "nostyles" in self.prefs
 
     @cache.memoize(300)
     def get_user_level(self):
-        """ Returns the level and xp of a user. """
+        """Returns the level and xp of a user."""
         return get_user_level(self.uid, self.score)
 
     def get_top_bar(self):
@@ -351,7 +351,7 @@ def is_target_user_admin(uid):
 
 
 class SiteAnon(AnonymousUserMixin):
-    """ A subclass of AnonymousUserMixin. Used for logged out users. """
+    """A subclass of AnonymousUserMixin. Used for logged out users."""
 
     uid = False
     subsid = []
@@ -383,17 +383,17 @@ class SiteAnon(AnonymousUserMixin):
 
     @classmethod
     def is_admin(cls):
-        """ Anons are not admins. """
+        """Anons are not admins."""
         return False
 
     @classmethod
     def can_pm_users(cls):
-        """ Anons may never PM users. """
+        """Anons may never PM users."""
         return False
 
     @classmethod
     def likes_scroll(cls):
-        """ Anons like scroll. """
+        """Anons like scroll."""
         return True
 
     @classmethod
@@ -402,27 +402,27 @@ class SiteAnon(AnonymousUserMixin):
 
     @classmethod
     def has_subscribed(cls, _sub):
-        """ Anons dont get subscribe options. """
+        """Anons dont get subscribe options."""
         return False
 
     @classmethod
     def has_blocked(cls, _sub):
-        """ Anons dont get blocked options. """
+        """Anons dont get blocked options."""
         return False
 
     @classmethod
     def block_styles(cls):
-        """ Anons dont get usermetadata options. """
+        """Anons dont get usermetadata options."""
         return False
 
     @classmethod
     def is_modinv(cls):
-        """ Anons dont get see submod page. """
+        """Anons dont get see submod page."""
         return False
 
     @classmethod
     def is_subban(cls, _sub):
-        """ Anons dont get banned by default. """
+        """Anons dont get banned by default."""
         return False
 
     @classmethod
@@ -435,7 +435,7 @@ class SiteAnon(AnonymousUserMixin):
 
 
 def get_ip():
-    """ Return the user's IP address for rate-limiting. """
+    """Return the user's IP address for rate-limiting."""
     addr = ipaddress.ip_address(request.remote_addr or "127.0.0.1")
     if isinstance(addr, ipaddress.IPv6Address):
         return addr.exploded[:19]  # use the /64
@@ -459,9 +459,9 @@ class MentionRegex:
     def init_app(self, app):
         prefix = app.config["THROAT_CONFIG"].site.sub_prefix
         BARE = (
-            fr"(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))((@|\/u\/|\/{prefix}\/)([A-Za-z0-9\-\_]+))"
+            rf"(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))((@|\/u\/|\/{prefix}\/)([A-Za-z0-9\-\_]+))"
         )
-        PRE0 = fr"(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))(?:(?:@|\/u\/|\/{prefix}\/)(?:[A-Za-z0-9\-\_]+)))"
+        PRE0 = rf"(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))(?:(?:@|\/u\/|\/{prefix}\/)(?:[A-Za-z0-9\-\_]+)))"
         PRE1 = r"(?:(\[.+?\]\(.+?\))|" + BARE + r")"
         self.ESCAPED = re.compile(
             r"```.*{0}.*```|`.*?{0}.*?`|({1})".format(PRE0, PRE1),
@@ -574,7 +574,7 @@ def user_markdown_link(user_name):
 
 @cache.memoize(5)
 def is_sub_banned(sub, user=None, uid=None):
-    """ Returns True if 'user' is banned 'sub' """
+    """Returns True if 'user' is banned 'sub'"""
     if isinstance(sub, dict):
         sid = sub["sid"]
     elif isinstance(sub, str) or isinstance(sub, int):
@@ -607,7 +607,7 @@ def getSubFlairs(sid):
 
 @cache.memoize(600)
 def getDefaultSubs():
-    """ Returns a list of all the default subs """
+    """Returns a list of all the default subs"""
     defaults = [
         x.value for x in SiteMetadata.select().where(SiteMetadata.key == "default")
     ]
@@ -617,7 +617,7 @@ def getDefaultSubs():
 
 @cache.memoize(600)
 def getDefaultSubs_list(ext=False):
-    """ Returns a list of all the default subs """
+    """Returns a list of all the default subs"""
     defaults = getDefaultSubs()
     if not ext:
         defaults = sorted(defaults, key=str.lower)
@@ -628,7 +628,7 @@ def getDefaultSubs_list(ext=False):
 
 @cache.memoize(30)
 def getMaxCodes(uid):
-    """ Returns how many invite codes a user can create """
+    """Returns how many invite codes a user can create"""
     try:
         amt = UserMetadata.get(
             (UserMetadata.key == "invite_max") & (UserMetadata.uid == uid)
@@ -768,7 +768,7 @@ def getYoutubeID(url):
 
 
 def workWithMentions(data, receivedby, post, _sub, cid=None, c_user=current_user):
-    """ Does all the job for mentions """
+    """Does all the job for mentions"""
     mts = re.findall(re_amention.LINKS, data)
     if mts:
         mts = list(set(mts))  # Removes dupes
@@ -825,27 +825,27 @@ def workWithMentions(data, receivedby, post, _sub, cid=None, c_user=current_user
 
 @cache.memoize(5)
 def getDomain(link):
-    """ Gets Domain from url """
+    """Gets Domain from url"""
     x = urlparse(link)
     return x.netloc
 
 
 @cache.memoize(300)
 def isImage(link):
-    """ Returns True if link ends with img suffix """
+    """Returns True if link ends with img suffix"""
     suffix = (".png", ".jpg", ".gif", ".tiff", ".bmp", ".jpeg", ".svg")
     return link.lower().endswith(suffix)
 
 
 @cache.memoize(300)
 def isGifv(link):
-    """ Returns True if link ends with video suffix """
+    """Returns True if link ends with video suffix"""
     return link.lower().endswith(".gifv")
 
 
 @cache.memoize(300)
 def isVideo(link):
-    """ Returns True if link ends with video suffix """
+    """Returns True if link ends with video suffix"""
     suffix = (".mp4", ".webm")
     return link.lower().endswith(suffix)
 
@@ -869,7 +869,7 @@ def get_user_level(uid, score=None):
 
 @cache.memoize(300)
 def fetchTodaysTopPosts(uid, include_nsfw):
-    """ Returns top posts in the last 24 hours """
+    """Returns top posts in the last 24 hours"""
     td = datetime.utcnow() - timedelta(days=1)
     query = SubPost.select(
         SubPost.pid,
@@ -959,7 +959,7 @@ def getSubOfTheDay():
 
 
 def getChangelog():
-    """ Returns most recent changelog post """
+    """Returns most recent changelog post"""
     if not config.site.changelog_sub:
         return None
     td = datetime.utcnow() - timedelta(days=15)
@@ -1624,7 +1624,7 @@ def get_unread_count():
 
 
 def get_errors(form, first=False):
-    """ A simple function that returns a list with all the form errors. """
+    """A simple function that returns a list with all the form errors."""
     if request.method == "GET":
         return []
     ret = []
@@ -1649,7 +1649,7 @@ def get_errors(form, first=False):
 
 
 def get_messages_inbox(page, uid=None):
-    """ Returns user's messages inbox as dictionary. """
+    """Returns user's messages inbox as dictionary."""
     if uid is None:
         uid = current_user.uid
     msgs = (
@@ -1723,7 +1723,7 @@ def get_messages_inbox(page, uid=None):
 
 
 def get_messages_sent(page, uid=None):
-    """ Returns messages sent """
+    """Returns messages sent"""
     if uid is None:
         uid = current_user.uid
     return process_msgs(
@@ -1760,7 +1760,7 @@ def get_messages_sent(page, uid=None):
 
 
 def get_messages_saved(page, uid=None):
-    """ Returns saved messages """
+    """Returns saved messages"""
     if uid is None:
         uid = current_user.uid
     msgs = (
@@ -1920,7 +1920,7 @@ def getSubMods(sid):
 
 
 def notify_mods(sid):
-    """ Send the sub mods an updated open report count. """
+    """Send the sub mods an updated open report count."""
     reports = (
         SubPostReport.select(fn.Count(SubPostReport.id))
         .join(SubPost)
@@ -2122,7 +2122,7 @@ def validate_css(css, sid):
 
 @cache.memoize(3)
 def get_security_questions():
-    """ Returns a list of tuples containing security questions and answers """
+    """Returns a list of tuples containing security questions and answers"""
     qs = SiteMetadata.select().where(SiteMetadata.key == "secquestion").dicts()
 
     return [
@@ -2131,14 +2131,14 @@ def get_security_questions():
 
 
 def pick_random_security_question():
-    """ Picks a random security question and saves the answer on the session """
+    """Picks a random security question and saves the answer on the session"""
     sc = random.choice(get_security_questions())
     session["sa"] = sc[2]
     return sc[1]
 
 
 def create_message(mfrom, to, subject, content, mtype):
-    """ Creates a message. """
+    """Creates a message."""
     posted = datetime.utcnow()
     msg_thread = MessageThread.create(subject=subject)
     msg = Message.create(
@@ -2163,7 +2163,7 @@ def create_message(mfrom, to, subject, content, mtype):
 
 
 def create_notification_message(mfrom, as_admin, sub, to, subject, content):
-    """ Create a message to notify a user of a mod action. """
+    """Create a message to notify a user of a mod action."""
     posted = datetime.utcnow()
     if as_admin and config.site.admin_sub != "":
         sub = Sub.get(fn.Lower(Sub.name) == config.site.admin_sub.lower()).sid
@@ -2190,7 +2190,7 @@ def create_notification_message(mfrom, as_admin, sub, to, subject, content):
 
 
 def create_message_reply(message, content):
-    """ Creates a reply to a message. """
+    """Creates a reply to a message."""
     posted = datetime.utcnow()
     sender = message.receivedby.uid
     thread = message.thread.mtid
@@ -2256,7 +2256,7 @@ def get_motto():
 
 
 def populate_feed(feed, posts):
-    """ Populates an AtomFeed `feed` with posts """
+    """Populates an AtomFeed `feed` with posts"""
     for post in posts:
         content = "<table><tr>"
         url = url_for("sub.view_post", sub=post["sub"], pid=post["pid"], _external=True)
@@ -2294,7 +2294,7 @@ def populate_feed(feed, posts):
 
 
 def metadata_to_dict(metadata):
-    """ Transforms metadata query objects into dicts """
+    """Transforms metadata query objects into dicts"""
     res = {}
     for mdata in metadata:
         if mdata.value == "0":
@@ -2793,7 +2793,7 @@ def get_comment_tree(
                 commdata[hist["cid"]]["history"].append(hist)
 
     def recursive_populate(tree):
-        """ Expands the tree with the data from `commdata` """
+        """Expands the tree with the data from `commdata`"""
         populated_tree = []
         for i in tree:
             if not i["cid"]:

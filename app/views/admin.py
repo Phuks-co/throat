@@ -152,7 +152,7 @@ def logout():
 @bp.route("/")
 @login_required
 def index():
-    """ WIP: View users. assign badges, etc """
+    """WIP: View users. assign badges, etc"""
     if not current_user.can_admin:
         abort(404)
 
@@ -192,7 +192,7 @@ def index():
 @bp.route("/users/<int:page>")
 @login_required
 def users(page):
-    """ WIP: View users. """
+    """WIP: View users."""
     if not current_user.is_admin():
         abort(404)
 
@@ -228,7 +228,7 @@ def users(page):
 @bp.route("/userbadges")
 @login_required
 def userbadges():
-    """ WIP: Assign user badges. """
+    """WIP: Assign user badges."""
     if not current_user.is_admin():
         abort(404)
 
@@ -430,7 +430,7 @@ def invitecodes(page):
 @bp.route("/admins")
 @login_required
 def view():
-    """ WIP: View admins. """
+    """WIP: View admins."""
     if not current_user.is_admin():
         abort(404)
     admins = UserMetadata.select().where(UserMetadata.key == "admin")
@@ -470,7 +470,7 @@ def view():
 @bp.route("/usersearch/<term>")
 @login_required
 def users_search(term):
-    """ WIP: Search users. """
+    """WIP: Search users."""
     if not current_user.is_admin():
         abort(404)
     term = re.sub(r"[^A-Za-z0-9.\-_]+", "", term)
@@ -509,7 +509,7 @@ def users_search(term):
 @bp.route("/subs/<int:page>")
 @login_required
 def subs(page):
-    """ WIP: View subs. Assign new owners """
+    """WIP: View subs. Assign new owners"""
     if not current_user.is_admin():
         abort(404)
     subs = Sub.select().paginate(page, 50)
@@ -525,7 +525,7 @@ def subs(page):
 @bp.route("/subsearch/<term>")
 @login_required
 def subs_search(term):
-    """ WIP: Search for a sub. """
+    """WIP: Search for a sub."""
     if not current_user.is_admin():
         abort(404)
     term = re.sub(r"[^A-Za-z0-9.\-_]+", "", term)
@@ -543,7 +543,7 @@ def subs_search(term):
 @bp.route("/posts/all/<int:page>")
 @login_required
 def posts(page):
-    """ WIP: View posts. """
+    """WIP: View posts."""
     if not current_user.is_admin():
         abort(404)
     posts = misc.getPostList(
@@ -558,7 +558,7 @@ def posts(page):
 @bp.route("/postvoting/<term>/<int:page>")
 @login_required
 def post_voting(page, term):
-    """ WIP: View post voting habits """
+    """WIP: View post voting habits"""
     if not current_user.is_admin():
         abort(404)
     try:
@@ -594,7 +594,7 @@ def post_voting(page, term):
 @bp.route("/commentvoting/<term>/<int:page>")
 @login_required
 def comment_voting(page, term):
-    """ WIP: View comment voting habits """
+    """WIP: View comment voting habits"""
     if not current_user.is_admin():
         abort(404)
     try:
@@ -639,7 +639,7 @@ def comment_voting(page, term):
 @bp.route("/post/search/<term>")
 @login_required
 def post_search(term):
-    """ WIP: Post search result. """
+    """WIP: Post search result."""
     if not current_user.is_admin():
         abort(404)
     term = re.sub(r"[^A-Za-z0-9.\-_]+", "", term)
@@ -686,7 +686,7 @@ def post_search(term):
 @bp.route("/domains/<domain_type>/<int:page>")
 @login_required
 def domains(domain_type, page):
-    """ WIP: View Banned Domains """
+    """WIP: View Banned Domains"""
     if not current_user.is_admin():
         abort(404)
     if domain_type == "email":
@@ -716,7 +716,7 @@ def domains(domain_type, page):
 @bp.route("/uploads/<int:page>")
 @login_required
 def user_uploads(page):
-    """ View user uploads """
+    """View user uploads"""
     if not current_user.is_admin():
         abort(404)
     uploads = (

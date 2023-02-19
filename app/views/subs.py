@@ -368,7 +368,7 @@ def create_post(ptype, sub):
 
 @bp.route("/random")
 def random_sub():
-    """ Here we get a random sub """
+    """Here we get a random sub"""
     rsub = Sub.select(Sub.name).order_by(pdb.random()).limit(1)
     return redirect(url_for("sub.view_sub", sub=rsub.get().name))
 
@@ -377,7 +377,7 @@ def random_sub():
 @login_required
 @ratelimit(POSTING_LIMIT)
 def create_sub():
-    """ Here we can view the create sub form """
+    """Here we can view the create sub form"""
     form = CreateSubForm()
     if not form.validate():
         return engine.get_template("sub/create.html").render(
