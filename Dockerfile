@@ -30,8 +30,10 @@ RUN \
   && rm -rf /var/lib/apt/lists/*
 
 # Install our python requirements
-COPY requirements.txt /requirements.txt
-RUN pip3 install -r requirements.txt && rm requirements.txt
+COPY pyproject.toml /pyproject.toml
+COPY poetry.lock /poetry.lock
+RUN pip3 install poetry && poetry config virtualenvs.create false &&  poetry install
+RUN rm pyproject.toml poetry.lock
 
 # Create the app user and the application directory.
 RUN useradd -ms /bin/bash app
