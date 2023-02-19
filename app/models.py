@@ -120,13 +120,12 @@ class User(BaseModel):
     joindate = DateTimeField(null=True)
     name = CharField(null=True, unique=True, max_length=64)
     password = CharField(null=True)
-
+    email_forwarded_notifications = CharField(null=True)
     score = IntegerField(default=0)  # AKA phuks taken
     given = IntegerField(default=0)  # AKA phuks given
     # status: 0 = OK; 10 = deleted; 5 = site-ban
     status = IntegerField(default=0)
     resets = IntegerField(default=0)
-
     language = CharField(default=None, null=True, max_length=11)
 
     def __repr__(self):

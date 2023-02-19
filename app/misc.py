@@ -1,5 +1,6 @@
 """ Misc helper function and classes. """
 import hashlib
+from typing import List, NamedTuple
 from urllib.parse import urlparse, parse_qs
 import json
 import math
@@ -550,7 +551,7 @@ def our_markdown(text):
 
 
 def post_and_sub_markdown_links(post):
-    """Construct links to a post and to its sub in markdown format."""
+    """ Construct links to a post and to its sub in markdown format. """
     sub_name = Sub.get(Sub.sid == post.sid).name
     posturl = url_for("sub.view_post", sub=sub_name, pid=post.pid)
     postlink = f"[{post.title}]({posturl})"
@@ -558,14 +559,14 @@ def post_and_sub_markdown_links(post):
 
 
 def sub_markdown_link(sub_name):
-    """Construct a link to to a sub in markdown format, given its name."""
+    """ Construct a link to a sub in markdown format, given its name. """
     suburl = url_for("sub.view_sub", sub=sub_name)
     sublink = f"[{suburl}]({suburl})"
     return sublink
 
 
 def user_markdown_link(user_name):
-    """Construct a link to to a user in markdown format, given the name."""
+    """ Construct a link to a user in markdown format, given the name. """
     userurl = url_for("user.view", user=user_name)
     userlink = f"[userurl]({userurl})"
     return userlink
@@ -689,28 +690,43 @@ def getInviteCodeInfo(uid):
     return info
 
 
+class SMTPEmail(NamedTuple):
+    sender: str
+    recipients: List[str]
+    subject: str
+    text_content: str
+    html_content: str
+
+
+class SendgridEmail(NamedTuple):
+    sender: str
+    to: List[str]
+    subject: str
+    html_content: str
+
+
 def send_email(to, subject, text_content, html_content, sender=None):
+    if not isinstance(to, list):
+        to = [to]
     if "server" in config.mail:
         if sender is None:
             sender = config.mail.default_from
-        send_email_with_smtp(sender, to, subject, text_content, html_content)
+        send_email_with_smtp(SMTPEmail(sender, to, subject, text_content, html_content))
     elif "sendgrid" in config:
         if sender is None:
             sender = config.sendgrid.default_from
-        send_email_with_sendgrid(sender, to, subject, html_content)
+        send_email_with_sendgrid(SendgridEmail(sender, to, subject, html_content))
     else:
         raise RuntimeError("Email not configured")
 
 
-def send_email_with_smtp(sender, recipients, subject, text_content, html_content):
-    if not isinstance(recipients, list):
-        recipients = [recipients]
+def send_email_with_smtp(email: SMTPEmail):
     msg = EmailMessage(
-        subject,
-        sender=sender,
-        recipients=recipients,
-        body=text_content,
-        html=html_content,
+        subject=email.subject,
+        sender=email.sender,
+        recipients=email.recipients,
+        body=email.text_content,
+        html=email.html_content,
     )
     if config.app.testing:
         send_smtp_email_async(current_app, msg)
@@ -723,14 +739,15 @@ def send_smtp_email_async(app, msg):
         mail.send(msg)
 
 
-def send_email_with_sendgrid(sender, to, subject, html_content):
+def send_email_with_sendgrid(email: SendgridEmail):
     """Send a mail through sendgrid"""
     sg = sendgrid.SendGridAPIClient(api_key=config.sendgrid.api_key)
-
     mail = sendgrid.helpers.mail.Mail(
-        from_email=sender, to_emails=to, subject=subject, html_content=html_content
+        from_email=email.sender,
+        to_emails=email.to,
+        subject=email.subject,
+        html_content=email.html_content,
     )
-
     sg.send(mail)
 
 
@@ -1566,7 +1583,7 @@ def get_notification_count(uid):
 
 
 def select_unread_messages(user_id, *args):
-    """Construct a query to get the unread and non-blocked messages in a user inbox."""
+    """ Construct a query to get the unread and non-blocked messages in a user inbox. """
     return (
         Message.select(*args)
         .join(
@@ -1794,7 +1811,7 @@ def get_messages_saved(page, uid=None):
 
 
 def process_msgs(msgs):
-    """Prepare message dictionaries for use in templates."""
+    """ Prepare message dictionaries for use in templates. """
 
     def process_msg(msg):
         if msg["mtype"] == MessageType.MOD_TO_USER_AS_MOD or (
@@ -2074,7 +2091,7 @@ def iter_validate_css(obj, uris):
 
 
 def validate_css(css, sid):
-    """Validates CSS. Returns parsed stylesheet or (errcode, col, line)"""
+    """ Validates CSS. Returns parsed stylesheet or (errcode, col, line) """
     st = tinycss2.parse_stylesheet(css, skip_comments=True, skip_whitespace=True)
     # create a map for uris.
     uris = {}
@@ -2297,7 +2314,7 @@ def metadata_to_dict(metadata):
 
 
 def get_postmeta_dicts(pids):
-    """Get the metadata for multiple posts."""
+    """ Get the metadata for multiple posts. """
     pids = set(pids)
     postmeta_query = SubPostMetadata.select(
         SubPostMetadata.pid, SubPostMetadata.key, SubPostMetadata.value
@@ -3502,7 +3519,7 @@ def get_sub_flair_choices(sid):
 
 @cache.memoize(3600)
 def get_best_comment_sort_init_date():
-    """Posts created before this date can only sort comments by top and new."""
+    """ Posts created before this date can only sort comments by top and new. """
     smd = SiteMetadata.get(SiteMetadata.key == "best_comment_sort_init")
     return datetime.strptime(smd.value, "%Y-%m-%UdT%H:%M:%SZ")
 
