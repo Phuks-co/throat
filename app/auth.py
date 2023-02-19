@@ -36,6 +36,7 @@ class KeycloakAdmin(KeycloakAdmin_):
                 b"Refresh token expired" in e.response_body
                 or b"Token is not active" in e.response_body
                 or b"Session is not active" in e.response_body
+                or b"No refresh token" in e.response_body
             ):
                 self.get_token()
             else:
