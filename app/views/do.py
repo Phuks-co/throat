@@ -121,7 +121,7 @@ def ratelimit_handler(*__):
 @do.route("/do/logout", methods=["POST"])
 @login_required
 def logout():
-    """ Logout endpoint """
+    """Logout endpoint"""
     form = LogOutForm()
     if form.validate():
         logout_user()
@@ -132,7 +132,7 @@ def logout():
 @do.route("/do/search", defaults={"stype": "home.search"}, methods=["POST"])
 @do.route("/do/search/<stype>", methods=["POST"])
 def search(stype):
-    """ Search endpoint """
+    """Search endpoint"""
     if stype not in (
         "home.search",
         "home.subs",
@@ -275,7 +275,7 @@ def delete_user():
 @do.route("/do/edit_user", methods=["POST"])
 @login_required
 def edit_user():
-    """ Edit user endpoint """
+    """Edit user endpoint"""
     form = EditUserForm()
     if form.validate():
         if form.subtheme.data != "":
@@ -305,7 +305,7 @@ def edit_user():
 @do.route("/do/delete_post", methods=["POST"])
 @login_required
 def delete_post():
-    """ Post deletion endpoint """
+    """Post deletion endpoint"""
     form = DeletePost()
 
     if form.validate():
@@ -438,7 +438,7 @@ def delete_post():
 @do.route("/do/undelete_post", methods=["POST"])
 @login_required
 def undelete_post():
-    """ Post un-deletion endpoint """
+    """Post un-deletion endpoint"""
     form = UndeletePost()
 
     if form.validate():
@@ -532,7 +532,7 @@ def undelete_post():
 @do.route("/do/edit_sub_css/<sub>", methods=["POST"])
 @login_required
 def edit_sub_css(sub):
-    """ Edit sub endpoint """
+    """Edit sub endpoint"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -568,7 +568,7 @@ def edit_sub_css(sub):
 @do.route("/do/edit_sub/<sub>", methods=["POST"])
 @login_required
 def edit_sub(sub):
-    """ Edit sub endpoint """
+    """Edit sub endpoint"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -800,7 +800,7 @@ def delete_user_own_flair(sub):
 @do.route("/do/flair/<sub>/<pid>/<fl>", methods=["POST"])
 @login_required
 def assign_post_flair(sub, pid, fl):
-    """ Assign a post's flair """
+    """Assign a post's flair"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -836,7 +836,7 @@ def assign_post_flair(sub, pid, fl):
 
 @do.route("/do/remove_post_flair/<sub>/<pid>", methods=["POST"])
 def remove_post_flair(sub, pid):
-    """ Deletes a post's flair """
+    """Deletes a post's flair"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -869,7 +869,7 @@ def remove_post_flair(sub, pid):
 @do.route("/do/edit_mod", methods=["POST"])
 @login_required
 def edit_mod():
-    """ Admin endpoint used for sub transfers. """
+    """Admin endpoint used for sub transfers."""
     if not current_user.is_admin():
         abort(403)
     form = EditModForm()
@@ -920,7 +920,7 @@ def edit_mod():
 @do.route("/do/assign_userbadge", methods=["POST"])
 @login_required
 def assign_userbadge():
-    """ Admin endpoint used for assigning a user badge. """
+    """Admin endpoint used for assigning a user badge."""
     if not current_user.is_admin():
         abort(403)
     badgeTuple = [(badge.bid, badge.name) for badge in badges]
@@ -946,7 +946,7 @@ def assign_userbadge():
 @do.route("/do/remove_userbadge", methods=["POST"])
 @login_required
 def remove_userbadge():
-    """ Admin endpoint used for removing a user badge. """
+    """Admin endpoint used for removing a user badge."""
     if not current_user.is_admin():
         abort(403)
     badgeList = [(badge.bid, badge.name) for badge in badges]
@@ -972,7 +972,7 @@ def remove_userbadge():
 @do.route("/do/subscribe/<sid>", methods=["POST"])
 @login_required
 def subscribe_to_sub(sid):
-    """ Subscribe to sub """
+    """Subscribe to sub"""
     try:
         sub = Sub.get(Sub.sid == sid)
     except Sub.DoesNotExist:
@@ -1005,7 +1005,7 @@ def subscribe_to_sub(sid):
 @do.route("/do/unsubscribe/<sid>", methods=["POST"])
 @login_required
 def unsubscribe_from_sub(sid):
-    """ Unsubscribe from sub """
+    """Unsubscribe from sub"""
     try:
         Sub.get(Sub.sid == sid)
     except Sub.DoesNotExist:
@@ -1031,7 +1031,7 @@ def unsubscribe_from_sub(sid):
 @do.route("/do/block/<sid>", methods=["POST"])
 @login_required
 def block_sub(sid):
-    """ Block sub """
+    """Block sub"""
     try:
         sub = Sub.get(Sub.sid == sid)
     except Sub.DoesNotExist:
@@ -1061,7 +1061,7 @@ def block_sub(sid):
 @do.route("/do/unblock/<sid>", methods=["POST"])
 @login_required
 def unblock_sub(sid):
-    """ Unblock sub """
+    """Unblock sub"""
     try:
         sub = Sub.get(Sub.sid == sid)
     except Sub.DoesNotExist:
@@ -1084,7 +1084,7 @@ def unblock_sub(sid):
 
 @do.route("/do/get_txtpost/<pid>", methods=["GET"])
 def get_txtpost(pid):
-    """ Sub text post expando get endpoint """
+    """Sub text post expando get endpoint"""
     try:
         post = misc.getSinglePost(pid)
     except SubPost.DoesNotExist:
@@ -1179,7 +1179,7 @@ def get_txtpost(pid):
 @do.route("/do/distinguish", methods=["POST"])
 @login_required
 def distinguish():
-    """ Allows a mod or admin to distinguish a comment or post """
+    """Allows a mod or admin to distinguish a comment or post"""
 
     form = DistinguishForm()
     cid = form.cid.data
@@ -1224,7 +1224,7 @@ def distinguish():
 @do.route("/do/lock_comments/<int:post>", methods=["POST"])
 @login_required
 def toggle_lock_comments(post):
-    """ Allows a mod or admin to lock a post to new comments. """
+    """Allows a mod or admin to lock a post to new comments."""
     try:
         post = SubPost.get(SubPost.pid == post)
     except SubPost.DoesNotExist:
@@ -1265,7 +1265,7 @@ def toggle_lock_comments(post):
 @do.route("/do/edit_txtpost/<pid>", methods=["POST"])
 @login_required
 def edit_txtpost(pid):
-    """ Sub text post creation endpoint """
+    """Sub text post creation endpoint"""
     form = EditSubTextPostForm()
     if form.validate():
         try:
@@ -1306,7 +1306,7 @@ def edit_txtpost(pid):
 @login_required
 @ratelimit(POSTING_LIMIT)
 def grab_title():
-    """ Safely grabs the <title> from a page """
+    """Safely grabs the <title> from a page"""
     url = request.json.get("u").strip()
     if not url:
         abort(400)
@@ -1317,7 +1317,7 @@ def grab_title():
 @login_required
 @ratelimit(POSTING_LIMIT)
 def create_comment(pid):
-    """ Here we send comments. """
+    """Here we send comments."""
     form = PostComment()
     if form.validate():
         if pid == "0":
@@ -1502,7 +1502,7 @@ def create_comment(pid):
 @ratelimit(POSTING_LIMIT)
 @login_required
 def create_sendmsg():
-    """ User PM message creation endpoint """
+    """User PM message creation endpoint"""
     form = CreateUserMessageForm()
     if form.validate():
         try:
@@ -1524,7 +1524,7 @@ def create_sendmsg():
 @ratelimit(POSTING_LIMIT)
 @login_required
 def create_replymsg():
-    """ User PM message reply creation endpoint """
+    """User PM message reply creation endpoint"""
     form = CreateUserMessageReplyForm()
     if form.validate():
         try:
@@ -1545,7 +1545,7 @@ def create_replymsg():
 @do.route("/do/ban_user_sub/<sub>", methods=["POST"])
 @login_required
 def ban_user_sub(sub):
-    """ Ban user from sub endpoint """
+    """Ban user from sub endpoint"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -1689,7 +1689,7 @@ def ban_user_sub(sub):
 @do.route("/do/inv_mod/<sub>", methods=["POST"])
 @login_required
 def inv_mod(sub):
-    """ User PM for Mod2 invite endpoint """
+    """User PM for Mod2 invite endpoint"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -1895,7 +1895,7 @@ def remove_sub_ban(sub, user):
 @do.route("/do/remove_mod2/<sub>/<user>", methods=["POST"])
 @login_required
 def remove_mod2(sub, user):
-    """ Remove Mod2 """
+    """Remove Mod2"""
     try:
         user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
@@ -1948,7 +1948,7 @@ def remove_mod2(sub, user):
 @do.route("/do/revoke_mod2inv/<sub>/<user>", methods=["POST"])
 @login_required
 def revoke_mod2inv(sub, user):
-    """ revoke Mod2 inv """
+    """revoke Mod2 inv"""
     try:
         user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
@@ -2002,7 +2002,7 @@ def revoke_mod2inv(sub, user):
 @do.route("/do/accept_modinv/<sub>/<user>", methods=["POST"])
 @login_required
 def accept_modinv(sub, user):
-    """ Accept mod invite """
+    """Accept mod invite"""
     try:
         user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
@@ -2062,7 +2062,7 @@ def accept_modinv(sub, user):
 @do.route("/do/refuse_mod2inv/<sub>", methods=["POST"])
 @login_required
 def refuse_mod2inv(sub):
-    """ refuse Mod2 """
+    """refuse Mod2"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -2095,7 +2095,7 @@ def refuse_mod2inv(sub):
 @do.route("/do/read_pm/<mid>", methods=["POST"])
 @login_required
 def read_pm(mid):
-    """ Mark PM as read """
+    """Mark PM as read"""
     try:
         Message.get(Message.mid == mid)
     except Message.DoesNotExist:
@@ -2121,7 +2121,7 @@ def read_pm(mid):
 @do.route("/do/readall_msgs", methods=["POST"])
 @login_required
 def readall_msgs():
-    """ Mark all messages in the inbox as read """
+    """Mark all messages in the inbox as read"""
     unreads = misc.select_unread_messages(current_user.uid, UserUnreadMessage.id)
     UserUnreadMessage.delete().where(
         UserUnreadMessage.id << [u["id"] for u in unreads.dicts()]
@@ -2139,7 +2139,7 @@ def readall_msgs():
 @do.route("/do/delete_pm/<mid>", methods=["POST"])
 @login_required
 def delete_pm(mid):
-    """ Delete PM """
+    """Delete PM"""
     try:
         message = Message.get(Message.mid == mid)
         if message.receivedby_id != current_user.uid:
@@ -2214,7 +2214,7 @@ def edit_title():
 @do.route("/do/save_pm/<mid>", methods=["POST"])
 @login_required
 def save_pm(mid):
-    """ Save/Archive PM """
+    """Save/Archive PM"""
     try:
         message = Message.get(Message.mid == mid)
         if message.receivedby_id != current_user.uid:
@@ -2235,7 +2235,7 @@ def save_pm(mid):
 @do.route("/do/admin/deleteannouncement", methods=["POST"])
 @login_required
 def deleteannouncement():
-    """ Removes the current announcement """
+    """Removes the current announcement"""
     if not current_user.is_admin():
         abort(403)
 
@@ -2266,7 +2266,7 @@ def deleteannouncement():
 @do.route("/do/makeannouncement", methods=["POST"])
 @login_required
 def make_announcement():
-    """ Flagging post as announcement - not api """
+    """Flagging post as announcement - not api"""
     if not current_user.is_admin():
         abort(403)
 
@@ -2311,7 +2311,7 @@ def make_announcement():
 
 @do.route("/do/ban_domain/<domain_type>", methods=["POST"])
 def ban_domain(domain_type):
-    """ Add domain to ban list """
+    """Add domain to ban list"""
     if not current_user.is_admin():
         abort(403)
     if domain_type == "email":
@@ -2341,7 +2341,7 @@ def ban_domain(domain_type):
 
 @do.route("/do/remove_banned_domain/<domain_type>/<domain>", methods=["POST"])
 def remove_banned_domain(domain_type, domain):
-    """ Remove domain if ban list """
+    """Remove domain if ban list"""
     if not current_user.is_admin():
         abort(403)
     if domain_type == "email":
@@ -2369,7 +2369,7 @@ def remove_banned_domain(domain_type, domain):
 @do.route("/do/admin/enable_posting", methods=["POST"])
 @login_required
 def enable_posting():
-    """ Emergency Mode: disable posting """
+    """Emergency Mode: disable posting"""
     if not current_user.is_admin():
         abort(404)
 
@@ -2391,7 +2391,7 @@ def enable_posting():
 @do.route("/do/admin/enable_registration", methods=["POST"])
 @login_required
 def enable_registration():
-    """ Isolation Mode: disable registration """
+    """Isolation Mode: disable registration"""
     if not current_user.is_admin():
         abort(404)
 
@@ -2413,7 +2413,7 @@ def enable_registration():
 @do.route("/do/admin/require_captchas", methods=["POST"])
 @login_required
 def enable_captchas():
-    """ Enable or disable the captcha solving requirement. """
+    """Enable or disable the captcha solving requirement."""
     if not current_user.is_admin():
         abort(404)
 
@@ -2433,7 +2433,7 @@ def enable_captchas():
 
 @do.route("/do/save_post/<pid>", methods=["POST"])
 def save_post(pid):
-    """ Save a post to your Saved Posts """
+    """Save a post to your Saved Posts"""
     try:
         SubPost.get(SubPost.pid == pid)
     except SubPost.DoesNotExist:
@@ -2448,7 +2448,7 @@ def save_post(pid):
 
 @do.route("/do/remove_saved_post/<pid>", methods=["POST"])
 def remove_saved_post(pid):
-    """ Remove a saved post """
+    """Remove a saved post"""
     try:
         SubPost.get(SubPost.pid == pid)
     except SubPost.DoesNotExist:
@@ -2464,7 +2464,7 @@ def remove_saved_post(pid):
 
 @do.route("/do/useinvitecode", methods=["POST"])
 def use_invite_code():
-    """ Enable invite code to register """
+    """Enable invite code to register"""
     if not current_user.is_admin():
         abort(404)
 
@@ -2521,7 +2521,7 @@ def invite_codes():
 
 @do.route("/do/stick/<int:post>", methods=["POST"])
 def toggle_sticky(post):
-    """ Toggles post stickyness """
+    """Toggles post stickyness"""
     try:
         post = SubPost.get(SubPost.pid == post)
     except SubPost.DoesNotExist:
@@ -2569,7 +2569,7 @@ def toggle_sticky(post):
 
 @do.route("/do/stick_comment/<comment>", methods=["POST"])
 def set_sticky_comment(comment):
-    """ Set or unset comment stickyness. """
+    """Set or unset comment stickyness."""
     try:
         comment = (
             SubPostComment.select().join(SubPost).where(SubPostComment.cid == comment)
@@ -2606,7 +2606,7 @@ def set_sticky_comment(comment):
 
 @do.route("/do/sticky_sort/<int:post>", methods=["POST"])
 def toggle_sort(post):
-    """ Toggles comment sort for a post. """
+    """Toggles comment sort for a post."""
     try:
         post = SubPost.get(SubPost.pid == post)
     except SubPost.DoesNotExist:
@@ -2656,7 +2656,7 @@ def toggle_sort(post):
 @do.route("/do/flair/<sub>/delete_user", methods=["POST"])
 @login_required
 def delete_user_flair(sub):
-    """ Removes a flair (from edit flair page) """
+    """Removes a flair (from edit flair page)"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -2684,7 +2684,7 @@ def delete_user_flair(sub):
 @do.route("/do/flair/<sub>/create_user", methods=["POST"])
 @login_required
 def create_user_flair(sub):
-    """ Creates a new flair (from edit flair page) """
+    """Creates a new flair (from edit flair page)"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -2712,7 +2712,7 @@ def create_user_flair(sub):
 @do.route("/do/flair/<sub>/delete", methods=["POST"])
 @login_required
 def delete_flair(sub):
-    """ Removes a flair (from edit flair page) """
+    """Removes a flair (from edit flair page)"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -2738,7 +2738,7 @@ def delete_flair(sub):
 @do.route("/do/flair/<sub>/create", methods=["POST"])
 @login_required
 def create_flair(sub):
-    """ Creates a new flair (from edit flair page) """
+    """Creates a new flair (from edit flair page)"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -2762,7 +2762,7 @@ def create_flair(sub):
 @do.route("/do/rule/<sub>/delete", methods=["POST"])
 @login_required
 def delete_rule(sub):
-    """ Removes a rule (from edit rule page) """
+    """Removes a rule (from edit rule page)"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -2787,7 +2787,7 @@ def delete_rule(sub):
 @do.route("/do/rule/<sub>/create", methods=["POST"])
 @login_required
 def create_rule(sub):
-    """ Creates a new rule (from edit rule page) """
+    """Creates a new rule (from edit rule page)"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -2836,7 +2836,7 @@ def delete_recovery_token(token):
 @gevent_required  # Contacts Keycloak if configured.
 @ratelimit(AUTH_LIMIT)
 def reset():
-    """ Password reset. Takes key and uid and changes password """
+    """Password reset. Takes key and uid and changes password"""
     if current_user.is_authenticated:
         abort(403)
 
@@ -2873,7 +2873,7 @@ def reset():
 @do.route("/do/edit_comment", methods=["POST"])
 @login_required
 def edit_comment():
-    """ Edits a comment """
+    """Edits a comment"""
     form = forms.EditCommentForm()
     if form.validate():
         try:
@@ -2920,7 +2920,7 @@ def edit_comment():
 @do.route("/do/delete_comment", methods=["POST"])
 @login_required
 def delete_comment():
-    """ deletes a comment """
+    """deletes a comment"""
     form = forms.DeleteCommentForm()
 
     if form.validate():
@@ -3020,7 +3020,7 @@ def delete_comment():
 @do.route("/do/undelete_comment", methods=["POST"])
 @login_required
 def undelete_comment():
-    """ un-deletes a comment """
+    """un-deletes a comment"""
     form = forms.UndeleteCommentForm()
     if form.validate():
         try:
@@ -3119,7 +3119,7 @@ def undelete_comment():
 
 @do.route("/do/vote/<pid>/<value>", methods=["POST"])
 def upvote(pid, value):
-    """ Logs an upvote to a post. """
+    """Logs an upvote to a post."""
     form = CsrfTokenOnlyForm()
     if not form.validate():
         return json.dumps({"status": "error", "error": get_errors(form)}), 400
@@ -3131,7 +3131,7 @@ def upvote(pid, value):
 
 @do.route("/do/votecomment/<cid>/<value>", methods=["POST"])
 def upvotecomment(cid, value):
-    """ Logs an upvote to a post. """
+    """Logs an upvote to a post."""
     form = CsrfTokenOnlyForm()
     if not form.validate():
         return json.dumps({"status": "error", "error": get_errors(form)})
@@ -3145,7 +3145,7 @@ def upvotecomment(cid, value):
 @do.route("/do/get_children/<int:pid>/<cid>/<lim>", methods=["post"])
 @do.route("/do/get_children/<int:pid>/<cid>", methods=["post"], defaults={"lim": ""})
 def get_sibling(pid, cid, lim):
-    """ Gets children comments for <cid> """
+    """Gets children comments for <cid>"""
     try:
         post = misc.getSinglePost(pid)
     except SubPost.DoesNotExist:
@@ -3243,7 +3243,7 @@ def get_sibling(pid, cid, lim):
 @do.route("/do/preview", methods=["POST"])
 @login_required
 def preview():
-    """ Returns parsed markdown. Used for post and comment previews. """
+    """Returns parsed markdown. Used for post and comment previews."""
     form = CsrfTokenOnlyForm()
     if form.validate():
         if request.json.get("text"):
@@ -3258,7 +3258,7 @@ def preview():
 @do.route("/do/nsfw", methods=["POST"])
 @login_required
 def toggle_nsfw():
-    """ Toggles NSFW tag on posts """
+    """Toggles NSFW tag on posts"""
     form = DeletePost()
 
     if form.validate():
@@ -3892,7 +3892,7 @@ def remove_vote(pid):
 @do.route("/do/mark_viewed", methods=["POST"])
 @login_required
 def mark_comments_viewed():
-    """ Mark comments as seen by the user. """
+    """Mark comments as seen by the user."""
     form = ViewCommentsForm()
     if form.validate():
         cids = json.loads(form.cids.data)
@@ -3948,7 +3948,7 @@ def mark_comments_viewed():
 @do.route("/do/close_poll", methods=["POST"])
 @login_required
 def close_poll():
-    """ Closes a poll. """
+    """Closes a poll."""
     form = DeletePost()
 
     if form.validate():
@@ -4357,7 +4357,7 @@ def close_comment_related_reports(related_reports, original_report):
 @do.route("/do/create_report_note/<report_type>/<report_id>", methods=["POST"])
 @login_required
 def create_report_note(report_type, report_id):
-    """ Creates a new note on a report """
+    """Creates a new note on a report"""
     if report_type == "post":
         try:
             report = SubPostReport.get(SubPostReport.id == report_id)

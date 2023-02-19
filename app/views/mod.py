@@ -16,7 +16,7 @@ bp = Blueprint("mod", __name__)
 @bp.route("/")
 @login_required
 def index():
-    """ WIP: Mod Dashboard """
+    """WIP: Mod Dashboard"""
 
     if not (
         SubMod.select().where(SubMod.user == current_user.uid) or current_user.can_admin
@@ -53,7 +53,7 @@ def index():
 @bp.route("/reports/<int:page>")
 @login_required
 def reports(page):
-    """ WIP: Open Report Queue """
+    """WIP: Open Report Queue"""
 
     if not (
         SubMod.select().where(SubMod.user == current_user.uid) or current_user.can_admin
@@ -77,7 +77,7 @@ def reports(page):
 @bp.route("/reports/closed/<int:page>")
 @login_required
 def closed(page):
-    """ WIP: Closed Reports List """
+    """WIP: Closed Reports List"""
 
     if not (
         SubMod.select().where(SubMod.user == current_user.uid) or current_user.can_admin
@@ -101,7 +101,7 @@ def closed(page):
 @bp.route("/reports/<sub>/<int:page>")
 @login_required
 def reports_sub(sub, page):
-    """ WIP: Sub Report Queue """
+    """WIP: Sub Report Queue"""
 
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
@@ -131,7 +131,7 @@ def reports_sub(sub, page):
 @bp.route("/reports/closed/<sub>/<int:page>")
 @login_required
 def reports_sub_closed(sub, page):
-    """ WIP: Sub Closed Reports """
+    """WIP: Sub Closed Reports"""
 
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
@@ -160,7 +160,7 @@ def reports_sub_closed(sub, page):
 @bp.route("/reports/details/<sub>/<report_type>/<report_id>")
 @login_required
 def report_details(sub, report_type, report_id):
-    """ WIP: Report Details View """
+    """WIP: Report Details View"""
 
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())

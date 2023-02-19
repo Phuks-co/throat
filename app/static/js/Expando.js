@@ -233,7 +233,7 @@ function resizer(element, handle, boundary) {
     document.addEventListener('mouseup', stop);
     document.addEventListener('mousemove', resize);
     element.style.pointerEvents = 'none';
-    
+
     e.preventDefault();
   }
 

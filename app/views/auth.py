@@ -96,7 +96,7 @@ def sso_proxy_validate():
 @gevent_required  # Contacts Keycloak if configured, does async task (email).
 @ratelimit(SIGNUP_LIMIT, methods=["POST"])
 def register():
-    """ Endpoint for the registration form """
+    """Endpoint for the registration form"""
     if current_user.is_authenticated:
         return redirect(url_for("home.index"))
     form = RegistrationForm()
@@ -387,7 +387,7 @@ def resend_confirmation_email():
 @gevent_required  # Contacts Keycloak if configured.
 @ratelimit(AUTH_LIMIT)
 def login():
-    """ Endpoint for the login form """
+    """Endpoint for the login form"""
     if request.args.get("service"):
         # CAS login. Verify that we trust the initiator.
         url = urlparse(request.args.get("service"))
@@ -439,7 +439,7 @@ def login():
 @gevent_required  # Makes request from Matrix server.
 @login_required
 def get_ticket():
-    """ Returns a CAS ticket for the current user """
+    """Returns a CAS ticket for the current user"""
     token = generate_cas_token(current_user.uid)
     # Not using safe_requests since we're supposed to trust this server.
     uri = f"{config.matrix.homeserver}/_matrix/client/r0/login/cas/ticket?redirectUrl=throat%3A%2F%2F&ticket={token}"

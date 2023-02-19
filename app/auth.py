@@ -340,7 +340,7 @@ class AuthProvider:
 
     @staticmethod
     def _set_email_verified(user, value=True):
-        """Set the UserMetadata email_verified flag. """
+        """Set the UserMetadata email_verified flag."""
         value = "1" if value else "0"
         try:
             umd = UserMetadata.get(

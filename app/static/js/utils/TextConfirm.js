@@ -14,4 +14,3 @@ function TextConfirm(the_element, yesfunc, question, nofunc){
 }
 
 export default TextConfirm;
-

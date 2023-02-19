@@ -9,14 +9,14 @@ from flask_babel import lazy_gettext as _l
 
 
 class SecurityQuestionForm(FlaskForm):
-    """ Create security question """
+    """Create security question"""
 
     question = StringField(_l("Question"), validators=[DataRequired()])
     answer = StringField("Answer", validators=[DataRequired()])
 
 
 class EditModForm(FlaskForm):
-    """ Edit owner of sub (admin) """
+    """Edit owner of sub (admin)"""
 
     sub = StringField(_l("Sub"), validators=[DataRequired(), Length(min=2, max=128)])
     user = StringField(
@@ -25,7 +25,7 @@ class EditModForm(FlaskForm):
 
 
 class AssignUserBadgeForm(FlaskForm):
-    """ Assign user badge to user (admin) """
+    """Assign user badge to user (admin)"""
 
     badge = SelectField(_l("Badge"))
     user = StringField(
@@ -54,13 +54,13 @@ class EditBadgeForm(FlaskForm):
 
 
 class BanDomainForm(FlaskForm):
-    """ Add banned domain """
+    """Add banned domain"""
 
     domain = StringField(_l("Enter Domain"))
 
 
 class UseInviteCodeForm(FlaskForm):
-    """ Enable/Use an invite code to register """
+    """Enable/Use an invite code to register"""
 
     enableinvitecode = BooleanField(_l("Enable invite code to register"))
     invitations_visible_to_users = BooleanField(
@@ -71,7 +71,7 @@ class UseInviteCodeForm(FlaskForm):
 
 
 class UpdateInviteCodeForm(FlaskForm):
-    """ Update the expiration dates of selected invitecodes. """
+    """Update the expiration dates of selected invitecodes."""
 
     codes = FieldList(BooleanField(default=False))
     etype = RadioField(
@@ -84,13 +84,13 @@ class UpdateInviteCodeForm(FlaskForm):
 
 
 class TOTPForm(FlaskForm):
-    """ TOTP form for admin 2FA """
+    """TOTP form for admin 2FA"""
 
     totp = StringField(_l("Enter one-time password"))
 
 
 class WikiForm(FlaskForm):
-    """ Form creation/editing form """
+    """Form creation/editing form"""
 
     slug = StringField(
         _l("Slug (URL)"),

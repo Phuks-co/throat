@@ -168,12 +168,12 @@ def create_app(config=None):
 
     @app.before_request
     def before_request():
-        """ Called before the request is processed. Used to time the request """
+        """Called before the request is processed. Used to time the request"""
         g.start = time.time()
 
     @app.after_request
     def after_request(response):
-        """ Called after the request is processed. Used to time the request """
+        """Called after the request is processed. Used to time the request"""
         if hasattr(g, "start"):
             diff = int((time.time() - float(g.start)) * 1000)
         else:
@@ -207,7 +207,7 @@ def create_app(config=None):
 
     @app.context_processor
     def utility_processor():
-        """ Here we set some useful stuff for templates """
+        """Here we set some useful stuff for templates"""
         # TODO: Kill this huge mass of shit
         return {
             "loginform": LoginForm(),

@@ -43,7 +43,7 @@ function InlinePrompt({
       const a = document.createElement("a");
       a.innerHTML = str;
       a.onclick = (ev) => {
-        if(oc != null) { 
+        if(oc != null) {
           oc(ev);
         }
         cNode.innerHTML = current_content;
@@ -58,7 +58,7 @@ function InlinePrompt({
   wrap.innerText = `${text} `;
 
   opt_elems.forEach((elem, i) => {
-    wrap.append(elem); 
+    wrap.append(elem);
     if(i < opt_elems.length - 1){
       wrap.append("/ ");
     }
@@ -66,4 +66,3 @@ function InlinePrompt({
 }
 
 export default InlinePrompt;
-

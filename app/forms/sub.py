@@ -9,13 +9,13 @@ from flask_babel import lazy_gettext as _l
 
 
 class SearchForm(FlaskForm):
-    """ Search form """
+    """Search form"""
 
     term = StringField(_l("Search"))
 
 
 class CreateSubForm(FlaskForm):
-    """ Sub creation form """
+    """Sub creation form"""
 
     subname = StringField(
         _l("Sub name"), validators=[DataRequired(), Length(min=2, max=32)]
@@ -26,27 +26,27 @@ class CreateSubForm(FlaskForm):
 
 
 class EditSubCSSForm(FlaskForm):
-    """ Edit sub stylesheet form. """
+    """Edit sub stylesheet form."""
 
     css = TextAreaField(_l("Custom stylesheet"), validators=[Length(max=65535)])
 
 
 class DeleteCommentForm(FlaskForm):
-    """ Removes a comment in a post """
+    """Removes a comment in a post"""
 
     cid = HiddenField()  # comment id
     reason = StringField()
 
 
 class UndeleteCommentForm(FlaskForm):
-    """ Un-deletes a comment in a post """
+    """Un-deletes a comment in a post"""
 
     cid = HiddenField()  # comment id
     reason = StringField()
 
 
 class EditCommentForm(FlaskForm):
-    """ Edits a comment in a post """
+    """Edits a comment in a post"""
 
     cid = HiddenField()  # comment id
     text = TextAreaField(
@@ -55,13 +55,13 @@ class EditCommentForm(FlaskForm):
 
 
 class CreateSubFlair(FlaskForm):
-    """ Creates a flair """
+    """Creates a flair"""
 
     text = StringField(_l("Flair text"), validators=[DataRequired(), Length(max=25)])
 
 
 class EditSubFlair(FlaskForm):
-    """ Edits ONE flair from a sub """
+    """Edits ONE flair from a sub"""
 
     flair = HiddenField()
     text = StringField(_l("Flair text"), validators=[DataRequired(), Length(max=25)])
@@ -85,32 +85,32 @@ class AssignSubUserFlair(FlaskForm):
 
 
 class DeleteSubFlair(FlaskForm):
-    """ Used to delete flairs """
+    """Used to delete flairs"""
 
     flair = HiddenField()
 
 
 class CreateSubRule(FlaskForm):
-    """ Creates a rule """
+    """Creates a rule"""
 
     text = StringField(_l("Rule text"), validators=[DataRequired(), Length(max=255)])
 
 
 class EditSubRule(FlaskForm):
-    """ Edits ONE rule from a sub """
+    """Edits ONE rule from a sub"""
 
     rule = HiddenField()
     text = StringField(_l("Rule text"), validators=[DataRequired(), Length(max=22)])
 
 
 class DeleteSubRule(FlaskForm):
-    """ Used to delete rules """
+    """Used to delete rules"""
 
     rule = HiddenField()
 
 
 class EditSubForm(FlaskForm):
-    """ Edit sub form. """
+    """Edit sub form."""
 
     title = StringField(
         _l("Title"), validators=[DataRequired(), Length(min=2, max=128)]
@@ -145,7 +145,7 @@ class SetOwnUserFlairForm(FlaskForm):
 
 
 class EditMod2Form(FlaskForm):
-    """ Edit mod2 of sub (admin/owner) """
+    """Edit mod2 of sub (admin/owner)"""
 
     user = StringField(
         _l("New mod username"), validators=[DataRequired(), Length(min=1, max=128)]
@@ -158,7 +158,7 @@ class EditMod2Form(FlaskForm):
 
 
 class CreateSubPostForm(FlaskForm):
-    """ Sub content submission form """
+    """Sub content submission form"""
 
     sub = StringField(_l("Sub"), validators=[DataRequired(), Length(min=2, max=32)])
     title = StringField(
@@ -190,7 +190,7 @@ class CreateSubPostForm(FlaskForm):
 
 
 class EditSubTextPostForm(FlaskForm):
-    """ Sub content edit form """
+    """Sub content edit form"""
 
     content = TextAreaField(
         _l("Post content"), validators=[DataRequired(), Length(min=1, max=65535)]
@@ -198,13 +198,13 @@ class EditSubTextPostForm(FlaskForm):
 
 
 class EditSubLinkPostForm(FlaskForm):
-    """ Sub content edit form """
+    """Sub content edit form"""
 
     nsfw = BooleanField(_l("NSFW?"))
 
 
 class PostComment(FlaskForm):
-    """ Comment submission form """
+    """Comment submission form"""
 
     post = HiddenField()
     parent = HiddenField()
@@ -216,7 +216,7 @@ class PostComment(FlaskForm):
 
 
 class BanUserSubForm(FlaskForm):
-    """ Edit ban user from posting """
+    """Edit ban user from posting"""
 
     user = StringField(
         _l("Username to ban"), validators=[DataRequired(), Length(min=1, max=128)]
@@ -228,14 +228,14 @@ class BanUserSubForm(FlaskForm):
 
 
 class EditPostFlair(FlaskForm):
-    """ Post deletion form. """
+    """Post deletion form."""
 
     post = HiddenField()
     flair = RadioField(_l("Flair"), choices=[], validators=[DataRequired()])
 
 
 class DistinguishForm(FlaskForm):
-    """ Post/comment distinguish form. """
+    """Post/comment distinguish form."""
 
     cid = HiddenField()
     pid = HiddenField()
@@ -243,7 +243,7 @@ class DistinguishForm(FlaskForm):
 
 
 class DeletePost(FlaskForm):
-    """ Post deletion form. """
+    """Post deletion form."""
 
     post = HiddenField()
     reason = StringField()
@@ -251,7 +251,7 @@ class DeletePost(FlaskForm):
 
 
 class UndeletePost(FlaskForm):
-    """ Post deletion form. """
+    """Post deletion form."""
 
     post = HiddenField()
     reason = StringField()
@@ -264,18 +264,18 @@ class AnnouncePostForm(FlaskForm):
 
 
 class VoteForm(FlaskForm):
-    """ form for voting """
+    """form for voting"""
 
     post = HiddenField()  # Post PID
 
 
 class ViewCommentsForm(FlaskForm):
-    """ Form for marking comments viewed. """
+    """Form for marking comments viewed."""
 
     cids = HiddenField()  # List of comment cids, as JSON
 
 
 class CreateReportNote(FlaskForm):
-    """ Logs a note on a report """
+    """Logs a note on a report"""
 
     text = StringField(_l("Comment text"), validators=[DataRequired(), Length(max=255)])

@@ -4389,4 +4389,3 @@ msgstr "El enlace para restablecer la contraseña no es válido o ha caducado"
 #: app/views/wiki.py:23
 msgid "License file was deleted :("
 msgstr "El archivo de licencia ha sido borrado :("
-

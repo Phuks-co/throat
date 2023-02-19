@@ -737,7 +737,7 @@ class Map:
 
 
 class Config(Map):
-    """ Main config object """
+    """Main config object"""
 
     def __init__(
         self,
@@ -834,7 +834,7 @@ class Config(Map):
 
 
 def ensure_trailing_slash(val):
-    """ Add a slash to the string if it doesn't already have one. """
+    """Add a slash to the string if it doesn't already have one."""
     if val and val[-1] != "/":
         return val + "/"
     else:

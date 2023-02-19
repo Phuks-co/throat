@@ -4394,4 +4394,3 @@ msgstr "Ссылка для сброса пароля недействитель
 #: app/views/wiki.py:23
 msgid "License file was deleted :("
 msgstr "Лицензионный файл был удален :("
-
