@@ -37,7 +37,7 @@
   </head>
 
 <body class="@{(config.site.enable_totp and current_user.admin) and 'body_admin' or ''} @{(request.cookies.get( "dayNight")=="dank") and 'dark dank' or ''} @{(request.cookies.get( "dayNight")=="dark") and 'dark' or ''}">
-  @if config.site.enable_totp and current_user.admin:
+  @if (config.site.enable_totp or (config.auth.provider == "KEYCLOAK" and config.auth.keycloak.use_oidc)) and current_user.admin:
   <div class="admin_alert">@{_('Admin mode is currently enabled.')}
     <form method="POST" action="/admin/logout" id="adminlogout">
       @{ form.LogOutForm().csrf_token() !!html }

@@ -20,7 +20,7 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from flask_babel import _
-from .. import misc
+from .. import misc, auth_provider
 from ..config import config
 from ..forms import (
     CsrfTokenOnlyForm,
@@ -60,6 +60,11 @@ bp = Blueprint("admin", __name__)
 def auth():
     if not current_user.can_admin:
         abort(404)
+
+    if config.auth.provider == "KEYCLOAK" and config.auth.keycloak.use_oidc:
+        # If the user is an admin, perform L2 auth via keycloak (should ask for TOTP)
+        return redirect(auth_provider.get_login_url(acr="aal2"))
+
     form = TOTPForm()
     try:
         user_secret = UserMetadata.get(
@@ -146,7 +151,7 @@ def logout():
     form = LogOutForm()
     if form.validate():
         del session["apriv"]
-    return redirect(url_for("admin.index"))
+    return redirect(url_for("home.index"))
 
 
 @bp.route("/")

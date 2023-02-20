@@ -92,6 +92,7 @@ class AuthProvider:
         session["state"] = "".join(
             [random.choice(string.ascii_letters + string.digits) for _ in range(16)]
         )
+        session["_acr"] = acr
         endpoint = self.keycloak_openid.well_known()["authorization_endpoint"]
         params = {
             "client_id": self.keycloak_openid.client_id,
@@ -99,7 +100,7 @@ class AuthProvider:
             "redirect_uri": url_for("auth.login_redirect", _external=True),
             "scope": "openid",
             "state": session["state"],
-            "acr": acr,
+            "acr_values": acr,
         }
         # Maybe someday: loginHint (auto-complete username), prompt (re-login)
 

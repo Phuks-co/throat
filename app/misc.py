@@ -215,7 +215,6 @@ class SiteUser(object):
 
         self.is_anonymous = True if self.user["status"] != 0 else False
         # True if the user is an admin, even without authing with TOTP
-        self.can_admin = "admin" in self.prefs
 
         self.subs_modded = [
             s.sid
@@ -225,10 +224,18 @@ class SiteUser(object):
         ]
         self.is_a_mod = len(self.subs_modded) > 0
 
+        self.can_admin = "admin" in self.prefs
+
         if time.time() - session.get("apriv", 0) < 7200 or not config.site.enable_totp:
             self.admin = "admin" in self.prefs
         else:
             self.admin = False
+
+        if config.auth.provider == "KEYCLOAK" and config.auth.keycloak.use_oidc:
+            self.can_admin = session.get("is_admin", False)
+
+            if time.time() - session.get("apriv", 0) < 7200:
+                self.admin = self.can_admin
 
         self.canupload = True if ("canupload" in self.prefs) or self.admin else False
         if config.site.allow_uploads and config.site.upload_min_level == 0:

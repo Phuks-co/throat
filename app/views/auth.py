@@ -1,4 +1,5 @@
 """ Authentication endpoints and functions """
+import time
 from urllib.parse import urlparse
 from datetime import datetime, timedelta, timezone
 import uuid
@@ -400,6 +401,9 @@ def login_redirect():
         return redirect(url_for("auth.login"))
 
     user_data = auth_provider.keycloak_openid.introspect(openid_tokens["access_token"])
+    if user_data["acr"] == "aal2":
+        session["apriv"] = time.time()
+        return redirect(url_for("admin.index"))
     # TODO: Update email in our db from this data?
 
     # Look up user.
