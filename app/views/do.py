@@ -127,6 +127,7 @@ def logout():
         if config.auth.provider == "KEYCLOAK" and config.auth.keycloak.use_oidc:
             auth_provider.logout()
 
+        session.pop("apriv", None)
         logout_user()
 
     return redirect(url_for("home.index"))
