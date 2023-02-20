@@ -460,6 +460,7 @@ class AuthProvider:
                 self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK
                 and self.provider == "KEYCLOAK"
             ):
+                self.keycloak_admin.realm_name = config.auth.keycloak.user_realm
                 self.keycloak_admin.update_user(
                     user_id=self.get_user_remote_uid(user), payload=payload
                 )
