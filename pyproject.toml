@@ -55,6 +55,7 @@ peewee-migrate = "^1.6.6"
 oic = "^1.5.0"
 gevent-websocket = "^0.10.1"
 gunicorn = "^20.1.0"
+psycogreen = "^1.0.2"
 
 
 [tool.poetry.group.dev.dependencies]

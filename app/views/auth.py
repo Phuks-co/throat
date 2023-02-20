@@ -386,6 +386,7 @@ def resend_confirmation_email():
 
 
 @bp.route("/login/oidc", methods=["GET", "POST"])
+@gevent_required
 def login_redirect():
     if request.args.get("state") != session.pop("state", None):
         return redirect(url_for("auth.login"))

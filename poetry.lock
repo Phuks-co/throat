@@ -940,6 +940,14 @@ pyyaml = ">=5.1"
 virtualenv = ">=20.10.0"
 
 [[package]]
+name = "psycogreen"
+version = "1.0.2"
+description = "psycopg2 integration with coroutine libraries"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "psycopg2"
 version = "2.9.5"
 description = "psycopg2 - Python-PostgreSQL Database Adapter"
@@ -1533,7 +1541,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "06082d726db9da00578946ebe517a5ec67d880a51b29c8b3bc8502adec57f44a"
+content-hash = "cca81f4008066ec7552c408035d42bda2f87d494d684908254d01385a176ef8f"
 
 [metadata.files]
 apache-libcloud = [
@@ -2336,6 +2344,9 @@ pluggy = [
 pre-commit = [
     {file = "pre_commit-3.0.4-py2.py3-none-any.whl", hash = "sha256:9e3255edb0c9e7fe9b4f328cb3dc86069f8fdc38026f1bf521018a05eaf4d67b"},
     {file = "pre_commit-3.0.4.tar.gz", hash = "sha256:bc4687478d55578c4ac37272fe96df66f73d9b5cf81be6f28627d4e712e752d5"},
+]
+psycogreen = [
+    {file = "psycogreen-1.0.2.tar.gz", hash = "sha256:c429845a8a49cf2f76b71265008760bcd7c7c77d80b806db4dc81116dbcd130d"},
 ]
 psycopg2 = [
     {file = "psycopg2-2.9.5-cp310-cp310-win32.whl", hash = "sha256:d3ef67e630b0de0779c42912fe2cbae3805ebaba30cda27fea2a3de650a9414f"},
