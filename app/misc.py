@@ -45,12 +45,13 @@ from tinycss2.ast import (
 )
 
 from .config import config
-from flask_login import AnonymousUserMixin, current_user
+from flask_login import AnonymousUserMixin, current_user, logout_user
 from flask_babel import Babel, _
 from flask_talisman import Talisman
 from .caching import cache
 from .socketio import socketio
 from .badges import badges
+from .auth import auth_provider
 
 from .models import (
     Sub,
@@ -211,7 +212,7 @@ class SiteUser(object):
         else:
             self.is_active = True
         self.is_active = True if self.user["status"] == 0 else False
-        self.is_authenticated = True if self.user["status"] == 0 else False
+
         self.is_anonymous = True if self.user["status"] != 0 else False
         # True if the user is an admin, even without authing with TOTP
         self.can_admin = "admin" in self.prefs
@@ -250,6 +251,23 @@ class SiteUser(object):
     def get_id(self):
         """Returns the unique user id. Used on load_user"""
         return self.uid if self.resets == 0 else f"{self.uid}${self.resets}"
+
+    @cache.memoize(1)
+    def _check_keycloak_auth(self):
+        if config.auth.provider == "KEYCLOAK" and config.auth.keycloak.use_oidc:
+            # Perform the slow check for session activity if using OIDC
+            user_intro = auth_provider.introspect()
+            print(user_intro)
+            if not user_intro["active"]:
+                logout_user()
+                return False
+        return True
+
+    @property
+    def is_authenticated(self):
+        if not self._check_keycloak_auth():
+            return False
+        return True if self.user["status"] == 0 else False
 
     @cache.memoize(1)
     def is_mod(self, sid, power_level=2):

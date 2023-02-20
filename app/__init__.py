@@ -6,7 +6,7 @@ import socket
 import datetime
 from pathlib import Path
 from bs4 import BeautifulSoup
-from flask import Flask, url_for, g, request, get_flashed_messages
+from flask import Flask, url_for, g, request, get_flashed_messages, session
 from flask_login import LoginManager, current_user
 from flask_webpack import Webpack
 from flask_babel import lazy_gettext as _l, _
@@ -14,7 +14,7 @@ from wheezy.html.utils import escape_html
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.wrappers import Response
 
-from .config import Config
+from .config import Config, config
 from .forms import LoginForm, LogOutForm, CreateSubForm
 from .models import db_init_app, rconn, User, SiteMetadata
 from .auth import auth_provider, email_validation_is_required
@@ -242,6 +242,12 @@ def load_user(user_id):
     splits = user_id.split("$")
     user = User.get(User.uid == splits[0])
     resets = 0 if len(splits) == 1 else int(splits[1])
+
+    if config.auth.provider == "KEYCLOAK" and config.auth.keycloak.use_oidc:
+        # If using OIDC, check if the refresh token has expired...
+        if session["exp_time"] < time.time():
+            return None
+
     if resets == user.resets:
         return misc.load_user(user.uid)
     else:

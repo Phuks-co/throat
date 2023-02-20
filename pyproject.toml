@@ -52,6 +52,8 @@ sendgrid = "^6.9.7"
 pyfcm = "^1.5.4"
 feedgen = "^0.9.0"
 peewee-migrate = "^1.6.6"
+oic = "^1.5.0"
+gevent-websocket = "^0.10.1"
 
 
 [tool.poetry.group.dev.dependencies]

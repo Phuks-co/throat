@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 import uuid
 import re
 import requests
+from keycloak import KeycloakPostError
 from peewee import fn
 from flask import (
     Blueprint,
@@ -24,10 +25,10 @@ from .. import misc
 from ..config import config
 from ..auth import auth_provider, email_validation_is_required
 from ..auth import normalize_email, create_user
-from ..forms import LoginForm, RegistrationForm, ResendConfirmationForm
+from ..forms import LoginForm, RegistrationForm, ResendConfirmationForm, is_safe_url
 from ..misc import engine, send_email, is_domain_banned, gevent_required
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
-from ..models import User, UserStatus, InviteCode, rconn
+from ..models import User, UserStatus, InviteCode, rconn, UserMetadata, UserAuthSource
 
 bp = Blueprint("auth", __name__)
 
@@ -383,6 +384,61 @@ def resend_confirmation_email():
     )
 
 
+@bp.route("/login/oidc", methods=["GET", "POST"])
+def login_redirect():
+    if request.args.get("state") != session.pop("state", None):
+        return redirect(url_for("auth.login"))
+
+    try:
+        openid_tokens = auth_provider.keycloak_openid.token(
+            grant_type=["authorization_code"],
+            code=request.args.get("code"),
+            redirect_uri=url_for("auth.login_redirect", _external=True),
+        )
+    except KeycloakPostError:
+        # TODO: Catch error code (invalid_grant) or re-raise
+        return redirect(url_for("auth.login"))
+
+    user_data = auth_provider.keycloak_openid.introspect(openid_tokens["access_token"])
+    # TODO: Update email in our db from this data?
+
+    # Look up user.
+    try:
+        user_meta = UserMetadata.get(
+            (UserMetadata.key == "remote_uid")
+            & (UserMetadata.value == user_data["sub"])
+        )
+        user = User.get(User.uid == user_meta.uid)
+    except UserMetadata.DoesNotExist:
+        # User exists in keycloak but not here!
+        # Perform a last attempt by looking up by username, and if that fails, bail out.
+        # TODO: Register the user here if it does not exist
+        try:
+            user = User.get(User.name == user_data["username"])
+            UserMetadata.create(
+                uid=user.uid, key="auth_source", value=UserAuthSource.KEYCLOAK
+            )
+            UserMetadata.create(uid=user.uid, key="remote_uid", value=user_data["sub"])
+        except User.DoesNotExist:
+            return redirect(url_for("home.index"))
+
+    # Perform the login
+    session["refresh_token"] = openid_tokens["refresh_token"]
+    refresh_introspect = auth_provider.introspect()
+    session["exp_time"] = refresh_introspect["exp"]
+
+    if "admin" in user_data["realm_access"]["roles"]:
+        session["is_admin"] = True
+
+    theuser = misc.load_user(user.uid)
+    login_user(theuser)
+
+    next_uri = session.pop("next_url", None)
+    if not next_uri:
+        next_uri = url_for("home.index")
+    return redirect(next_uri)
+
+
 @bp.route("/login", methods=["GET", "POST"])
 @gevent_required  # Contacts Keycloak if configured.
 @ratelimit(AUTH_LIMIT)
@@ -402,6 +458,13 @@ def login():
         return redirect(url_for("home.index"))
 
     form = LoginForm()
+
+    if config.auth.keycloak.use_oidc:
+        if is_safe_url(form.next.data):
+            session["next_url"] = form.next.data
+
+        return redirect(auth_provider.get_login_url())
+
     if not form.validate_on_submit():
         return engine.get_template("user/login.html").render(
             {"error": misc.get_errors(form, True), "loginform": form}

@@ -1,13 +1,19 @@
+import base64
+import logging
+import random
+import string
+import urllib.parse
+
 import bcrypt
 from datetime import datetime
 import uuid
 
 from email_validator import validate_email
-from flask import session
+from flask import session, url_for
 from flask_login import login_user
 from keycloak import KeycloakAdmin as KeycloakAdmin_
 from keycloak import KeycloakOpenID
-from keycloak.exceptions import KeycloakError, KeycloakGetError
+from keycloak.exceptions import KeycloakError
 from peewee import fn
 
 from .config import config
@@ -20,8 +26,8 @@ from .models import (
     Sub,
     SubSubscriber,
 )
-from .misc import logger
-from . import misc
+
+logger = logging.getLogger("throat_auth")
 
 
 # Fix an unhandled error in python-keycloak.
@@ -31,7 +37,7 @@ class KeycloakAdmin(KeycloakAdmin_):
         refresh_token = self.token.get("refresh_token")
         try:
             self.token = self.keycloak_openid.refresh_token(refresh_token)
-        except KeycloakGetError as e:
+        except KeycloakError as e:
             if e.response_code == 400 and (
                 b"Refresh token expired" in e.response_body
                 or b"Token is not active" in e.response_body
@@ -81,6 +87,32 @@ class AuthProvider:
                 realm_name=cfg.user_realm,
                 verify=True,
             )
+
+    def get_login_url(self, acr: str = "aal1"):
+        session["state"] = "".join(
+            [random.choice(string.ascii_letters + string.digits) for _ in range(16)]
+        )
+        endpoint = self.keycloak_openid.well_known()["authorization_endpoint"]
+        params = {
+            "client_id": self.keycloak_openid.client_id,
+            "response_type": "code",
+            "redirect_uri": url_for("auth.login_redirect", _external=True),
+            "scope": "openid",
+            "state": session["state"],
+            "acr": acr,
+        }
+        # Maybe someday: loginHint (auto-complete username), prompt (re-login)
+
+        return f"{endpoint}?{urllib.parse.urlencode(params)}"
+
+    def introspect(self):
+        return self.keycloak_openid.introspect(
+            token=base64.b64encode(
+                f"{self.keycloak_openid.client_id}:{self.keycloak_openid.client_secret_key}".encode()
+            ).decode(),
+            rpt=session["refresh_token"],
+            token_type_hint="requesting_party_token",
+        )
 
     def get_user_by_email(self, email):
         try:
@@ -201,7 +233,11 @@ class AuthProvider:
                 raise AuthError
             # Invalidate other existing login sessions.
             User.update(resets=User.resets + 1).where(User.uid == user.uid).execute()
-            theuser = misc.load_user(user.uid)
+
+            # XXX: Remove this import from here. temporally changed to avoid circular import
+            from .misc import load_user
+
+            theuser = load_user(user.uid)
             login_user(theuser, remember=session.get("remember_me", False))
 
     def reset_password(self, user, new_password):
@@ -480,7 +516,9 @@ def create_user(username, password, email, invite_code, existing_user):
     if prefs:
         UserMetadata.insert(prefs).execute()
 
-    defaults = misc.getDefaultSubs()
+    from .misc import getDefaultSubs
+
+    defaults = getDefaultSubs()
     subs = [
         {"uid": user.uid, "sid": x["sid"], "status": 1, "time": datetime.utcnow()}
         for x in defaults
