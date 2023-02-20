@@ -254,10 +254,14 @@ class SiteUser(object):
 
     @cache.memoize(1)
     def _check_keycloak_auth(self):
-        if config.auth.provider == "KEYCLOAK" and config.auth.keycloak.use_oidc:
+        # XXX: Active session checking disabled by default because it is a blocking network op!
+        if (
+            config.auth.provider == "KEYCLOAK"
+            and config.auth.keycloak.use_oidc
+            and config.auth.keycloak.active_session_check
+        ):
             # Perform the slow check for session activity if using OIDC
             user_intro = auth_provider.introspect()
-            print(user_intro)
             if not user_intro["active"]:
                 logout_user()
                 return False

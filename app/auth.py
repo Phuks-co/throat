@@ -114,6 +114,11 @@ class AuthProvider:
             token_type_hint="requesting_party_token",
         )
 
+    def logout(self):
+        session.pop("exp_time")
+        session.pop("is_admin")
+        auth_provider.keycloak_openid.logout(session.pop("refresh_token"))
+
     def get_user_by_email(self, email):
         try:
             return User.get(fn.Lower(User.email) == email.lower())

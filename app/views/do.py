@@ -124,6 +124,9 @@ def logout():
     """Logout endpoint"""
     form = LogOutForm()
     if form.validate():
+        if config.auth.provider == "KEYCLOAK" and config.auth.keycloak.use_oidc:
+            auth_provider.logout()
+
         logout_user()
 
     return redirect(url_for("home.index"))

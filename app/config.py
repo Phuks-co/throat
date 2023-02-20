@@ -42,7 +42,7 @@ defaults = {  # key => default value
     "auth": {
         "provider": "LOCAL",
         "require_valid_emails": False,
-        "keycloak": {"use_oidc": False},
+        "keycloak": {"use_oidc": False, "active_session_check": False},
     },
     "cache": {"type": "null"},
     "mail": {},
