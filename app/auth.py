@@ -116,9 +116,11 @@ class AuthProvider:
         )
 
     def logout(self):
-        session.pop("exp_time")
-        session.pop("is_admin")
-        auth_provider.keycloak_openid.logout(session.pop("refresh_token"))
+        session.pop("exp_time", None)
+        session.pop("is_admin", None)
+        refresh_token = session.pop("refresh_token", None)
+        if refresh_token:
+            auth_provider.keycloak_openid.logout(refresh_token)
 
     def get_user_by_email(self, email):
         try:
