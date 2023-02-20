@@ -245,7 +245,7 @@ def load_user(user_id):
 
     if config.auth.provider == "KEYCLOAK" and config.auth.keycloak.use_oidc:
         # If using OIDC, check if the refresh token has expired...
-        if session["exp_time"] < time.time():
+        if session.get("exp_time", 0) < time.time():
             return None
 
     if resets == user.resets:
