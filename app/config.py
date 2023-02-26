@@ -73,7 +73,6 @@ defaults = {  # key => default value
         "max_content_length": 10485760,  # 10mb
         "fallback_language": "en",
         "testing": False,
-        "allow_email_forwarded_notifications": False,
     },
     "aws": {},
     "database": {"autoconnect": False},
@@ -117,6 +116,16 @@ configurable_defaults = {
                 "doc": _l(
                     "Enables setting security questions on the admin page. Users will be "
                     "asked to answer one of these security questions before registering."
+                ),
+                "value": False,
+            },
+            "allow_email_forwarded_notifications": {
+                "type": "bool",
+                "doc": _l(
+                    """
+                    Allows the application to let users opt-in to email-forwarded notifications -- notifications sent by
+                    email when the actual in-app notification was missed.
+                """
                 ),
                 "value": False,
             },
