@@ -163,7 +163,7 @@ def create_app(config=None):
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=config.site.trusted_proxy_count)
 
     # Start running email manager unless the config says otherwise
-    if config.app.allow_email_forwarded_notifications:
+    if config.site.allow_email_forwarded_notifications:
         EmailManager()
 
     # Don't let Werkzeug make the Location header into a full URL, because relative
