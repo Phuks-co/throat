@@ -10,17 +10,17 @@ docker-npm:
 
 .PHONY: docker-compose-build
 docker-compose-build:
-	docker-compose build
+	docker compose build
 	@$(DONE)
 
 .PHONY: up
 up: docker-compose-build
-	docker-compose up --remove-orphans -d
+	docker compose up --remove-orphans -d
 	@$(DONE)
 
 .PHONY: down
 down:
-	docker-compose down --remove-orphans
+	docker compose down --remove-orphans
 	@$(DONE)
 
 .PHONY: docker-shell
@@ -30,8 +30,8 @@ docker-shell: docker-compose-build
 
 .PHONY: test
 test: docker-compose-build
-	docker-compose up --detach redis
-	docker-compose run \
+	docker compose up --detach redis
+	docker compose run \
 		--name=throat_tests \
 		--rm \
 		--no-deps \
