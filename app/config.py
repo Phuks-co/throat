@@ -122,10 +122,8 @@ configurable_defaults = {
             "allow_email_forwarded_notifications": {
                 "type": "bool",
                 "doc": _l(
-                    """
-                    Allows the application to let users opt-in to email-forwarded notifications -- notifications sent by
-                    email when the actual in-app notification was missed.
-                """
+                    "Allows the application to let users opt-in to email-forwarded notifications "
+                    "-- notifications sent by email when the actual in-app notification was missed."
                 ),
                 "value": False,
             },
