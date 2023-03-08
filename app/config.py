@@ -38,6 +38,7 @@ defaults = {  # key => default value
         "custom_hot_sort": False,
         "icon_url": None,
         "logo": "app/static/img/throat-logo.svg",
+        "email_forwarded_notifications": False,
     },
     "auth": {
         "provider": "LOCAL",
