@@ -34,7 +34,7 @@
                   @{edituserform.nochat()!!html}
               </div>
             @end
-            @if config.site.allow_email_forwarded_notifications:
+            @if config.site.email_forwarded_notifications:
               <div class="pure-control-group">
                   <label for="nochat" class="pure-checkbox">@{edituserform.email_forwarded_notifications.label.text}</label>
                   @{edituserform.email_forwarded_notifications()!!html}
