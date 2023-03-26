@@ -32,13 +32,19 @@ defaults = {  # key => default value
             "instaud.io",
             "player.vimeo.com",
         ],
+        "extra_connect_src": [],
         "footer": {"links": {"ToS": "/wiki/tos", "Privacy": "/wiki/privacy"}},
         "trusted_proxy_count": 0,
         "custom_hot_sort": False,
         "icon_url": None,
         "logo": "app/static/img/throat-logo.svg",
+        "email_forwarded_notifications": False,
     },
-    "auth": {"provider": "LOCAL", "require_valid_emails": False, "keycloak": {}},
+    "auth": {
+        "provider": "LOCAL",
+        "require_valid_emails": False,
+        "keycloak": {"use_oidc": False, "active_session_check": False},
+    },
     "cache": {"type": "null"},
     "mail": {},
     "storage": {
@@ -111,6 +117,14 @@ configurable_defaults = {
                 "doc": _l(
                     "Enables setting security questions on the admin page. Users will be "
                     "asked to answer one of these security questions before registering."
+                ),
+                "value": False,
+            },
+            "allow_search_feeds": {
+                "type": "bool",
+                "doc": _l(
+                    "Allow the application to expose a single endpoint offering results "
+                    "to global keyword searches in the form of web feeds."
                 ),
                 "value": False,
             },
@@ -447,6 +461,17 @@ configurable_defaults = {
                     },
                 },
             },
+            "admin_sub": {
+                "type": "string",
+                "doc": _l(
+                    "If set, and site.enable_modmail is also set, "
+                    "when an admin removes a user's content, a reply by the "
+                    "user to the notification message will be sent to the modmail of "
+                    "this sub. If this is left empty, replies will go to the modmail "
+                    "of the sub in which the removed content was posted."
+                ),
+                "value": "",
+            },
         },
     },
     "storage": {
@@ -717,7 +742,7 @@ class Map:
 
 
 class Config(Map):
-    """ Main config object """
+    """Main config object"""
 
     def __init__(
         self,
@@ -814,7 +839,7 @@ class Config(Map):
 
 
 def ensure_trailing_slash(val):
-    """ Add a slash to the string if it doesn't already have one. """
+    """Add a slash to the string if it doesn't already have one."""
     if val and val[-1] != "/":
         return val + "/"
     else:

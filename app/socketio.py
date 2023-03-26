@@ -1,7 +1,6 @@
 from flask_socketio import SocketIO, join_room
 from flask_login import current_user
 from flask_jwt_extended import decode_token
-from flask_jwt_extended.utils import verify_token_claims, UserClaimsVerificationError
 from flask import request
 from .models import rconn
 from . import misc
@@ -13,6 +12,10 @@ import re
 from wheezy.html.utils import escape_html
 import logging
 import time
+from engineio.payload import Payload
+
+Payload.max_decode_packets = 50
+
 
 # Time in seconds for the expiration of the Redis keys used to decide
 # which instance should do the socketio.emit for messages received via
@@ -171,10 +174,7 @@ def handle_subscription(data):
 @socketio.on("token-login", namespace="/snt")
 def token_login(data):
     tokendata = decode_token(data["jwt"])
-    try:
-        verify_token_claims(tokendata)
-    except UserClaimsVerificationError:
-        return
+
     join_room("user" + tokendata["identity"])
 
     socketio.emit(

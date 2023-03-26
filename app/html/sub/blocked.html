@@ -1,0 +1,18 @@
+@extends("shared/layout.html")
+@require(sub)
+
+
+@def main():
+<div id="center-container">
+    <div class="content createpost">
+        <h2>@{_('<a href="%(url)s">/%(prefix)s/%(sub)s</a> is not available.', url=url_for('sub.view_sub', sub=sub.name), prefix=config.site.sub_prefix, sub=sub.name)!!html}</h2>
+        <p>
+        @if sub.status == 1:
+            @{_('The sub has been banned by the administration due to ToS/rule violations.')}
+        @elif sub.status == 2:
+            @{_('The sub is temporally quarantined and will be back soon.')}
+        @endif
+        </p>
+    </div>
+</div>
+@end

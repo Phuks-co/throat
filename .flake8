@@ -1,5 +1,10 @@
 [flake8]
-exclude = .git,__pycache__,static,migrations
+exclude =
+    .git
+    __pycache__
+    static
+    migrations/*.py
+
 max-complexity = 10
 max-line-length = 120
 ignore =

@@ -307,10 +307,12 @@ def test_change_password(client, user_info):
             oldpassword=user_info["password"],
             password=new_password,
             confirm=new_password,
+            email="",
         ),
         follow_redirects=True,
     )
     reply = json.loads(rv.data.decode("utf-8"))
+    print(reply)
     assert reply["status"] == "ok"
 
     log_out_current_user(client)

@@ -2,8 +2,11 @@ import json
 import re
 from bs4 import BeautifulSoup
 from flask import url_for
+import pytest
 
 from app.config import config
+from app.misc import get_notification_count
+from app.models import User
 from test.utilities import (
     create_sub,
     csrf_token,
@@ -557,3 +560,340 @@ def test_mod_comment_delete(client, user_info, user2_info, user3_info):
             assert reply["error"] == "Can not un-delete a self-deleted comment"
         else:
             assert reply["error"] == "Not authorized"
+
+
+def test_ban_notification_messages(client, user_info, user2_info):
+    "Notifications are sent for sub bans."
+    config.update_value("site.sub_creation_min_level", 0)
+    receiver, mod = user_info, user2_info
+
+    register_user(client, receiver)
+    receiver_uid = User.get(User.name == receiver["username"]).uid
+    log_out_current_user(client)
+
+    register_user(client, mod)
+    create_sub(client)
+
+    rv = client.get(url_for("sub.view_sub_bans", sub="test"))
+    csrf = csrf_token(rv.data)
+
+    # Mod bans receiver.
+    rv = client.post(
+        url_for("do.ban_user_sub", sub="test"),
+        data=dict(
+            csrf_token=csrf,
+            user=receiver["username"],
+            reason="serious reason",
+            expires=None,
+        ),
+    )
+    reply = json.loads(rv.data.decode("utf-8"))
+    assert reply["status"] == "ok"
+
+    # Mod un-bans receiver.
+    rv = client.post(
+        url_for("do.remove_sub_ban", sub="test", user=receiver["username"]),
+        data=dict(csrf_token=csrf),
+    )
+    reply = json.loads(rv.data.decode("utf-8"))
+    assert reply["status"] == "ok"
+    log_out_current_user(client)
+
+    # Receiver checks messages.  They should not be ignored,
+    # because they are mod actions.
+    log_in_user(client, receiver)
+    assert get_notification_count(receiver_uid)["messages"] == 2
+    rv = client.get(url_for("messages.view_messages"))
+    assert b"permanently banned" in rv.data
+    assert b"serious reason" in rv.data
+    assert b"no longer banned" in rv.data
+
+
+def test_mod_invite_messages(client, user_info, user2_info):
+    "Messages are sent for mod invites."
+    config.update_value("site.sub_creation_min_level", 0)
+    receiver, mod = user_info, user2_info
+
+    register_user(client, receiver)
+    receiver_uid = User.get(User.name == receiver["username"]).uid
+    log_out_current_user(client)
+
+    register_user(client, mod)
+    mod_uid = User.get(User.name == mod["username"]).uid
+    create_sub(client, name="test_janitor")
+    create_sub(client, name="test_mod")
+
+    # Mod invites receiver as moderator.
+    rv_index = client.get(url_for("home.index", sub="test_mod"))
+    rv = client.post(
+        url_for("do.inv_mod", sub="test_mod"),
+        data=dict(
+            csrf_token=csrf_token(rv_index.data), user=receiver["username"], level="1"
+        ),
+    )
+    reply = json.loads(rv.data.decode("utf-8"))
+    assert reply["status"] == "ok"
+
+    # Mod invites receiver as janitor.
+    rv = client.post(
+        url_for("do.inv_mod", sub="test_janitor"),
+        data=dict(
+            csrf_token=csrf_token(rv_index.data), user=receiver["username"], level="2"
+        ),
+    )
+    reply = json.loads(rv.data.decode("utf-8"))
+    assert reply["status"] == "ok"
+    log_out_current_user(client)
+
+    # Receiver blocks mod.
+    log_in_user(client, receiver)
+    rv = client.post(
+        url_for("do.edit_ignore", uid=mod_uid),
+        data=dict(
+            csrf_token=csrf_token(rv_index.data),
+            view_messages="hide",
+            view_content="hide",
+        ),
+        follow_redirects=True,
+    )
+    reply = json.loads(rv.data.decode("utf-8"))
+    assert reply["status"] == "ok"
+
+    # Receiver checks messages.  They should not be blocked,
+    # because they are mod messages.
+    assert get_notification_count(receiver_uid)["messages"] == 2
+    rv = client.get(url_for("messages.view_messages"))
+    assert b"invited you to moderate" in rv.data
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
+    assert soup.find(href=url_for("sub.edit_sub_mods", sub="test_mod"))
+    assert soup.find(href=url_for("sub.edit_sub_mods", sub="test_janitor"))
+
+    # Receiver unblocks mod.
+    rv = client.post(
+        url_for("do.edit_ignore", uid=mod_uid),
+        data=dict(
+            csrf_token=csrf_token(rv.data), view_messages="show", view_content="show"
+        ),
+        follow_redirects=True,
+    )
+    reply = json.loads(rv.data.decode("utf-8"))
+    assert reply["status"] == "ok"
+
+    # Receiver checks messages again.
+    assert get_notification_count(receiver_uid)["messages"] == 2
+    rv = client.get(url_for("messages.view_messages"))
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
+    assert b"invited you to moderate" in rv.data
+    assert soup.find(href=url_for("sub.edit_sub_mods", sub="test_mod"))
+    assert soup.find(href=url_for("sub.edit_sub_mods", sub="test_janitor"))
+
+    # Receiver deletes messages.
+    mids = [elem["data-mid"] for elem in soup.find_all(class_="deletemsg")]
+    assert len(mids) == 2
+    for mid in mids:
+        rv = client.post(
+            url_for("do.delete_pm", mid=mid), data=dict(csrf_token=csrf_token)
+        )
+        reply = json.loads(rv.data.decode("utf-8"))
+        assert reply["status"] == "ok"
+    assert get_notification_count(receiver_uid)["messages"] == 0
+    log_out_current_user(client)
+
+    # Mod revokes the invitation.
+    log_in_user(client, mod)
+    rv = client.post(
+        url_for("do.revoke_mod2inv", sub="test_mod", user=receiver["username"]),
+        data=dict(csrf_token=csrf_token(rv_index.data)),
+    )
+    reply = json.loads(rv.data.decode("utf-8"))
+    assert reply["status"] == "ok"
+    log_out_current_user(client)
+
+    # Receiver checks messages.
+    log_in_user(client, receiver)
+    assert get_notification_count(receiver_uid)["messages"] == 1
+    rv = client.get(url_for("messages.view_messages"), follow_redirects=True)
+    assert b"cancelled your invitation" in rv.data
+
+
+@pytest.mark.parametrize("by_admin", [True, False])
+def test_mod_action_messages(client, user_info, user2_info, user3_info, by_admin):
+    "Notification messages are sent for content moderation actions."
+    config.update_value("site.sub_creation_min_level", 0)
+    receiver, admin, mod = user_info, user2_info, user3_info
+
+    # Use usernames that aren't going to be found in notification
+    # message text, unlike "mod" and "admin".
+    receiver["username"] = "yyyyyy"
+    mod["username"] = "xxxxxx"
+    admin["username"] = "zzzzzz"
+
+    register_user(client, receiver)
+    receiver_uid = User.get(User.name == receiver["username"]).uid
+    log_out_current_user(client)
+
+    register_user(client, mod)
+    mod_uid = User.get(User.name == mod["username"]).uid
+    create_sub(client)
+    log_out_current_user(client)
+
+    if by_admin:
+        register_user(client, admin)
+        admin_uid = User.get(User.name == admin["username"]).uid
+        promote_user_to_admin(client, admin)
+        create_sub(client, name="adminsub")
+        config.update_value("site.admin_sub", "adminsub")
+        log_out_current_user(client)
+        actor, actor_uid = admin, admin_uid
+    else:
+        actor, actor_uid = mod, mod_uid
+
+    # Receiver makes a post.
+    log_in_user(client, receiver)
+    rv = client.get(url_for("subs.submit", ptype="text", sub="test"))
+    csrf = csrf_token(rv.data)
+    rv = client.post(
+        url_for("subs.submit", ptype="text", sub="test"),
+        data=dict(
+            csrf_token=csrf, title="the title", ptype="text", content="the content"
+        ),
+        follow_redirects=False,
+    )
+    assert rv.status == "302 FOUND"
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
+    link = soup.a.get_text()
+    pid = link.split("/")[-1]
+
+    # Receiver makes a comment.
+    rv = client.get(link, follow_redirects=True)
+    assert b"the title |  test" in rv.data
+    rv = client.post(
+        url_for("do.create_comment", pid=pid),
+        data=dict(csrf_token=csrf, post=pid, parent="0", comment="OP reply"),
+        follow_redirects=False,
+    )
+    reply = json.loads(rv.data.decode("utf-8"))
+    assert reply["status"] == "ok"
+    cid = reply["cid"]
+    log_out_current_user(client)
+
+    # Mod or admin deletes and then un-deletes the comment.
+    log_in_user(client, actor)
+    rv = client.post(
+        url_for("do.delete_comment"),
+        data=dict(csrf_token=csrf, cid=cid, reason="serious comment reason"),
+    )
+    reply = json.loads(rv.data.decode("utf-8"))
+    assert reply["status"] == "ok"
+
+    rv = client.post(
+        url_for("do.undelete_comment"),
+        data=dict(csrf_token=csrf, cid=cid, reason="frivolous comment reason"),
+    )
+    reply = json.loads(rv.data.decode("utf-8"))
+    assert reply["status"] == "ok"
+    log_out_current_user(client)
+
+    # Receiver checks messages, with and without blocking the mod.
+    log_in_user(client, receiver)
+    for block in [False] if by_admin else [False, True]:
+        if block:
+            data = dict(csrf_token=csrf, view_messages="hide", view_content="hide")
+            rv = client.post(
+                url_for("do.edit_ignore", uid=actor_uid),
+                data=data,
+                follow_redirects=True,
+            )
+            reply = json.loads(rv.data.decode("utf-8"))
+            assert reply["status"] == "ok"
+
+        config.update_value("site.anonymous_modding", False)
+        rv = client.get(url_for("messages.view_messages"))
+        if by_admin:
+            assert b"The site administrators" in rv.data
+            assert b"adminsub" in rv.data
+        else:
+            assert b"The moderators of" in rv.data
+
+        assert b"as mod of" in rv.data
+        assert actor["username"].encode("utf-8") in rv.data
+
+        config.update_value("site.anonymous_modding", True)
+        rv = client.get(url_for("messages.view_messages"))
+        assert b"by the mods of" in rv.data
+        assert actor["username"].encode("utf-8") not in rv.data
+
+        assert b"Moderation action: comment deleted" in rv.data
+        assert b"Moderation action: comment restored" in rv.data
+        assert b"deleted a comment" in rv.data
+        assert b"restored a comment" in rv.data
+        assert b"serious comment reason" in rv.data
+        assert b"frivolous comment reason" in rv.data
+
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
+    mids = [elem["data-mid"] for elem in soup.find_all(class_="deletemsg")]
+    assert len(mids) == 2
+
+    # Receiver deletes messages.
+    for mid in mids:
+        rv = client.post(
+            url_for("do.delete_pm", mid=mid), data=dict(csrf_token=csrf_token)
+        )
+        reply = json.loads(rv.data.decode("utf-8"))
+        assert reply["status"] == "ok"
+    assert get_notification_count(receiver_uid)["messages"] == 0
+    log_out_current_user(client)
+
+    # Mod or admin deletes and then un-deletes the post.
+    log_in_user(client, actor)
+    rv = client.post(
+        url_for("do.delete_post"),
+        data=dict(csrf_token=csrf, post=pid, reason="serious post reason"),
+    )
+    reply = json.loads(rv.data.decode("utf-8"))
+    assert reply["status"] == "ok"
+
+    rv = client.post(
+        url_for("do.undelete_post"),
+        data=dict(csrf_token=csrf, post=pid, reason="frivolous post reason"),
+    )
+    reply = json.loads(rv.data.decode("utf-8"))
+    assert reply["status"] == "ok"
+    log_out_current_user(client)
+
+    # Receiver checks messages, with and without unblocking the mod.
+    log_in_user(client, receiver)
+    for unblock in [False] if by_admin else [True, False]:
+        if unblock:
+            data = dict(csrf_token=csrf, view_messages="show", view_content="show")
+            rv = client.post(
+                url_for("do.edit_ignore", uid=actor_uid),
+                data=data,
+                follow_redirects=True,
+            )
+            reply = json.loads(rv.data.decode("utf-8"))
+            assert reply["status"] == "ok"
+
+        assert get_notification_count(receiver_uid)["messages"] == 2
+
+        config.update_value("site.anonymous_modding", False)
+        rv = client.get(url_for("messages.view_messages"))
+        if by_admin:
+            assert b"The site administrators" in rv.data
+            assert b"adminsub" in rv.data
+        else:
+            assert b"The moderators of" in rv.data
+        assert b"as mod of" in rv.data
+        assert actor["username"].encode("utf-8") in rv.data
+
+        config.update_value("site.anonymous_modding", True)
+        rv = client.get(url_for("messages.view_messages"))
+        assert b"by the mods of" in rv.data
+        assert actor["username"].encode("utf-8") not in rv.data
+
+        assert b"Moderation action: post deleted" in rv.data
+        assert b"Moderation action: post restored" in rv.data
+        assert b"deleted your post" in rv.data
+        assert b"restored your post" in rv.data
+        assert b"serious post reason" in rv.data
+        assert b"frivolous post reason" in rv.data

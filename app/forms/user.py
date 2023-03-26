@@ -6,7 +6,7 @@ from wtforms import StringField, PasswordField, TextAreaField
 from wtforms import BooleanField, HiddenField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 from wtforms.validators import Optional, Regexp, ValidationError
-from wtforms.fields.html5 import EmailField
+from wtforms.fields import EmailField
 from flask_babel import lazy_gettext as _l
 from app.config import config
 
@@ -40,18 +40,8 @@ class RedirectForm(FlaskForm):
         return redirect(target or url_for(endpoint, **values))
 
 
-class LoginForm(RedirectForm):
-    """ Login form. """
-
-    username = StringField(_l("Username"), validators=[DataRequired(), Length(max=32)])
-    password = PasswordField(
-        _l("Password"), validators=[DataRequired(), Length(min=7, max=256)]
-    )
-    remember = BooleanField(_l("Remember me"))
-
-
 class OptionalIfFieldIsEmpty(Optional):
-    """ A custom field validator. """
+    """A custom field validator."""
 
     def __init__(self, field_name, *args, **kwargs):
         self.field_name = field_name
@@ -85,8 +75,18 @@ class UsernameLength:
             raise ValidationError(message % dict(min=min, max=max, length=length))
 
 
+class LoginForm(RedirectForm):
+    """Login form."""
+
+    username = StringField(_l("Username"), validators=[Length(max=256)])
+    password = PasswordField(
+        _l("Password"), validators=[DataRequired(), Length(min=7, max=256)]
+    )
+    remember = BooleanField(_l("Remember me"))
+
+
 class RegistrationForm(FlaskForm):
-    """ Registration form. """
+    """Registration form."""
 
     username = StringField(
         _l("Username"), [UsernameLength(), Regexp(r"[a-zA-Z0-9_-]+")]
@@ -118,7 +118,7 @@ class RegistrationForm(FlaskForm):
 
 
 class ResendConfirmationForm(FlaskForm):
-    """ For resending emails """
+    """For resending emails"""
 
     email = EmailField(
         _l("Email Address"), validators=[Email(_l("Invalid email address."))]
@@ -129,7 +129,7 @@ class EditAccountForm(FlaskForm):
     email_optional = EmailField(
         _l("Email Address (optional)"),
         validators=[
-            OptionalIfFieldIsEmpty("email_optional"),
+            Optional(),
             Email(_l("Invalid email address.")),
         ],
     )
@@ -163,7 +163,7 @@ class DeleteAccountForm(FlaskForm):
 
 
 class EditUserForm(FlaskForm):
-    """ Edit User info form. """
+    """Edit User info form."""
 
     # username = StringField('Username', [Length(min=2, max=32)])
     disable_sub_style = BooleanField(_l("Disable custom sub styles"))
@@ -185,7 +185,7 @@ class EditUserForm(FlaskForm):
 
 
 class EditIgnoreForm(FlaskForm):
-    """ Edit User blocks form. """
+    """Edit User blocks form."""
 
     view_messages = SelectField(
         "", choices=[("hide", _l("Hide messages")), ("show", _l("Show messages"))]
@@ -201,7 +201,7 @@ class EditIgnoreForm(FlaskForm):
 
 
 class CreateUserMessageForm(FlaskForm):
-    """ CreateUserMessage form. """
+    """CreateUserMessage form."""
 
     to = StringField(_l("to"), [Length(min=2, max=32), Regexp(r"[a-zA-Z0-9_-]+")])
     subject = StringField(
@@ -214,7 +214,7 @@ class CreateUserMessageForm(FlaskForm):
 
 
 class CreateUserMessageReplyForm(FlaskForm):
-    """ Form for replies to private messages. """
+    """Form for replies to private messages."""
 
     mid = HiddenField()
     content = TextAreaField(
@@ -223,7 +223,7 @@ class CreateUserMessageReplyForm(FlaskForm):
 
 
 class PasswordRecoveryForm(FlaskForm):
-    """ the 'forgot your password?' form """
+    """the 'forgot your password?' form"""
 
     email = EmailField(
         _l("Email Address"), validators=[Email(_l("Invalid email address."))]
@@ -233,7 +233,7 @@ class PasswordRecoveryForm(FlaskForm):
 
 
 class PasswordResetForm(FlaskForm):
-    """ the 'forgot your password?' form """
+    """the 'forgot your password?' form"""
 
     user = HiddenField()
     key = HiddenField()

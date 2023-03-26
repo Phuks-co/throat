@@ -50,7 +50,7 @@ blueprint = Blueprint("sub", __name__)
 @blueprint.route("/<sub>/")
 @blueprint.route("/<sub>")
 def view_sub(sub):
-    """ Here we can view subs """
+    """Here we can view subs"""
     if sub.lower() == "all":
         return redirect(url_for("home.all_hot", page=1))
 
@@ -58,6 +58,9 @@ def view_sub(sub):
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         abort(404)
+
+    if sub.status != 0 and not current_user.is_admin():
+        return engine.get_template("sub/blocked.html").render({"sub": sub})
 
     try:
         x = SubMetadata.select().where(SubMetadata.sid == sub.sid)
@@ -76,13 +79,15 @@ def view_sub(sub):
 @blueprint.route("/<sub>/edit/css")
 @login_required
 def edit_sub_css(sub):
-    """ Here we can edit sub info and settings """
+    """Here we can edit sub info and settings"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         abort(404)
 
-    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
+    if (
+        not current_user.is_mod(sub.sid, 1) or sub.status != 0
+    ) and not current_user.is_admin():
         abort(403)
 
     subInfo = misc.getSubData(sub.sid)
@@ -113,13 +118,15 @@ def edit_sub_css(sub):
 @blueprint.route("/<sub>/edit/flairs")
 @login_required
 def edit_sub_flairs(sub):
-    """ Here we manage the sub's flairs. """
+    """Here we manage the sub's flairs."""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         abort(404)
 
-    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
+    if (
+        not current_user.is_mod(sub.sid, 1) or sub.status != 0
+    ) and not current_user.is_admin():
         abort(403)
 
     flairs = SubFlair.select().where(SubFlair.sid == sub.sid).dicts()
@@ -135,13 +142,15 @@ def edit_sub_flairs(sub):
 @blueprint.route("/<sub>/edit/user_flairs")
 @login_required
 def edit_sub_user_flairs(sub):
-    """ Here we manage user flairs """
+    """Here we manage user flairs"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         abort(404)
 
-    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
+    if (
+        not current_user.is_mod(sub.sid, 1) or sub.status != 0
+    ) and not current_user.is_admin():
         abort(403)
 
     flairs = SubUserFlairChoice.select().where(SubUserFlairChoice.sub == sub.sid)
@@ -172,13 +181,15 @@ def edit_sub_user_flairs(sub):
 @blueprint.route("/<sub>/edit/rules")
 @login_required
 def edit_sub_rules(sub):
-    """ Here we manage the sub's rules. """
+    """Here we manage the sub's rules."""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         abort(404)
 
-    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
+    if (
+        not current_user.is_mod(sub.sid, 1) or sub.status != 0
+    ) and not current_user.is_admin():
         abort(403)
 
     rules = SubRule.select().where(SubRule.sid == sub.sid).dicts()
@@ -194,37 +205,41 @@ def edit_sub_rules(sub):
 @blueprint.route("/<sub>/edit")
 @login_required
 def edit_sub(sub):
-    """ Here we can edit sub info and settings """
+    """Here we can edit sub info and settings"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         abort(404)
 
-    if current_user.is_mod(sub.sid, 1) or current_user.is_admin():
-        submeta = misc.metadata_to_dict(
-            SubMetadata.select().where(SubMetadata.sid == sub.sid)
-        )
-        form = EditSubForm()
-        # pre-populate the form.
-        form.subsort.data = submeta.get("sort")
-        form.sidebar.data = sub.sidebar
-        form.title.data = sub.title
-
-        return engine.get_template("sub/settings.html").render(
-            {"sub": sub, "editsubform": form, "metadata": submeta}
-        )
-    else:
+    if (
+        not current_user.is_mod(sub.sid, 1) or sub.status != 0
+    ) and not current_user.is_admin():
         abort(403)
+    submeta = misc.metadata_to_dict(
+        SubMetadata.select().where(SubMetadata.sid == sub.sid)
+    )
+    form = EditSubForm()
+    # pre-populate the form.
+    form.subsort.data = submeta.get("sort")
+    form.sidebar.data = sub.sidebar
+    form.title.data = sub.title
+
+    return engine.get_template("sub/settings.html").render(
+        {"sub": sub, "editsubform": form, "metadata": submeta}
+    )
 
 
 @blueprint.route("/<sub>/sublog", defaults={"page": 1})
 @blueprint.route("/<sub>/sublog/<int:page>")
 def view_sublog(sub, page):
-    """ Here we can see a log of mod/admin activity in the sub """
+    """Here we can see a log of mod/admin activity in the sub"""
     try:
         sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     except Sub.DoesNotExist:
         abort(404)
+
+    if sub["status"] != 0:
+        return redirect(url_for("sub.view_sub", sub=sub["name"]))
 
     subInfo = misc.getSubData(sub["sid"])
     if not config.site.force_sublog_public:
@@ -250,9 +265,9 @@ def view_sublog(sub, page):
 @blueprint.route("/<sub>/mods")
 @login_required
 def edit_sub_mods(sub):
-    """ Here we can edit moderators for a sub """
+    """Here we can edit moderators for a sub"""
     try:
-        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+        sub = Sub.get((fn.Lower(Sub.name) == sub.lower()) & (Sub.status == 0))
     except Sub.DoesNotExist:
         abort(404)
 
@@ -283,9 +298,9 @@ def edit_sub_mods(sub):
 
 @blueprint.route("/<sub>/new.rss")
 def sub_new_rss(sub):
-    """ RSS feed for /sub/new """
+    """RSS feed for /sub/new"""
     try:
-        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+        sub = Sub.get((fn.Lower(Sub.name) == sub.lower()) & (Sub.status == 0))
     except Sub.DoesNotExist:
         abort(404)
 
@@ -308,7 +323,7 @@ def sub_new_rss(sub):
 @blueprint.route("/<sub>/new", defaults={"page": 1})
 @blueprint.route("/<sub>/new/<int:page>")
 def view_sub_new(sub, page):
-    """ The index page, all posts sorted as most recent posted first """
+    """The index page, all posts sorted as most recent posted first"""
     if sub.lower() == "all":
         return redirect(url_for("home.all_new", page=1))
 
@@ -318,6 +333,9 @@ def view_sub_new(sub, page):
         sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     except Sub.DoesNotExist:
         abort(404)
+
+    if sub["status"] != 0 and not current_user.is_admin():
+        return redirect(url_for("sub.view_sub", sub=sub["name"]))
 
     isSubMod = current_user.is_mod(sub["sid"], 1) or current_user.is_admin()
 
@@ -344,7 +362,7 @@ def view_sub_new(sub, page):
 
 @blueprint.route("/<sub>/bannedusers")
 def view_sub_bans(sub):
-    """ See banned users for the sub """
+    """See banned users for the sub"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -354,7 +372,7 @@ def view_sub_bans(sub):
     if not config.site.force_sublog_public:
         banned_users_is_private = subInfo.get("sub_banned_users_private", 0) == "1"
 
-        if banned_users_is_private and not (
+        if (banned_users_is_private or sub.status != 0) and not (
             current_user.is_mod(sub.sid, 1) or current_user.is_admin()
         ):
             abort(404)
@@ -414,7 +432,7 @@ def view_sub_bans(sub):
 @blueprint.route("/<sub>/top", defaults={"page": 1})
 @blueprint.route("/<sub>/top/<int:page>")
 def view_sub_top(sub, page):
-    """ The index page, /top sorting """
+    """The index page, /top sorting"""
     if sub.lower() == "all":
         return redirect(url_for("home.all_top", page=1))
 
@@ -424,6 +442,9 @@ def view_sub_top(sub, page):
         sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     except Sub.DoesNotExist:
         abort(404)
+
+    if sub["status"] != 0 and not current_user.is_admin():
+        return redirect(url_for("sub.view_sub", sub=sub["name"]))
 
     isSubMod = current_user.is_mod(sub["sid"], 1) or current_user.is_admin()
 
@@ -451,7 +472,7 @@ def view_sub_top(sub, page):
 @blueprint.route("/<sub>/hot", defaults={"page": 1})
 @blueprint.route("/<sub>/hot/<int:page>")
 def view_sub_hot(sub, page):
-    """ The index page, /hot sorting """
+    """The index page, /hot sorting"""
     if sub.lower() == "all":
         return redirect(url_for("home.all_hot", page=1))
 
@@ -461,6 +482,9 @@ def view_sub_hot(sub, page):
         sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     except Sub.DoesNotExist:
         abort(404)
+
+    if sub["status"] != 0 and not current_user.is_admin():
+        return redirect(url_for("sub.view_sub", sub=sub["name"]))
 
     isSubMod = current_user.is_mod(sub["sid"], 1) or current_user.is_admin()
 
@@ -488,7 +512,7 @@ def view_sub_hot(sub, page):
 @blueprint.route("/<sub>/<int:pid>", defaults={"slug": ""})
 @blueprint.route("/<sub>/<int:pid>/<slug>")
 def view_post(sub, pid, slug=None, comments=False, highlight=None):
-    """ View post and comments (WIP) """
+    """View post and comments (WIP)"""
     sort = request.args.get("sort", default=None, type=str)
     try:
         post = misc.getSinglePost(pid)
@@ -506,6 +530,10 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
         )
 
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
+
+    if sub["status"] != 0 and not current_user.is_admin():
+        return redirect(url_for("sub.view_sub", sub=sub["name"]))
+
     subInfo = misc.getSubData(sub["sid"])
     postmeta = misc.metadata_to_dict(
         SubPostMetadata.select().where(SubPostMetadata.pid == pid)
@@ -687,7 +715,7 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
 @blueprint.route("/<sub>/<int:pid>/_/<cid>", defaults={"slug": "_"})
 @blueprint.route("/<sub>/<int:pid>/<slug>/<cid>")
 def view_perm(sub, pid, slug, cid):
-    """ Permalink to comment """
+    """Permalink to comment"""
     # We get the comment...
     try:
         post = (

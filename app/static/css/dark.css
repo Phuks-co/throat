@@ -630,3 +630,41 @@ body.dark .mod-table .close-elem,
 body.dark .mod-table .last-elem {
     background-color: #222;
 }
+
+body.dark .RoomView .Timeline_messageBody {
+    color: #dddddd;
+}
+
+body.dark .RoomView .Timeline_messageOptions {
+    background: #343434;
+    border-color: #222;
+    color: #eee;
+}
+
+body.dark .RoomView .MessageComposer_replyPreview {
+    background-color: #070707;
+    box-shadow: 0 0 5px #111;
+}
+
+body.dark .Timeline_messageReactions button, body.dark .Timeline_messageBody .pill {
+    background-color: #333;
+    color: #eee;
+    border-color: #444;
+}
+
+body.dark .AnnouncementView>div {
+    background-color: #333;
+    color: #eee;
+}
+
+body.dark #chpop .menu {
+    background-color: #222;
+}
+
+body.dark #chpop .menu .button, body.dark #chpop .menu .menu-item {
+    color: #eee;
+}
+
+body.dark #chloading {
+    color: #ddd;
+}

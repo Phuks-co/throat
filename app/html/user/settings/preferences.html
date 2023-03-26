@@ -34,14 +34,19 @@
                   @{edituserform.nochat()!!html}
               </div>
             @end
-
+            @if config.site.email_forwarded_notifications:
+              <div class="pure-control-group">
+                  <label for="nochat" class="pure-checkbox">@{edituserform.email_forwarded_notifications.label.text}</label>
+                  @{edituserform.email_forwarded_notifications()!!html}
+              </div>
+            @end
             <div class="pure-control-group">
-                <label for="nochat" class="pure-checkbox">@{edituserform.subtheme.label.text}</label>
+                <label for="subtheme" class="pure-checkbox">@{edituserform.subtheme.label.text}</label>
                 @{edituserform.subtheme(class_="sub_autocomplete")!!html}
             </div>
 
             <div class="pure-control-group">
-                <label for="nochat" class="pure-checkbox">@{edituserform.language.label.text}</label>
+                <label for="language" class="pure-checkbox">@{edituserform.language.label.text}</label>
                 @{edituserform.language(autocomplete="off")!!html}
             </div>
 

@@ -18,6 +18,8 @@
 !throat.py
 !throat_prod.py
 !webpack.config.js
+!pyproject.toml
+!poetry.lock
 
 # Disallow Python cache files
 **/__pycache__

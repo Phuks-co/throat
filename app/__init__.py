@@ -6,15 +6,15 @@ import socket
 import datetime
 from pathlib import Path
 from bs4 import BeautifulSoup
-from flask import Flask, url_for, g, request, get_flashed_messages
+from flask import Flask, url_for, g, request, get_flashed_messages, session
 from flask_login import LoginManager, current_user
 from flask_webpack import Webpack
 from flask_babel import lazy_gettext as _l, _
 from wheezy.html.utils import escape_html
 from werkzeug.middleware.proxy_fix import ProxyFix
-from werkzeug.wrappers import BaseResponse
+from werkzeug.wrappers import Response
 
-from .config import Config
+from .config import Config, config
 from .forms import LoginForm, LogOutForm, CreateSubForm
 from .models import db_init_app, rconn, User, SiteMetadata
 from .auth import auth_provider, email_validation_is_required
@@ -35,6 +35,7 @@ from .notifications import notifications
 from .socketio import socketio
 from .misc import SiteAnon, engine, re_amention, mail, talisman, limiter
 from .misc import logging_init_app, get_locale, babel
+from .email_manager import EmailManager
 
 # /!\ FOR DEBUGGING ONLY /!\
 # from werkzeug.middleware.profiler import ProfilerMiddleware
@@ -69,10 +70,10 @@ def create_app(config=None):
         "default-src": ["'self'"],
         "child-src": ["'self'"]
         + [f"https://{url}" for url in config.site.expando_sites],
-        "img-src": ["'self'", "data:", "https:"],
+        "img-src": ["'self'", "data:", "https:", "blob:"],
         "media-src": ["'self'", "https:"],
         "style-src": ["'self'", "'unsafe-inline'"],
-        "connect-src": ["'self'"],
+        "connect-src": ["'self'"] + config.site.extra_connect_src,
     }
 
     if "server_name" in config.site.keys():
@@ -161,19 +162,23 @@ def create_app(config=None):
     if config.site.trusted_proxy_count != 0:
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=config.site.trusted_proxy_count)
 
+    # Start running email manager unless the config says otherwise
+    if config.site.email_forwarded_notifications:
+        EmailManager()
+
     # Don't let Werkzeug make the Location header into a full URL, because relative
     # paths are legal in Location and because Werkzeug gets it wrong if the app is
     # behind a load balancer which terminates SSL.
-    BaseResponse.autocorrect_location_header = False
+    Response.autocorrect_location_header = False
 
     @app.before_request
     def before_request():
-        """ Called before the request is processed. Used to time the request """
+        """Called before the request is processed. Used to time the request"""
         g.start = time.time()
 
     @app.after_request
     def after_request(response):
-        """ Called after the request is processed. Used to time the request """
+        """Called after the request is processed. Used to time the request"""
         if hasattr(g, "start"):
             diff = int((time.time() - float(g.start)) * 1000)
         else:
@@ -207,7 +212,7 @@ def create_app(config=None):
 
     @app.context_processor
     def utility_processor():
-        """ Here we set some useful stuff for templates """
+        """Here we set some useful stuff for templates"""
         # TODO: Kill this huge mass of shit
         return {
             "loginform": LoginForm(),
@@ -237,6 +242,12 @@ def load_user(user_id):
     splits = user_id.split("$")
     user = User.get(User.uid == splits[0])
     resets = 0 if len(splits) == 1 else int(splits[1])
+
+    if config.auth.provider == "KEYCLOAK" and config.auth.keycloak.use_oidc:
+        # If using OIDC, check if the refresh token has expired...
+        if session.get("exp_time", 0) < time.time():
+            return None
+
     if resets == user.resets:
         return misc.load_user(user.uid)
     else:

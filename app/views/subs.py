@@ -134,7 +134,7 @@ def create_post(ptype, sub):
         return error_response(_("Please select a flair for your post."))
 
     flair = None
-    if form.flair.data != "":
+    if form.flair.data:
         flair = [f.text for f in flairs if str(f.xid) == form.flair.data]
         if (user_must_flair or user_can_flair) and not flair:
             return error_response(_("Invalid flair."))
@@ -368,7 +368,7 @@ def create_post(ptype, sub):
 
 @bp.route("/random")
 def random_sub():
-    """ Here we get a random sub """
+    """Here we get a random sub"""
     rsub = Sub.select(Sub.name).order_by(pdb.random()).limit(1)
     return redirect(url_for("sub.view_sub", sub=rsub.get().name))
 
@@ -377,7 +377,7 @@ def random_sub():
 @login_required
 @ratelimit(POSTING_LIMIT)
 def create_sub():
-    """ Here we can view the create sub form """
+    """Here we can view the create sub form"""
     form = CreateSubForm()
     if not form.validate():
         return engine.get_template("sub/create.html").render(
@@ -416,7 +416,7 @@ def create_sub():
     level = misc.get_user_level(current_user.uid)[0]
     if not config.app.development:
         min_level = config.site.sub_creation_min_level
-        if min_level != 0 and level <= min_level and not current_user.admin:
+        if min_level != 0 and level < min_level and not current_user.admin:
             return engine.get_template("sub/create.html").render(
                 {
                     "error": _(

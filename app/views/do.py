@@ -67,7 +67,6 @@ from ..models import (
     SubBan,
     SubPostCommentHistory,
     InviteCode,
-    Notification,
     SubPostContentHistory,
 )
 from ..models import (
@@ -122,9 +121,13 @@ def ratelimit_handler(*__):
 @do.route("/do/logout", methods=["POST"])
 @login_required
 def logout():
-    """ Logout endpoint """
+    """Logout endpoint"""
     form = LogOutForm()
     if form.validate():
+        if config.auth.provider == "KEYCLOAK" and config.auth.keycloak.use_oidc:
+            auth_provider.logout()
+
+        session.pop("apriv", None)
         logout_user()
 
     return redirect(url_for("home.index"))
@@ -133,7 +136,7 @@ def logout():
 @do.route("/do/search", defaults={"stype": "home.search"}, methods=["POST"])
 @do.route("/do/search/<stype>", methods=["POST"])
 def search(stype):
-    """ Search endpoint """
+    """Search endpoint"""
     if stype not in (
         "home.search",
         "home.subs",
@@ -276,7 +279,7 @@ def delete_user():
 @do.route("/do/edit_user", methods=["POST"])
 @login_required
 def edit_user():
-    """ Edit user endpoint """
+    """Edit user endpoint"""
     form = EditUserForm()
     if form.validate():
         if form.subtheme.data != "":
@@ -306,7 +309,7 @@ def edit_user():
 @do.route("/do/delete_post", methods=["POST"])
 @login_required
 def delete_post():
-    """ Post deletion endpoint """
+    """Post deletion endpoint"""
     form = DeletePost()
 
     if form.validate():
@@ -314,6 +317,11 @@ def delete_post():
             post = SubPost.get(SubPost.pid == form.post.data)
         except SubPost.DoesNotExist:
             return jsonify(status="error", error=[_("Post does not exist")])
+
+        sub = Sub.get(Sub.sid == post.sid)
+
+        if sub.status != 0 and not current_user.is_admin():
+            return jsonify(status="error", error=[_("Sub is disabled")])
 
         if post.deleted != 0:
             return jsonify(status="error", error=[_("Post was already deleted")])
@@ -332,17 +340,35 @@ def delete_post():
                 return jsonify(
                     status="error", error=[_("Cannot delete without reason")]
                 )
-            deletion = 2 if current_user.is_mod(post.sid) else 3
-            # notify user.
-            Notification.create(
-                type="POST_DELETE",
-                sub=post.sid,
-                post=post.pid,
-                content="Reason: " + form.reason.data,
-                sender=current_user.uid,
-                target=post.uid,
-            )
+            as_admin = not current_user.is_mod(post.sid)
+            postlink, sublink = misc.post_and_sub_markdown_links(post)
+            if as_admin:
+                deletion = 3
+                content = _(
+                    "The site administrators deleted your post %(postlink)s from %(sublink)s. "
+                    "Reason: %(reason)s",
+                    sublink=sublink,
+                    postlink=postlink,
+                    reason=form.reason.data,
+                )
+            else:
+                deletion = 2
+                content = _(
+                    "The moderators of %(sublink)s deleted your post %(postlink)s. "
+                    "Reason: %(reason)s",
+                    sublink=sublink,
+                    postlink=postlink,
+                    reason=form.reason.data,
+                )
 
+            misc.create_notification_message(
+                mfrom=current_user.uid,
+                as_admin=as_admin,
+                sub=post.sid.get_id(),
+                to=post.uid.get_id(),
+                subject=_("Moderation action: post deleted"),
+                content=content,
+            )
             misc.create_sublog(
                 misc.LOG_TYPE_SUB_DELETE_POST,
                 current_user.uid,
@@ -355,17 +381,15 @@ def delete_post():
                 target=post.uid,
             )
 
-            related_reports = SubPostReport.select().where(
-                SubPostReport.pid == post.pid
+        related_reports = SubPostReport.select().where(SubPostReport.pid == post.pid)
+        for report in related_reports:
+            misc.create_reportlog(
+                misc.LOG_TYPE_REPORT_POST_DELETED,
+                current_user.uid,
+                report.id,
+                log_type="post",
+                desc=form.reason.data,
             )
-            for report in related_reports:
-                misc.create_reportlog(
-                    misc.LOG_TYPE_REPORT_POST_DELETED,
-                    current_user.uid,
-                    report.id,
-                    log_type="post",
-                    desc=form.reason.data,
-                )
 
         # time limited to prevent socket spam
         if (
@@ -418,7 +442,7 @@ def delete_post():
 @do.route("/do/undelete_post", methods=["POST"])
 @login_required
 def undelete_post():
-    """ Post un-deletion endpoint """
+    """Post un-deletion endpoint"""
     form = UndeletePost()
 
     if form.validate():
@@ -426,6 +450,11 @@ def undelete_post():
             post = SubPost.get(SubPost.pid == form.post.data)
         except SubPost.DoesNotExist:
             return jsonify(status="error", error=[_("Post does not exist")])
+
+        sub = Sub.get(Sub.sid == post.sid)
+
+        if sub.status != 0 and not current_user.is_admin():
+            return jsonify(status="error", error=[_("Sub is disabled")])
 
         if post.deleted == 0:
             return jsonify(status="error", error=[_("Post is not deleted")])
@@ -444,14 +473,33 @@ def undelete_post():
         if not form.reason.data:
             return jsonify(status="error", error=[_("Cannot un-delete without reason")])
         deletion = 0
-        # notify user.
-        Notification.create(
-            type="POST_UNDELETE",
-            sub=post.sid,
-            post=post.pid,
-            content="Reason: " + form.reason.data,
-            sender=current_user.uid,
-            target=post.uid,
+        as_admin = not current_user.is_mod(post.sid)
+        postlink, sublink = misc.post_and_sub_markdown_links(post)
+
+        if as_admin:
+            content = _(
+                "The site administrators restored your post %(postlink)s to %(sublink)s. "
+                "Reason: %(reason)s",
+                sublink=sublink,
+                postlink=postlink,
+                reason=form.reason.data,
+            )
+        else:
+            content = _(
+                "The moderators of %(sublink)s restored your post %(postlink)s. "
+                "Reason: %(reason)s",
+                sublink=sublink,
+                postlink=postlink,
+                reason=form.reason.data,
+            )
+
+        misc.create_notification_message(
+            mfrom=current_user.uid,
+            as_admin=as_admin,
+            sub=post.sid.get_id(),
+            to=post.uid.get_id(),
+            subject=_("Moderation action: post restored"),
+            content=content,
         )
 
         misc.create_sublog(
@@ -488,11 +536,14 @@ def undelete_post():
 @do.route("/do/edit_sub_css/<sub>", methods=["POST"])
 @login_required
 def edit_sub_css(sub):
-    """ Edit sub endpoint """
+    """Edit sub endpoint"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
+
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
 
     if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
         return jsonify(status="error", error=[_("Not authorized")])
@@ -521,11 +572,15 @@ def edit_sub_css(sub):
 @do.route("/do/edit_sub/<sub>", methods=["POST"])
 @login_required
 def edit_sub(sub):
-    """ Edit sub endpoint """
+    """Edit sub endpoint"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
+
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
+
     if current_user.is_mod(sub.sid, 1) or current_user.is_admin():
         form = EditSubForm()
         if form.validate():
@@ -587,6 +642,9 @@ def mod_assign_flair(sub):
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
 
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
+
     if not current_user.is_mod(sub.sid) and not current_user.is_admin():
         return jsonify(status="error", error=[_("Not authorized")])
 
@@ -644,6 +702,9 @@ def set_user_flair_text(sub):
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
 
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
+
     form = SetOwnUserFlairForm()
 
     if not form.validate():
@@ -678,6 +739,9 @@ def set_user_flair_choice(sub, flair_id):
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
+
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
 
     sub_info = misc.getSubData(sub.sid)
 
@@ -715,6 +779,9 @@ def delete_user_own_flair(sub):
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
 
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
+
     sub_info = misc.getSubData(sub.sid)
 
     if (
@@ -737,11 +804,14 @@ def delete_user_own_flair(sub):
 @do.route("/do/flair/<sub>/<pid>/<fl>", methods=["POST"])
 @login_required
 def assign_post_flair(sub, pid, fl):
-    """ Assign a post's flair """
+    """Assign a post's flair"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
+
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
 
     try:
         post = SubPost.get(SubPost.pid == pid)
@@ -770,11 +840,14 @@ def assign_post_flair(sub, pid, fl):
 
 @do.route("/do/remove_post_flair/<sub>/<pid>", methods=["POST"])
 def remove_post_flair(sub, pid):
-    """ Deletes a post's flair """
+    """Deletes a post's flair"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
+
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
 
     try:
         post = SubPost.get(SubPost.pid == pid)
@@ -800,7 +873,7 @@ def remove_post_flair(sub, pid):
 @do.route("/do/edit_mod", methods=["POST"])
 @login_required
 def edit_mod():
-    """ Admin endpoint used for sub transfers. """
+    """Admin endpoint used for sub transfers."""
     if not current_user.is_admin():
         abort(403)
     form = EditModForm()
@@ -809,6 +882,9 @@ def edit_mod():
         sub = Sub.get(fn.Lower(Sub.name) == form.sub.data.lower())
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
+
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
 
     try:
         user = User.get(fn.Lower(User.name) == form.user.data.lower())
@@ -848,7 +924,7 @@ def edit_mod():
 @do.route("/do/assign_userbadge", methods=["POST"])
 @login_required
 def assign_userbadge():
-    """ Admin endpoint used for assigning a user badge. """
+    """Admin endpoint used for assigning a user badge."""
     if not current_user.is_admin():
         abort(403)
     badgeTuple = [(badge.bid, badge.name) for badge in badges]
@@ -874,7 +950,7 @@ def assign_userbadge():
 @do.route("/do/remove_userbadge", methods=["POST"])
 @login_required
 def remove_userbadge():
-    """ Admin endpoint used for removing a user badge. """
+    """Admin endpoint used for removing a user badge."""
     if not current_user.is_admin():
         abort(403)
     badgeList = [(badge.bid, badge.name) for badge in badges]
@@ -900,11 +976,14 @@ def remove_userbadge():
 @do.route("/do/subscribe/<sid>", methods=["POST"])
 @login_required
 def subscribe_to_sub(sid):
-    """ Subscribe to sub """
+    """Subscribe to sub"""
     try:
-        Sub.get(Sub.sid == sid)
+        sub = Sub.get(Sub.sid == sid)
     except Sub.DoesNotExist:
         return jsonify(status="error", error=_("sub not found"))
+
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
 
     if current_user.has_subscribed(sid):
         return jsonify(status="ok", message=_("already subscribed"))
@@ -930,7 +1009,7 @@ def subscribe_to_sub(sid):
 @do.route("/do/unsubscribe/<sid>", methods=["POST"])
 @login_required
 def unsubscribe_from_sub(sid):
-    """ Unsubscribe from sub """
+    """Unsubscribe from sub"""
     try:
         Sub.get(Sub.sid == sid)
     except Sub.DoesNotExist:
@@ -956,7 +1035,7 @@ def unsubscribe_from_sub(sid):
 @do.route("/do/block/<sid>", methods=["POST"])
 @login_required
 def block_sub(sid):
-    """ Block sub """
+    """Block sub"""
     try:
         sub = Sub.get(Sub.sid == sid)
     except Sub.DoesNotExist:
@@ -986,7 +1065,7 @@ def block_sub(sid):
 @do.route("/do/unblock/<sid>", methods=["POST"])
 @login_required
 def unblock_sub(sid):
-    """ Unblock sub """
+    """Unblock sub"""
     try:
         sub = Sub.get(Sub.sid == sid)
     except Sub.DoesNotExist:
@@ -1009,11 +1088,15 @@ def unblock_sub(sid):
 
 @do.route("/do/get_txtpost/<pid>", methods=["GET"])
 def get_txtpost(pid):
-    """ Sub text post expando get endpoint """
+    """Sub text post expando get endpoint"""
     try:
         post = misc.getSinglePost(pid)
     except SubPost.DoesNotExist:
         return abort(404)
+
+    sub = Sub.get(Sub.sid == post["sid"])
+    if sub.status != 0 and not current_user.is_admin():
+        abort(403)
 
     post["visibility"] = ""
     if post["deleted"] == 1:
@@ -1100,7 +1183,7 @@ def get_txtpost(pid):
 @do.route("/do/distinguish", methods=["POST"])
 @login_required
 def distinguish():
-    """ Allows a mod or admin to distinguish a comment or post """
+    """Allows a mod or admin to distinguish a comment or post"""
 
     form = DistinguishForm()
     cid = form.cid.data
@@ -1145,7 +1228,7 @@ def distinguish():
 @do.route("/do/lock_comments/<int:post>", methods=["POST"])
 @login_required
 def toggle_lock_comments(post):
-    """ Allows a mod or admin to lock a post to new comments. """
+    """Allows a mod or admin to lock a post to new comments."""
     try:
         post = SubPost.get(SubPost.pid == post)
     except SubPost.DoesNotExist:
@@ -1169,7 +1252,16 @@ def toggle_lock_comments(post):
             smd.value = "0" if smd.value == "1" else "1"
             smd.save()
         except SubPostMetadata.DoesNotExist:
-            SubPostMetadata.create(pid=post.pid, key="lock-comments", value="1")
+            smd = SubPostMetadata.create(pid=post.pid, key="lock-comments", value="")
+
+        misc.create_sublog(
+            misc.LOG_TYPE_LOCK_COMMENTS,
+            current_user.uid,
+            post.sid_id,
+            comment=smd.value,
+            link=url_for("site.view_post_inbox", pid=post.pid),
+            target=post.uid,
+        )
 
     return jsonify(status="ok")
 
@@ -1177,13 +1269,18 @@ def toggle_lock_comments(post):
 @do.route("/do/edit_txtpost/<pid>", methods=["POST"])
 @login_required
 def edit_txtpost(pid):
-    """ Sub text post creation endpoint """
+    """Sub text post creation endpoint"""
     form = EditSubTextPostForm()
     if form.validate():
         try:
             post = SubPost.get(SubPost.pid == pid)
         except SubPost.DoesNotExist:
             return jsonify(status="error", error=[_("Post not found")])
+
+        sub = Sub.get(Sub.sid == post.sid)
+
+        if sub.status != 0 and not current_user.is_admin():
+            return jsonify(status="error", error=[_("Sub is disabled")])
 
         if post.deleted != 0:
             return jsonify(status="error", error=[_("Post was deleted")])
@@ -1213,7 +1310,7 @@ def edit_txtpost(pid):
 @login_required
 @ratelimit(POSTING_LIMIT)
 def grab_title():
-    """ Safely grabs the <title> from a page """
+    """Safely grabs the <title> from a page"""
     url = request.json.get("u").strip()
     if not url:
         abort(400)
@@ -1224,7 +1321,7 @@ def grab_title():
 @login_required
 @ratelimit(POSTING_LIMIT)
 def create_comment(pid):
-    """ Here we send comments. """
+    """Here we send comments."""
     form = PostComment()
     if form.validate():
         if pid == "0":
@@ -1261,6 +1358,10 @@ def create_comment(pid):
             sub = Sub.get(Sub.sid == post.sid_id)
         except Sub.DoesNotExist:
             return jsonify(status="error", error=_("Internal error")), 400
+
+        if sub.status != 0 and not current_user.is_admin():
+            return jsonify(status="error", error=[_("Sub is disabled")])
+
         if current_user.is_subban(sub):
             return (
                 jsonify(
@@ -1321,7 +1422,7 @@ def create_comment(pid):
         )
         comment_text = BeautifulSoup(
             misc.our_markdown(comment.content.decode()), features="lxml"
-        ).findAll(text=True)
+        ).findAll(string=True)
         comment_res = misc.word_truncate("".join(comment_text).replace("\n", " "), 250)
         defaults = [
             x.value for x in SiteMetadata.select().where(SiteMetadata.key == "default")
@@ -1405,7 +1506,7 @@ def create_comment(pid):
 @ratelimit(POSTING_LIMIT)
 @login_required
 def create_sendmsg():
-    """ User PM message creation endpoint """
+    """User PM message creation endpoint"""
     form = CreateUserMessageForm()
     if form.validate():
         try:
@@ -1427,7 +1528,7 @@ def create_sendmsg():
 @ratelimit(POSTING_LIMIT)
 @login_required
 def create_replymsg():
-    """ User PM message reply creation endpoint """
+    """User PM message reply creation endpoint"""
     form = CreateUserMessageReplyForm()
     if form.validate():
         try:
@@ -1448,7 +1549,7 @@ def create_replymsg():
 @do.route("/do/ban_user_sub/<sub>", methods=["POST"])
 @login_required
 def ban_user_sub(sub):
-    """ Ban user from sub endpoint """
+    """Ban user from sub endpoint"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -1492,40 +1593,39 @@ def ban_user_sub(sub):
                     status="error", error=[_("Expiration date is in the past")]
                 )
 
+        if misc.is_sub_banned(sub, uid=user.uid):
+            return jsonify(status="error", error=[_("Already banned")])
+
+        sublink = misc.sub_markdown_link(sub.name)
         if expires is None:
             if not current_user.is_mod(sub.sid, 1):
                 return jsonify(
                     status="error", error=[_("Janitors may only create temporary bans")]
                 )
+            subject = _("Moderation action: permanent ban")
             content = _(
-                "You have been permanently banned. Reason: %(reason)s",
+                "You have been permanently banned from %(sublink)s. Reason: %(reason)s",
+                sublink=sublink,
                 reason=form.reason.data,
             )
         else:
+            subject = _("Moderation action: temporary ban")
             content = ngettext(
-                "You have been banned for %(num)d day. Reason: %(reason)s",
-                "You have been banned for %(num)d days. Reason: %(reason)s",
+                "You have been banned from %(sublink)s for %(num)d day. Reason: %(reason)s",
+                "You have been banned from %(sublink)s for %(num)d days. Reason: %(reason)s",
                 days,
+                sublink=sublink,
                 reason=form.reason.data,
             )
 
-        if misc.is_sub_banned(sub, uid=user.uid):
-            return jsonify(status="error", error=[_("Already banned")])
-
-        Notification.create(
-            type="SUB_BAN",
+        misc.create_notification_message(
+            mfrom=current_user.uid,
+            as_admin=False,
             sub=sub.sid,
-            sender=current_user.uid,
+            to=user.uid,
+            subject=subject,
             content=content,
-            target=user.uid,
         )
-        socketio.emit(
-            "notification",
-            {"count": misc.get_notification_count(user.uid)},
-            namespace="/snt",
-            room="user" + user.uid,
-        )
-
         SubBan.create(
             sid=sub.sid,
             uid=user.uid,
@@ -1593,11 +1693,14 @@ def ban_user_sub(sub):
 @do.route("/do/inv_mod/<sub>", methods=["POST"])
 @login_required
 def inv_mod(sub):
-    """ User PM for Mod2 invite endpoint """
+    """User PM for Mod2 invite endpoint"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
+
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
 
     try:
         SubMod.get(
@@ -1656,12 +1759,19 @@ def inv_mod(sub):
                     status="error", error=[_("User can't mod more than 20 subs")]
                 )
 
-            if form.level.data == "1":
-                mtype = "MOD_INVITE"
-            else:
-                mtype = "MOD_INVITE_JANITOR"
-            notifications.send(
-                mtype, sub=sub.sid, sender=current_user.uid, target=user.uid
+            misc.create_notification_message(
+                mfrom=current_user.uid,
+                as_admin=not is_owner,
+                sub=sub.sid,
+                to=user.uid,
+                subject=_("Invitation to become a moderator"),
+                content=_(
+                    "%(userlink)s invited you to moderate %(sublink)s. "
+                    "Please [click here](%(invitelink)s) to accept or reject the invitation.",
+                    userlink=misc.user_markdown_link(current_user.name),
+                    sublink=misc.sub_markdown_link(sub.name),
+                    invitelink=url_for("sub.edit_sub_mods", sub=sub.name),
+                ),
             )
 
             SubMod.create(
@@ -1693,6 +1803,10 @@ def remove_sub_ban(sub, user):
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
+
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
+
     form = CsrfTokenOnlyForm()
     if form.validate():
         if current_user.is_mod(sub.sid, 2) or current_user.is_admin():
@@ -1723,28 +1837,26 @@ def remove_sub_ban(sub, user):
             sb.effective = False
             sb.expires = datetime.datetime.utcnow()
             sb.save()
+            as_admin = not current_user.is_mod(sub.sid, 1) and current_user.is_admin()
 
-            Notification.create(
-                type="SUB_UNBAN", sub=sub.sid, sender=current_user.uid, target=user.uid
-            )
-            socketio.emit(
-                "notification",
-                {"count": misc.get_notification_count(user.uid)},
-                namespace="/snt",
-                room="user" + user.uid,
+            misc.create_notification_message(
+                mfrom=current_user.uid,
+                as_admin=as_admin,
+                sub=sub.sid,
+                to=user.uid,
+                subject=_("Moderation action: ban removed"),
+                content=_(
+                    "You are no longer banned from posting in %(sublink)s.",
+                    sublink=misc.sub_markdown_link(sub.name),
+                ),
             )
 
-            admin = (
-                True
-                if (not current_user.is_mod(sub.sid, 1) and current_user.is_admin())
-                else False
-            )
             misc.create_sublog(
                 misc.LOG_TYPE_SUB_UNBAN,
                 current_user.uid,
                 sub.sid,
                 target=user.uid,
-                admin=admin,
+                admin=as_admin,
             )
 
             related_post_reports = (
@@ -1787,7 +1899,7 @@ def remove_sub_ban(sub, user):
 @do.route("/do/remove_mod2/<sub>/<user>", methods=["POST"])
 @login_required
 def remove_mod2(sub, user):
-    """ Remove Mod2 """
+    """Remove Mod2"""
     try:
         user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
@@ -1796,6 +1908,10 @@ def remove_mod2(sub, user):
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
+
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
+
     form = CsrfTokenOnlyForm()
     if form.validate():
         isTopMod = current_user.is_mod(sub.sid, 0)
@@ -1836,7 +1952,7 @@ def remove_mod2(sub, user):
 @do.route("/do/revoke_mod2inv/<sub>/<user>", methods=["POST"])
 @login_required
 def revoke_mod2inv(sub, user):
-    """ revoke Mod2 inv """
+    """revoke Mod2 inv"""
     try:
         user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
@@ -1850,7 +1966,7 @@ def revoke_mod2inv(sub, user):
         isTopMod = current_user.is_mod(sub.sid, 0)
         if isTopMod or current_user.is_admin():
             try:
-                x = SubMod.get(
+                submod = SubMod.get(
                     (SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & SubMod.invite
                 )
             except SubMetadata.DoesNotExist:
@@ -1858,14 +1974,27 @@ def revoke_mod2inv(sub, user):
                     status="error",
                     error=[_("User has not been invited to moderate the sub")],
                 )
-            x.delete_instance()
+
+            misc.create_notification_message(
+                mfrom=current_user.uid,
+                as_admin=not isTopMod,
+                sub=sub.sid,
+                to=user.uid,
+                subject=_("Moderation invitation revoked"),
+                content=_(
+                    "%(userlink)s cancelled your invitation to moderate %(sublink)s.",
+                    userlink=misc.user_markdown_link(current_user.name),
+                    sublink=misc.sub_markdown_link(sub.name),
+                ),
+            )
+            submod.delete_instance()
 
             misc.create_sublog(
                 misc.LOG_TYPE_SUB_MOD_INV_CANCEL,
                 current_user.uid,
                 sub.sid,
                 target=user.uid,
-                admin=True if (not isTopMod and current_user.is_admin()) else False,
+                admin=not isTopMod,
             )
 
             return jsonify(status="ok")
@@ -1877,7 +2006,7 @@ def revoke_mod2inv(sub, user):
 @do.route("/do/accept_modinv/<sub>/<user>", methods=["POST"])
 @login_required
 def accept_modinv(sub, user):
-    """ Accept mod invite """
+    """Accept mod invite"""
     try:
         user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
@@ -1886,6 +2015,10 @@ def accept_modinv(sub, user):
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
+
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
+
     form = CsrfTokenOnlyForm()
     if form.validate():
         try:
@@ -1933,7 +2066,7 @@ def accept_modinv(sub, user):
 @do.route("/do/refuse_mod2inv/<sub>", methods=["POST"])
 @login_required
 def refuse_mod2inv(sub):
-    """ refuse Mod2 """
+    """refuse Mod2"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -1966,12 +2099,11 @@ def refuse_mod2inv(sub):
 @do.route("/do/read_pm/<mid>", methods=["POST"])
 @login_required
 def read_pm(mid):
-    """ Mark PM as read """
+    """Mark PM as read"""
     try:
         Message.get(Message.mid == mid)
     except Message.DoesNotExist:
         return jsonify(status="error", error=[_("Message not found")])
-
     try:
         um = UserUnreadMessage.get(
             (UserUnreadMessage.uid == current_user.uid) & (UserUnreadMessage.mid == mid)
@@ -1992,7 +2124,7 @@ def read_pm(mid):
 @do.route("/do/readall_msgs", methods=["POST"])
 @login_required
 def readall_msgs():
-    """ Mark all messages in the inbox as read """
+    """Mark all messages in the inbox as read"""
     unreads = misc.select_unread_messages(current_user.uid, UserUnreadMessage.id)
     UserUnreadMessage.delete().where(
         UserUnreadMessage.id << [u["id"] for u in unreads.dicts()]
@@ -2010,7 +2142,7 @@ def readall_msgs():
 @do.route("/do/delete_pm/<mid>", methods=["POST"])
 @login_required
 def delete_pm(mid):
-    """ Delete PM """
+    """Delete PM"""
     try:
         message = Message.get(Message.mid == mid)
         if message.receivedby_id != current_user.uid:
@@ -2051,6 +2183,10 @@ def edit_title():
         except SubPost.DoesNotExist:
             return jsonify(status="error", error=_("Post does not exist"))
         sub = Sub.get(Sub.sid == post.sid)
+
+        if sub.status != 0 and not current_user.is_admin():
+            return jsonify(status="error", error=[_("Sub is disabled")])
+
         if current_user.is_subban(sub):
             return jsonify(status="error", error=_("You are banned on this sub."))
 
@@ -2081,7 +2217,7 @@ def edit_title():
 @do.route("/do/save_pm/<mid>", methods=["POST"])
 @login_required
 def save_pm(mid):
-    """ Save/Archive PM """
+    """Save/Archive PM"""
     try:
         message = Message.get(Message.mid == mid)
         if message.receivedby_id != current_user.uid:
@@ -2102,7 +2238,7 @@ def save_pm(mid):
 @do.route("/do/admin/deleteannouncement", methods=["POST"])
 @login_required
 def deleteannouncement():
-    """ Removes the current announcement """
+    """Removes the current announcement"""
     if not current_user.is_admin():
         abort(403)
 
@@ -2133,7 +2269,7 @@ def deleteannouncement():
 @do.route("/do/makeannouncement", methods=["POST"])
 @login_required
 def make_announcement():
-    """ Flagging post as announcement - not api """
+    """Flagging post as announcement - not api"""
     if not current_user.is_admin():
         abort(403)
 
@@ -2178,7 +2314,7 @@ def make_announcement():
 
 @do.route("/do/ban_domain/<domain_type>", methods=["POST"])
 def ban_domain(domain_type):
-    """ Add domain to ban list """
+    """Add domain to ban list"""
     if not current_user.is_admin():
         abort(403)
     if domain_type == "email":
@@ -2208,7 +2344,7 @@ def ban_domain(domain_type):
 
 @do.route("/do/remove_banned_domain/<domain_type>/<domain>", methods=["POST"])
 def remove_banned_domain(domain_type, domain):
-    """ Remove domain if ban list """
+    """Remove domain if ban list"""
     if not current_user.is_admin():
         abort(403)
     if domain_type == "email":
@@ -2236,7 +2372,7 @@ def remove_banned_domain(domain_type, domain):
 @do.route("/do/admin/enable_posting", methods=["POST"])
 @login_required
 def enable_posting():
-    """ Emergency Mode: disable posting """
+    """Emergency Mode: disable posting"""
     if not current_user.is_admin():
         abort(404)
 
@@ -2258,7 +2394,7 @@ def enable_posting():
 @do.route("/do/admin/enable_registration", methods=["POST"])
 @login_required
 def enable_registration():
-    """ Isolation Mode: disable registration """
+    """Isolation Mode: disable registration"""
     if not current_user.is_admin():
         abort(404)
 
@@ -2280,7 +2416,7 @@ def enable_registration():
 @do.route("/do/admin/require_captchas", methods=["POST"])
 @login_required
 def enable_captchas():
-    """ Enable or disable the captcha solving requirement. """
+    """Enable or disable the captcha solving requirement."""
     if not current_user.is_admin():
         abort(404)
 
@@ -2300,7 +2436,7 @@ def enable_captchas():
 
 @do.route("/do/save_post/<pid>", methods=["POST"])
 def save_post(pid):
-    """ Save a post to your Saved Posts """
+    """Save a post to your Saved Posts"""
     try:
         SubPost.get(SubPost.pid == pid)
     except SubPost.DoesNotExist:
@@ -2315,7 +2451,7 @@ def save_post(pid):
 
 @do.route("/do/remove_saved_post/<pid>", methods=["POST"])
 def remove_saved_post(pid):
-    """ Remove a saved post """
+    """Remove a saved post"""
     try:
         SubPost.get(SubPost.pid == pid)
     except SubPost.DoesNotExist:
@@ -2331,7 +2467,7 @@ def remove_saved_post(pid):
 
 @do.route("/do/useinvitecode", methods=["POST"])
 def use_invite_code():
-    """ Enable invite code to register """
+    """Enable invite code to register"""
     if not current_user.is_admin():
         abort(404)
 
@@ -2388,7 +2524,7 @@ def invite_codes():
 
 @do.route("/do/stick/<int:post>", methods=["POST"])
 def toggle_sticky(post):
-    """ Toggles post stickyness """
+    """Toggles post stickyness"""
     try:
         post = SubPost.get(SubPost.pid == post)
     except SubPost.DoesNotExist:
@@ -2436,7 +2572,7 @@ def toggle_sticky(post):
 
 @do.route("/do/stick_comment/<comment>", methods=["POST"])
 def set_sticky_comment(comment):
-    """ Set or unset comment stickyness. """
+    """Set or unset comment stickyness."""
     try:
         comment = (
             SubPostComment.select().join(SubPost).where(SubPostComment.cid == comment)
@@ -2473,7 +2609,7 @@ def set_sticky_comment(comment):
 
 @do.route("/do/sticky_sort/<int:post>", methods=["POST"])
 def toggle_sort(post):
-    """ Toggles comment sort for a post. """
+    """Toggles comment sort for a post."""
     try:
         post = SubPost.get(SubPost.pid == post)
     except SubPost.DoesNotExist:
@@ -2523,7 +2659,7 @@ def toggle_sort(post):
 @do.route("/do/flair/<sub>/delete_user", methods=["POST"])
 @login_required
 def delete_user_flair(sub):
-    """ Removes a flair (from edit flair page) """
+    """Removes a flair (from edit flair page)"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -2551,7 +2687,7 @@ def delete_user_flair(sub):
 @do.route("/do/flair/<sub>/create_user", methods=["POST"])
 @login_required
 def create_user_flair(sub):
-    """ Creates a new flair (from edit flair page) """
+    """Creates a new flair (from edit flair page)"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -2579,7 +2715,7 @@ def create_user_flair(sub):
 @do.route("/do/flair/<sub>/delete", methods=["POST"])
 @login_required
 def delete_flair(sub):
-    """ Removes a flair (from edit flair page) """
+    """Removes a flair (from edit flair page)"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -2605,7 +2741,7 @@ def delete_flair(sub):
 @do.route("/do/flair/<sub>/create", methods=["POST"])
 @login_required
 def create_flair(sub):
-    """ Creates a new flair (from edit flair page) """
+    """Creates a new flair (from edit flair page)"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -2629,7 +2765,7 @@ def create_flair(sub):
 @do.route("/do/rule/<sub>/delete", methods=["POST"])
 @login_required
 def delete_rule(sub):
-    """ Removes a rule (from edit rule page) """
+    """Removes a rule (from edit rule page)"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -2654,7 +2790,7 @@ def delete_rule(sub):
 @do.route("/do/rule/<sub>/create", methods=["POST"])
 @login_required
 def create_rule(sub):
-    """ Creates a new rule (from edit rule page) """
+    """Creates a new rule (from edit rule page)"""
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
@@ -2703,7 +2839,7 @@ def delete_recovery_token(token):
 @gevent_required  # Contacts Keycloak if configured.
 @ratelimit(AUTH_LIMIT)
 def reset():
-    """ Password reset. Takes key and uid and changes password """
+    """Password reset. Takes key and uid and changes password"""
     if current_user.is_authenticated:
         abort(403)
 
@@ -2740,7 +2876,7 @@ def reset():
 @do.route("/do/edit_comment", methods=["POST"])
 @login_required
 def edit_comment():
-    """ Edits a comment """
+    """Edits a comment"""
     form = forms.EditCommentForm()
     if form.validate():
         try:
@@ -2753,6 +2889,10 @@ def edit_comment():
 
         post = SubPost.get(SubPost.pid == comment.pid)
         sub = Sub.get(Sub.sid == post.sid)
+
+        if sub.status != 0 and not current_user.is_admin():
+            return jsonify(status="error", error=[_("Sub is disabled")])
+
         if current_user.is_subban(sub):
             return jsonify(status="error", error=[_("You are banned on this sub.")])
 
@@ -2783,7 +2923,7 @@ def edit_comment():
 @do.route("/do/delete_comment", methods=["POST"])
 @login_required
 def delete_comment():
-    """ deletes a comment """
+    """deletes a comment"""
     form = forms.DeleteCommentForm()
 
     if form.validate():
@@ -2795,35 +2935,69 @@ def delete_comment():
         if comment.status:
             return jsonify(status="error", error=_("Comment is already deleted"))
 
-        sub = (
-            Sub.select(Sub.sid, Sub.name)
-            .join(SubPost)
+        post = (
+            SubPost.select(SubPost.pid, SubPost.title, Sub.sid, Sub.name)
+            .join(Sub)
             .where(SubPost.pid == comment.pid)
             .get()
         )
+        sid = post.sid.get_id()
+        sub_name = post.sid.name
+        sub = Sub.get(Sub.sid == post.sid.get_id())
+
+        if sub.status != 0 and not current_user.is_admin():
+            return jsonify(status="error", error=[_("Sub is disabled")])
 
         if comment.uid_id != current_user.uid and not (
-            current_user.is_admin() or current_user.is_mod(sub.sid)
+            current_user.is_admin() or current_user.is_mod(sid)
         ):
             return jsonify(status="error", error=_("Not authorized"))
 
+        postlink, sublink = misc.post_and_sub_markdown_links(post)
+
         if comment.uid_id != current_user.uid and (
-            current_user.is_admin() or current_user.is_mod(sub.sid)
+            current_user.is_admin() or current_user.is_mod(sid)
         ):
+            as_admin = not current_user.is_mod(sid)
+            if as_admin:
+                comment.status = 3
+                content = _(
+                    "The site administrators deleted a comment you made on the post %(postlink)s. Reason: %(reason)s",
+                    postlink=postlink,
+                    reason=form.reason.data,
+                )
+            else:
+                comment.status = 2
+                content = _(
+                    "The moderators of %(sublink)s deleted a comment you made on the post %(postlink)s. "
+                    "Reason: %(reason)s",
+                    sublink=sublink,
+                    postlink=postlink,
+                    reason=form.reason.data,
+                )
+
+            misc.create_notification_message(
+                mfrom=current_user.uid,
+                as_admin=as_admin,
+                sub=sid,
+                to=comment.uid.get_id(),
+                subject=_("Moderation action: comment deleted"),
+                content=content,
+            )
             misc.create_sublog(
                 misc.LOG_TYPE_SUB_DELETE_COMMENT,
                 current_user.uid,
-                sub.sid,
+                sid,
                 comment=form.reason.data,
                 link=url_for(
                     "sub.view_perm",
-                    sub=sub.name,
-                    pid=comment.pid.get_id(),
+                    sub=sub_name,
+                    pid=post.pid,
                     cid=comment.cid,
                     slug="_",
                 ),
                 admin=True
-                if (not current_user.is_mod(sub.sid) and current_user.is_admin())
+                if (not current_user.is_mod(sid) and current_user.is_admin())
                 else False,
                 target=comment.uid,
             )
@@ -2838,10 +3012,6 @@ def delete_comment():
                     log_type="comment",
                     desc=form.reason.data,
                 )
-            if current_user.is_mod(sub.sid):
-                comment.status = 2
-            else:
-                comment.status = 3
         else:
             comment.status = 1
 
@@ -2853,7 +3023,7 @@ def delete_comment():
 @do.route("/do/undelete_comment", methods=["POST"])
 @login_required
 def undelete_comment():
-    """ un-deletes a comment """
+    """un-deletes a comment"""
     form = forms.UndeleteCommentForm()
     if form.validate():
         try:
@@ -2861,12 +3031,18 @@ def undelete_comment():
         except SubPostComment.DoesNotExist:
             return jsonify(status="error", error=_("Comment does not exist"))
 
-        sub = (
-            Sub.select(Sub.sid, Sub.name)
-            .join(SubPost)
+        post = (
+            SubPost.select(SubPost.pid, SubPost.title, Sub.sid, Sub.name)
+            .join(Sub)
             .where(SubPost.pid == comment.pid)
             .get()
         )
+        sid = post.sid.get_id()
+        sub_name = post.sid.name
+        sub = Sub.get(Sub.sid == post.sid.get_id())
+
+        if sub.status != 0 and not current_user.is_admin():
+            return jsonify(status="error", error=[_("Sub is disabled")])
 
         if not comment.status:
             return jsonify(status="error", error=_("Comment is not deleted"))
@@ -2878,24 +3054,51 @@ def undelete_comment():
 
         if not (
             current_user.is_admin()
-            or (comment.status == 2 and current_user.is_mod(sub.sid))
+            or (comment.status == 2 and current_user.is_mod(sid))
         ):
             return jsonify(status="error", error=_("Not authorized"))
 
+        postlink, sublink = misc.post_and_sub_markdown_links(post)
+        as_admin = not current_user.is_mod(sid)
+        if as_admin:
+            content = _(
+                "The site administrators restored a comment you made on the post %(postlink)s in %(sublink)s. "
+                "Reason: %(reason)s",
+                sublink=sublink,
+                postlink=postlink,
+                reason=form.reason.data,
+            )
+        else:
+            content = _(
+                "The moderators of %(sublink)s restored a comment you made on the post %(postlink)s. "
+                "Reason: %(reason)s",
+                sublink=sublink,
+                postlink=postlink,
+                reason=form.reason.data,
+            )
+
+        misc.create_notification_message(
+            mfrom=current_user.uid,
+            as_admin=as_admin,
+            sub=sid,
+            to=comment.uid.get_id(),
+            subject=_("Moderation action: comment restored"),
+            content=content,
+        )
         misc.create_sublog(
             misc.LOG_TYPE_SUB_UNDELETE_COMMENT,
             current_user.uid,
-            sub.sid,
+            sid,
             comment=form.reason.data,
             link=url_for(
                 "sub.view_perm",
-                sub=sub.name,
+                sub=sub_name,
                 pid=comment.pid.get_id(),
                 cid=comment.cid,
                 slug="_",
             ),
             admin=True
-            if (not current_user.is_mod(sub.sid) and current_user.is_admin())
+            if (not current_user.is_mod(sid) and current_user.is_admin())
             else False,
             target=comment.uid,
         )
@@ -2919,7 +3122,7 @@ def undelete_comment():
 
 @do.route("/do/vote/<pid>/<value>", methods=["POST"])
 def upvote(pid, value):
-    """ Logs an upvote to a post. """
+    """Logs an upvote to a post."""
     form = CsrfTokenOnlyForm()
     if not form.validate():
         return json.dumps({"status": "error", "error": get_errors(form)}), 400
@@ -2931,7 +3134,7 @@ def upvote(pid, value):
 
 @do.route("/do/votecomment/<cid>/<value>", methods=["POST"])
 def upvotecomment(cid, value):
-    """ Logs an upvote to a post. """
+    """Logs an upvote to a post."""
     form = CsrfTokenOnlyForm()
     if not form.validate():
         return json.dumps({"status": "error", "error": get_errors(form)})
@@ -2945,11 +3148,15 @@ def upvotecomment(cid, value):
 @do.route("/do/get_children/<int:pid>/<cid>/<lim>", methods=["post"])
 @do.route("/do/get_children/<int:pid>/<cid>", methods=["post"], defaults={"lim": ""})
 def get_sibling(pid, cid, lim):
-    """ Gets children comments for <cid> """
+    """Gets children comments for <cid>"""
     try:
         post = misc.getSinglePost(pid)
     except SubPost.DoesNotExist:
         return jsonify(status="ok", posts=[])
+
+    sub = Sub.get(Sub.sid == post["sid"])
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
 
     default_sort = "best" if post["best_sort_enabled"] else "top"
     sort = request.args.get("sort", default=default_sort, type=str)
@@ -3039,7 +3246,7 @@ def get_sibling(pid, cid, lim):
 @do.route("/do/preview", methods=["POST"])
 @login_required
 def preview():
-    """ Returns parsed markdown. Used for post and comment previews. """
+    """Returns parsed markdown. Used for post and comment previews."""
     form = CsrfTokenOnlyForm()
     if form.validate():
         if request.json.get("text"):
@@ -3054,7 +3261,7 @@ def preview():
 @do.route("/do/nsfw", methods=["POST"])
 @login_required
 def toggle_nsfw():
-    """ Toggles NSFW tag on posts """
+    """Toggles NSFW tag on posts"""
     form = DeletePost()
 
     if form.validate():
@@ -3180,6 +3387,9 @@ def sub_upload(sub):
     except Sub.DoesNotExist:
         abort(404)
 
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
+
     if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
         abort(403)
 
@@ -3303,6 +3513,10 @@ def sub_upload_delete(sub, name):
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         jsonify(status="error")  # descriptive errors where?
+
+    if sub.status != 0 and not current_user.is_admin():
+        return jsonify(status="error", error=[_("Sub is disabled")])
+
     form = CsrfTokenOnlyForm()
     if not form.validate():
         return redirect(url_for("sub.edit_sub_css", sub=sub.name))
@@ -3681,7 +3895,7 @@ def remove_vote(pid):
 @do.route("/do/mark_viewed", methods=["POST"])
 @login_required
 def mark_comments_viewed():
-    """ Mark comments as seen by the user. """
+    """Mark comments as seen by the user."""
     form = ViewCommentsForm()
     if form.validate():
         cids = json.loads(form.cids.data)
@@ -3737,7 +3951,7 @@ def mark_comments_viewed():
 @do.route("/do/close_poll", methods=["POST"])
 @login_required
 def close_poll():
-    """ Closes a poll. """
+    """Closes a poll."""
     form = DeletePost()
 
     if form.validate():
@@ -4146,7 +4360,7 @@ def close_comment_related_reports(related_reports, original_report):
 @do.route("/do/create_report_note/<report_type>/<report_id>", methods=["POST"])
 @login_required
 def create_report_note(report_type, report_id):
-    """ Creates a new note on a report """
+    """Creates a new note on a report"""
     if report_type == "post":
         try:
             report = SubPostReport.get(SubPostReport.id == report_id)

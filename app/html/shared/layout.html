@@ -37,7 +37,7 @@
   </head>
 
 <body class="@{(config.site.enable_totp and current_user.admin) and 'body_admin' or ''} @{(request.cookies.get( "dayNight")=="dank") and 'dark dank' or ''} @{(request.cookies.get( "dayNight")=="dark") and 'dark' or ''}">
-  @if config.site.enable_totp and current_user.admin:
+  @if (config.site.enable_totp or (config.auth.provider == "KEYCLOAK" and config.auth.keycloak.use_oidc)) and current_user.admin:
   <div class="admin_alert">@{_('Admin mode is currently enabled.')}
     <form method="POST" action="/admin/logout" id="adminlogout">
       @{ form.LogOutForm().csrf_token() !!html }
@@ -132,7 +132,7 @@
       </div>
     </div>
   </div>
-  
+
   @def content():
   <div class="th-body pure-g">
     @def sidebar():
@@ -180,13 +180,17 @@
     @def chat():
       @#...
       @if not current_user.is_anonymous and 'nochat' not in current_user.prefs:
-      <div id="chpop" style="height: 1.65em">
+      <div id="chpop" class="hydrogen" style="height: 1.65em">
         <div id="chtitle" hid="true"><span id="cht-text">@{_('Chat')}</span> <div class="glyphbutton"><a href="/chat"><span class="p-icon " data-icon="resize"></span></a></div></div>
+        @if config.matrix.enabled:
+        <div id="chloading">Loading....</div>
+        @else:
         <div id="chcont"></div>
         <div id="chbott" style="display: none">
           <div id="chstatus">&nbsp;</div>
           <input type="text" id="chsend" maxlength="250" placeholder="@{_('Type here')}"/>
         </div>
+        @end
       </div>
       <label id="throat-chat" name="true" style="display: none;"></label>
       @if config.matrix.enabled:

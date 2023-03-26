@@ -199,12 +199,6 @@ class Notifications(object):
          - COMMENT_REPLY
          - POST_MENTION
          - COMMENT_MENTION
-         - POST_DELETE
-         - POST_UNDELETE
-         - SUB_BAN
-         - SUB_UNBAN
-         - MOD_INVITE
-         - MOD_INVITE_JANITOR
         @param target: UID of the user receiving the message
         @param sender: UID of the user sending the message or None if it was sent by the system
         @param sub: SID of the sub related to this message
@@ -223,43 +217,37 @@ class Notifications(object):
         )
 
         ignore = None
-        if notification_type in [
-            "POST_REPLY",
-            "COMMENT_REPLY",
-            "POST_MENTION",
-            "COMMENT_MENTION",
-        ]:
-            try:
-                TargetSubMod = SubMod.alias()
-                ignore = (
-                    UserContentBlock.select()
-                    .join(
-                        SubMod,
-                        JOIN.LEFT_OUTER,
-                        on=(
-                            (SubMod.uid == UserContentBlock.uid)
-                            & (SubMod.sub == sub)
-                            & ~SubMod.invite
-                        ),
-                    )
-                    .join(
-                        TargetSubMod,
-                        JOIN.LEFT_OUTER,
-                        on=(
-                            (TargetSubMod.uid == UserContentBlock.target)
-                            & (TargetSubMod.sub == sub)
-                            & ~TargetSubMod.invite
-                        ),
-                    )
-                    .where(
-                        (UserContentBlock.target == sender)
-                        & (UserContentBlock.uid == target)
-                        & SubMod.uid.is_null()
-                        & TargetSubMod.uid.is_null()
-                    )
-                ).get()
-            except UserContentBlock.DoesNotExist:
-                pass
+        try:
+            TargetSubMod = SubMod.alias()
+            ignore = (
+                UserContentBlock.select()
+                .join(
+                    SubMod,
+                    JOIN.LEFT_OUTER,
+                    on=(
+                        (SubMod.uid == UserContentBlock.uid)
+                        & (SubMod.sub == sub)
+                        & ~SubMod.invite
+                    ),
+                )
+                .join(
+                    TargetSubMod,
+                    JOIN.LEFT_OUTER,
+                    on=(
+                        (TargetSubMod.uid == UserContentBlock.target)
+                        & (TargetSubMod.sub == sub)
+                        & ~TargetSubMod.invite
+                    ),
+                )
+                .where(
+                    (UserContentBlock.target == sender)
+                    & (UserContentBlock.uid == target)
+                    & SubMod.uid.is_null()
+                    & TargetSubMod.uid.is_null()
+                )
+            ).get()
+        except UserContentBlock.DoesNotExist:
+            pass
 
         if ignore is not None:
             return
@@ -317,45 +305,6 @@ class Notifications(object):
                     "%(name)s mentioned you in the post titled %(title)s",
                     name=sender.name,
                     title=post.title,
-                )
-            elif notification_type == "POST_DELETE":
-                message_title = _(
-                    "Your post in %(prefix)s/%(sub)s was deleted",
-                    prefix=config.site.sub_prefix,
-                    sub=sub.name,
-                )
-                message_body = _(
-                    "%(name)s deleted your post titled %(title)s. %(comment)s",
-                    name=sender.name,
-                    title=post.title,
-                    comment=content,
-                )
-            elif notification_type == "SUB_BAN":
-                message_title = _(
-                    "You have been banned from %(prefix)s/%(sub)s",
-                    prefix=config.site.sub_prefix,
-                    sub=sub.name,
-                )
-                message_body = _(
-                    "%(name)s banned you with reason: %(content)s",
-                    name=sender.name,
-                    comment=content,
-                )
-            elif notification_type == "SUB_UNBAN":
-                message_title = _(
-                    "You have been unbanned from %(prefix)s/%(sub)s",
-                    prefix=config.site.sub_prefix,
-                    sub=sub.name,
-                )
-                message_body = _("%(name)s unbanned you.", name=sender.name)
-            elif notification_type in ("MOD_INVITE", "MOD_INVITE_JANITOR"):
-                message_title = _(
-                    "You have been invited to moderate %(prefix)s/%(sub)s",
-                    prefix=config.site.sub_prefix,
-                    sub=sub.name,
-                )
-                message_body = _(
-                    "%(name)s invited you to the sub's mod team", name=sender.name
                 )
 
             # TODO: click_action (URL the notification sends you to)

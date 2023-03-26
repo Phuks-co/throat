@@ -1,5 +1,6 @@
 """ Misc helper function and classes. """
 import hashlib
+from typing import List, NamedTuple
 from urllib.parse import urlparse, parse_qs
 import json
 import math
@@ -44,12 +45,13 @@ from tinycss2.ast import (
 )
 
 from .config import config
-from flask_login import AnonymousUserMixin, current_user
+from flask_login import AnonymousUserMixin, current_user, logout_user
 from flask_babel import Babel, _
 from flask_talisman import Talisman
 from .caching import cache
 from .socketio import socketio
 from .badges import badges
+from .auth import auth_provider
 
 from .models import (
     Sub,
@@ -58,15 +60,15 @@ from .models import (
     SiteMetadata,
     SubSubscriber,
     Message,
+    MessageThread,
     UserMetadata,
     SubRule,
     SubUserFlair,
-)
-from .models import (
     MessageType,
     MessageMailbox,
     UserUnreadMessage,
     UserMessageMailbox,
+    SubMessageMailbox,
     SubPostVote,
     SubPostComment,
     SubPostCommentVote,
@@ -75,15 +77,11 @@ from .models import (
     SubLog,
     db,
     SubUserFlairChoice,
-)
-from .models import (
     SubPostReport,
     SubPostCommentReport,
     PostReportLog,
     CommentReportLog,
     Notification,
-)
-from .models import (
     SubMetadata,
     rconn,
     SubStylesheet,
@@ -93,11 +91,14 @@ from .models import (
     SubUploads,
     SubFlair,
     InviteCode,
+    SubMod,
+    SubBan,
+    SubPostCommentHistory,
+    SubPostMetadata,
 )
-from .models import SubMod, SubBan, SubPostCommentHistory, SubPostMetadata
 
 from .storage import file_url, thumbnail_url
-from peewee import JOIN, fn, SQL, NodeList, Value, Case
+from peewee import JOIN, fn, SQL, NodeList, Value
 import logging
 import logging.config
 from werkzeug.local import LocalProxy
@@ -171,7 +172,7 @@ talisman = Talisman()
 
 
 class SiteUser(object):
-    """ Representation of a site user. Used on the login manager. """
+    """Representation of a site user. Used on the login manager."""
 
     def __init__(self, userclass=None, subs=(), prefs=()):
         self.user = userclass
@@ -211,10 +212,9 @@ class SiteUser(object):
         else:
             self.is_active = True
         self.is_active = True if self.user["status"] == 0 else False
-        self.is_authenticated = True if self.user["status"] == 0 else False
+
         self.is_anonymous = True if self.user["status"] != 0 else False
         # True if the user is an admin, even without authing with TOTP
-        self.can_admin = "admin" in self.prefs
 
         self.subs_modded = [
             s.sid
@@ -224,10 +224,18 @@ class SiteUser(object):
         ]
         self.is_a_mod = len(self.subs_modded) > 0
 
+        self.can_admin = "admin" in self.prefs
+
         if time.time() - session.get("apriv", 0) < 7200 or not config.site.enable_totp:
             self.admin = "admin" in self.prefs
         else:
             self.admin = False
+
+        if config.auth.provider == "KEYCLOAK" and config.auth.keycloak.use_oidc:
+            self.can_admin = session.get("is_admin", False)
+
+            if time.time() - session.get("apriv", 0) < 7200:
+                self.admin = self.can_admin
 
         self.canupload = True if ("canupload" in self.prefs) or self.admin else False
         if config.site.allow_uploads and config.site.upload_min_level == 0:
@@ -248,31 +256,52 @@ class SiteUser(object):
         return "<SiteUser {0}>".format(self.uid)
 
     def get_id(self):
-        """ Returns the unique user id. Used on load_user """
+        """Returns the unique user id. Used on load_user"""
         return self.uid if self.resets == 0 else f"{self.uid}${self.resets}"
 
     @cache.memoize(1)
+    def _check_keycloak_auth(self):
+        # XXX: Active session checking disabled by default because it is a blocking network op!
+        if (
+            config.auth.provider == "KEYCLOAK"
+            and config.auth.keycloak.use_oidc
+            and config.auth.keycloak.active_session_check
+        ):
+            # Perform the slow check for session activity if using OIDC
+            user_intro = auth_provider.introspect()
+            if not user_intro["active"]:
+                logout_user()
+                return False
+        return True
+
+    @property
+    def is_authenticated(self):
+        if not self._check_keycloak_auth():
+            return False
+        return True if self.user["status"] == 0 else False
+
+    @cache.memoize(1)
     def is_mod(self, sid, power_level=2):
-        """ Returns True if the current user is a mod of 'sub' """
+        """Returns True if the current user is a mod of 'sub'"""
         return is_sub_mod(self.uid, sid, power_level, self.can_admin)
 
     @cache.memoize(1)
     def mod_notifications(self):
-        if self.is_mod:
+        if self.is_a_mod:
             reports, comments, messages = get_mod_notification_counts(self.uid)
             return {"reports": reports, "comments": comments, "messages": messages}
         else:
-            return []
+            return {}
 
     def mod_notifications_json(self):
         return json.dumps(self.mod_notifications())
 
     def is_subban(self, sub):
-        """ Returns True if the current user is banned from 'sub' """
+        """Returns True if the current user is banned from 'sub'"""
         return is_sub_banned(sub, self.user)
 
     def is_modinv(self, sub):
-        """ Returns True if the current user is invited to mod of 'sub' """
+        """Returns True if the current user is invited to mod of 'sub'"""
         try:
             SubMod.get((SubMod.sid == sub) & (SubMod.uid == self.uid) & SubMod.invite)
             return True
@@ -280,31 +309,31 @@ class SiteUser(object):
             return False
 
     def is_admin(self):
-        """ Returns true if the current user is a site admin. """
+        """Returns true if the current user is a site admin."""
         return self.admin
 
     def has_subscribed(self, name):
-        """ Returns True if the current user has subscribed to sub """
+        """Returns True if the current user has subscribed to sub"""
         if len(name) == 36:  # TODO: BAD NASTY HACK REMOVE THIS.
             return name in self.subsid
         else:
             return name in self.subscriptions
 
     def has_blocked(self, sid):
-        """ Returns True if the current user has blocked sub """
+        """Returns True if the current user has blocked sub"""
         return sid in self.blocksid
 
     def likes_scroll(self):
-        """ Returns true if user likes scroll """
+        """Returns true if user likes scroll"""
         return "noscroll" not in self.prefs
 
     def block_styles(self):
-        """ Returns true if user selects to block sub styles """
+        """Returns true if user selects to block sub styles"""
         return "nostyles" in self.prefs
 
     @cache.memoize(300)
     def get_user_level(self):
-        """ Returns the level and xp of a user. """
+        """Returns the level and xp of a user."""
         return get_user_level(self.uid, self.score)
 
     def get_top_bar(self):
@@ -351,7 +380,7 @@ def is_target_user_admin(uid):
 
 
 class SiteAnon(AnonymousUserMixin):
-    """ A subclass of AnonymousUserMixin. Used for logged out users. """
+    """A subclass of AnonymousUserMixin. Used for logged out users."""
 
     uid = False
     subsid = []
@@ -383,17 +412,17 @@ class SiteAnon(AnonymousUserMixin):
 
     @classmethod
     def is_admin(cls):
-        """ Anons are not admins. """
+        """Anons are not admins."""
         return False
 
     @classmethod
     def can_pm_users(cls):
-        """ Anons may never PM users. """
+        """Anons may never PM users."""
         return False
 
     @classmethod
     def likes_scroll(cls):
-        """ Anons like scroll. """
+        """Anons like scroll."""
         return True
 
     @classmethod
@@ -402,27 +431,27 @@ class SiteAnon(AnonymousUserMixin):
 
     @classmethod
     def has_subscribed(cls, _sub):
-        """ Anons dont get subscribe options. """
+        """Anons dont get subscribe options."""
         return False
 
     @classmethod
     def has_blocked(cls, _sub):
-        """ Anons dont get blocked options. """
+        """Anons dont get blocked options."""
         return False
 
     @classmethod
     def block_styles(cls):
-        """ Anons dont get usermetadata options. """
+        """Anons dont get usermetadata options."""
         return False
 
     @classmethod
     def is_modinv(cls):
-        """ Anons dont get see submod page. """
+        """Anons dont get see submod page."""
         return False
 
     @classmethod
     def is_subban(cls, _sub):
-        """ Anons dont get banned by default. """
+        """Anons dont get banned by default."""
         return False
 
     @classmethod
@@ -435,7 +464,7 @@ class SiteAnon(AnonymousUserMixin):
 
 
 def get_ip():
-    """ Return the user's IP address for rate-limiting. """
+    """Return the user's IP address for rate-limiting."""
     addr = ipaddress.ip_address(request.remote_addr or "127.0.0.1")
     if isinstance(addr, ipaddress.IPv6Address):
         return addr.exploded[:19]  # use the /64
@@ -459,9 +488,9 @@ class MentionRegex:
     def init_app(self, app):
         prefix = app.config["THROAT_CONFIG"].site.sub_prefix
         BARE = (
-            fr"(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))((@|\/u\/|\/{prefix}\/)([A-Za-z0-9\-\_]+))"
+            rf"(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))((@|\/u\/|\/{prefix}\/)([A-Za-z0-9\-\_]+))"
         )
-        PRE0 = fr"(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))(?:(?:@|\/u\/|\/{prefix}\/)(?:[A-Za-z0-9\-\_]+)))"
+        PRE0 = rf"(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))(?:(?:@|\/u\/|\/{prefix}\/)(?:[A-Za-z0-9\-\_]+)))"
         PRE1 = r"(?:(\[.+?\]\(.+?\))|" + BARE + r")"
         self.ESCAPED = re.compile(
             r"```.*{0}.*```|`.*?{0}.*?`|({1})".format(PRE0, PRE1),
@@ -550,9 +579,31 @@ def our_markdown(text):
     return html
 
 
+def post_and_sub_markdown_links(post):
+    """Construct links to a post and to its sub in markdown format."""
+    sub_name = Sub.get(Sub.sid == post.sid).name
+    posturl = url_for("sub.view_post", sub=sub_name, pid=post.pid)
+    postlink = f"[{post.title}]({posturl})"
+    return postlink, sub_markdown_link(sub_name)
+
+
+def sub_markdown_link(sub_name):
+    """Construct a link to a sub in markdown format, given its name."""
+    suburl = url_for("sub.view_sub", sub=sub_name)
+    sublink = f"[{suburl}]({suburl})"
+    return sublink
+
+
+def user_markdown_link(user_name):
+    """Construct a link to a user in markdown format, given the name."""
+    userurl = url_for("user.view", user=user_name)
+    userlink = f"[userurl]({userurl})"
+    return userlink
+
+
 @cache.memoize(5)
 def is_sub_banned(sub, user=None, uid=None):
-    """ Returns True if 'user' is banned 'sub' """
+    """Returns True if 'user' is banned 'sub'"""
     if isinstance(sub, dict):
         sid = sub["sid"]
     elif isinstance(sub, str) or isinstance(sub, int):
@@ -585,7 +636,7 @@ def getSubFlairs(sid):
 
 @cache.memoize(600)
 def getDefaultSubs():
-    """ Returns a list of all the default subs """
+    """Returns a list of all the default subs"""
     defaults = [
         x.value for x in SiteMetadata.select().where(SiteMetadata.key == "default")
     ]
@@ -595,7 +646,7 @@ def getDefaultSubs():
 
 @cache.memoize(600)
 def getDefaultSubs_list(ext=False):
-    """ Returns a list of all the default subs """
+    """Returns a list of all the default subs"""
     defaults = getDefaultSubs()
     if not ext:
         defaults = sorted(defaults, key=str.lower)
@@ -606,7 +657,7 @@ def getDefaultSubs_list(ext=False):
 
 @cache.memoize(30)
 def getMaxCodes(uid):
-    """ Returns how many invite codes a user can create """
+    """Returns how many invite codes a user can create"""
     try:
         amt = UserMetadata.get(
             (UserMetadata.key == "invite_max") & (UserMetadata.uid == uid)
@@ -668,28 +719,43 @@ def getInviteCodeInfo(uid):
     return info
 
 
+class SMTPEmail(NamedTuple):
+    sender: str
+    recipients: List[str]
+    subject: str
+    text_content: str
+    html_content: str
+
+
+class SendgridEmail(NamedTuple):
+    sender: str
+    to: List[str]
+    subject: str
+    html_content: str
+
+
 def send_email(to, subject, text_content, html_content, sender=None):
+    if not isinstance(to, list):
+        to = [to]
     if "server" in config.mail:
         if sender is None:
             sender = config.mail.default_from
-        send_email_with_smtp(sender, to, subject, text_content, html_content)
+        send_email_with_smtp(SMTPEmail(sender, to, subject, text_content, html_content))
     elif "sendgrid" in config:
         if sender is None:
             sender = config.sendgrid.default_from
-        send_email_with_sendgrid(sender, to, subject, html_content)
+        send_email_with_sendgrid(SendgridEmail(sender, to, subject, html_content))
     else:
         raise RuntimeError("Email not configured")
 
 
-def send_email_with_smtp(sender, recipients, subject, text_content, html_content):
-    if not isinstance(recipients, list):
-        recipients = [recipients]
+def send_email_with_smtp(email: SMTPEmail):
     msg = EmailMessage(
-        subject,
-        sender=sender,
-        recipients=recipients,
-        body=text_content,
-        html=html_content,
+        subject=email.subject,
+        sender=email.sender,
+        recipients=email.recipients,
+        body=email.text_content,
+        html=email.html_content,
     )
     if config.app.testing:
         send_smtp_email_async(current_app, msg)
@@ -702,20 +768,21 @@ def send_smtp_email_async(app, msg):
         mail.send(msg)
 
 
-def send_email_with_sendgrid(sender, to, subject, html_content):
-    """ Send a mail through sendgrid """
+def send_email_with_sendgrid(email: SendgridEmail):
+    """Send a mail through sendgrid"""
     sg = sendgrid.SendGridAPIClient(api_key=config.sendgrid.api_key)
-
     mail = sendgrid.helpers.mail.Mail(
-        from_email=sender, to_emails=to, subject=subject, html_content=html_content
+        from_email=email.sender,
+        to_emails=email.to,
+        subject=email.subject,
+        html_content=email.html_content,
     )
-
     sg.send(mail)
 
 
 # TODO: Make all these functions one.
 def getYoutubeID(url):
-    """ Returns youtube ID for a video. """
+    """Returns youtube ID for a video."""
     url = urlparse(url)
     if url.hostname == "youtu.be":
         return url.path[1:]
@@ -730,8 +797,10 @@ def getYoutubeID(url):
 
 
 def workWithMentions(data, receivedby, post, _sub, cid=None, c_user=current_user):
-    """ Does all the job for mentions """
-    mts = re.findall(re_amention.LINKS, data)
+    """Does all the job for mentions"""
+    if not data:
+        return
+    mts = re_amention.LINKS.findall(data)
     if mts:
         mts = list(set(mts))  # Removes dupes
         clean_mts = []
@@ -787,34 +856,34 @@ def workWithMentions(data, receivedby, post, _sub, cid=None, c_user=current_user
 
 @cache.memoize(5)
 def getDomain(link):
-    """ Gets Domain from url """
+    """Gets Domain from url"""
     x = urlparse(link)
     return x.netloc
 
 
 @cache.memoize(300)
 def isImage(link):
-    """ Returns True if link ends with img suffix """
+    """Returns True if link ends with img suffix"""
     suffix = (".png", ".jpg", ".gif", ".tiff", ".bmp", ".jpeg", ".svg")
     return link.lower().endswith(suffix)
 
 
 @cache.memoize(300)
 def isGifv(link):
-    """ Returns True if link ends with video suffix """
+    """Returns True if link ends with video suffix"""
     return link.lower().endswith(".gifv")
 
 
 @cache.memoize(300)
 def isVideo(link):
-    """ Returns True if link ends with video suffix """
+    """Returns True if link ends with video suffix"""
     suffix = (".mp4", ".webm")
     return link.lower().endswith(suffix)
 
 
 @cache.memoize(10)
 def get_user_level(uid, score=None):
-    """ Returns the user's level and XP as a tuple (level, xp) """
+    """Returns the user's level and XP as a tuple (level, xp)"""
     if not score:
         user = User.get(User.uid == uid)
         xp = user.score
@@ -831,7 +900,7 @@ def get_user_level(uid, score=None):
 
 @cache.memoize(300)
 def fetchTodaysTopPosts(uid, include_nsfw):
-    """ Returns top posts in the last 24 hours """
+    """Returns top posts in the last 24 hours"""
     td = datetime.utcnow() - timedelta(days=1)
     query = SubPost.select(
         SubPost.pid,
@@ -904,7 +973,10 @@ def getSubOfTheDay():
     if not daysub:
         try:
             daysub = (
-                Sub.select(Sub.sid, Sub.name, Sub.title).order_by(db.random()).get()
+                Sub.select(Sub.sid, Sub.name, Sub.title)
+                .where(Sub.status == 0)
+                .order_by(db.random())
+                .get()
             )
         except Sub.DoesNotExist:  # No subs
             return False
@@ -918,7 +990,7 @@ def getSubOfTheDay():
 
 
 def getChangelog():
-    """ Returns most recent changelog post """
+    """Returns most recent changelog post"""
     if not config.site.changelog_sub:
         return None
     td = datetime.utcnow() - timedelta(days=15)
@@ -955,6 +1027,7 @@ def getSinglePost(pid):
         SubPost.link,
         User.name.alias("user"),
         Sub.name.alias("sub"),
+        Sub.sid,
         SubPost.flair,
         SubPost.edited,
         SubPost.comments,
@@ -1157,8 +1230,10 @@ def postListQueryBase(
             )
         elif not current_user.is_admin():
             posts = posts.where(SubPost.deleted << [0, 2, 3])
+            # Also hide posts from suspended subs
+            posts = posts.where(Sub.status == 0)
     else:
-        posts = posts.where(SubPost.deleted == 0)
+        posts = posts.where((SubPost.deleted == 0) & (Sub.status == 0))
 
     if not noAllFilter and not nofilter:
         if current_user.is_authenticated and current_user.blocksid:
@@ -1229,7 +1304,7 @@ def getAnnouncementPid():
 
 @cache.memoize(600)
 def getAnnouncement():
-    """ Returns sitewide announcement post or False """
+    """Returns sitewide announcement post or False"""
     ann = getAnnouncementPid()
     if not ann:
         return False
@@ -1240,7 +1315,7 @@ def getAnnouncement():
 
 @cache.memoize(5)
 def getWikiPid(sid):
-    """ Returns a list of wickied SubPosts """
+    """Returns a list of wickied SubPosts"""
     x = (
         SubMetadata.select(SubMetadata.value)
         .where(SubMetadata.sid == sid)
@@ -1252,7 +1327,7 @@ def getWikiPid(sid):
 
 @cache.memoize(60)
 def getStickyPid(sid):
-    """ Returns a list of stickied SubPosts """
+    """Returns a list of stickied SubPosts"""
     x = (
         SubMetadata.select(SubMetadata.value)
         .where(SubMetadata.sid == sid)
@@ -1377,7 +1452,7 @@ def get_mod_notification_counts(uid):
         .join(SubPost)
         .join(Sub)
         .join(SubMod)
-        .where((SubMod.user == uid) & SubPostReport.open)
+        .where((SubMod.user == uid) & SubPostReport.open & ~SubMod.invite)
         .group_by(Sub.sid)
         .dicts()
     )
@@ -1389,55 +1464,93 @@ def get_mod_notification_counts(uid):
         .join(SubPost)
         .join(Sub)
         .join(SubMod)
-        .where((SubMod.user == uid) & SubPostCommentReport.open)
+        .where((SubMod.user == uid) & SubPostCommentReport.open & ~SubMod.invite)
         .group_by(Sub.sid)
         .dicts()
     )
+    # Count modmail conversations where the newest message in the
+    # thread is unread.
     if not config.site.enable_modmail:
-        unread_modmail_counts = {}
+        unread_modmail_counts = []
     else:
-        # Count modmail conversations where the newest message in the
-        # thread is unread.
-        MessageAlias1 = Message.alias()
-        conversation = MessageAlias1.select(
-            Case(
-                None,
-                [(MessageAlias1.reply_to.is_null(), MessageAlias1.mid)],
-                MessageAlias1.reply_to,
-            ).alias("convo_mid"),
-        )
-        MessageAlias2 = Message.alias()
-        conversation_newest = (
-            MessageAlias2.select(
-                conversation.c.convo_mid, fn.MAX(MessageAlias2.posted).alias("maxtime")
+        # Use Postgres's lateral join capability for a more efficient
+        # query.
+        if "Postgresql" in config.database.engine:
+            thread_newest = (
+                Message.select()
+                .where(Message.mtid == MessageThread.mtid)
+                .order_by(Message.posted.desc())
+                .limit(1)
+            )
+            unread_modmail_query = (
+                MessageThread.select(
+                    MessageThread.sub.alias("sid"),
+                    fn.COUNT(thread_newest.c.mid).alias("count"),
+                )
+                .join(thread_newest, JOIN.LEFT_LATERAL)
+                .join(
+                    UserUnreadMessage, on=(thread_newest.c.mid == UserUnreadMessage.mid)
+                )
+            )
+        else:
+            MessageAlias = Message.alias()
+            MessageThreadAlias = MessageThread.alias()
+            SubModAlias = SubMod.alias()
+            thread_newest = (
+                MessageAlias.select(
+                    MessageAlias.thread.alias("mtid"),
+                    fn.MAX(MessageAlias.posted).alias("maxtime"),
+                )
+                .join(MessageThreadAlias)
+                .join(
+                    SubModAlias,
+                    on=(
+                        (SubModAlias.sid == MessageThreadAlias.sid)
+                        & (SubModAlias.user == uid)
+                        & ~SubModAlias.invite
+                    ),
+                )
+                .group_by(MessageAlias.thread)
+            )
+            unread_modmail_query = (
+                MessageThread.select(
+                    MessageThread.sub.alias("sid"), fn.COUNT(Message.mid).alias("count")
+                )
+                .join(
+                    thread_newest,
+                    on=(thread_newest.c.mtid == MessageThread.mtid),
+                )
+                .join(
+                    Message,
+                    on=(
+                        (Message.mtid == thread_newest.c.mtid)
+                        & (Message.posted == thread_newest.c.maxtime)
+                    ),
+                )
+                .join(UserUnreadMessage, on=(Message.mid == UserUnreadMessage.mid))
+            )
+        unread_modmail_query = (
+            unread_modmail_query.join(
+                SubMessageMailbox,
+                on=(SubMessageMailbox.thread == MessageThread.mtid),
             )
             .join(
-                conversation,
-                on=(conversation.c.convo_mid == MessageAlias2.mid)
-                | (conversation.c.convo_mid == MessageAlias2.reply_to),
-            )
-            .group_by(conversation.c.convo_mid)
-        )
-        unread_modmail_counts = dictify(
-            Message.select(Sub.sid, fn.COUNT(Message.mid).alias("count"))
-            .join(Sub)
-            .join(SubMod)
-            .join(
-                conversation_newest,
+                SubMod,
                 on=(
-                    (
-                        (conversation_newest.c.convo_mid == Message.mid)
-                        | (conversation_newest.c.convo_mid == Message.reply_to)
-                    )
-                    & (conversation_newest.c.maxtime == Message.posted)
+                    (SubMod.sid == MessageThread.sid)
+                    & (SubMod.user == uid)
+                    & ~SubMod.invite
                 ),
             )
-            .switch(Message)
-            .join(UserUnreadMessage)
-            .where((SubMod.user == uid) & (UserUnreadMessage.uid == uid))
-            .group_by(Sub.sid)
+            .where(
+                MessageThread.sid.is_null(False)
+                & (UserUnreadMessage.uid == uid)
+                & (SubMessageMailbox.mailbox == MessageMailbox.INBOX)
+            )
+            .group_by(MessageThread.sid)
             .dicts()
         )
+        unread_modmail_counts = dictify(unread_modmail_query)
     return post_report_counts, comment_report_counts, unread_modmail_counts
 
 
@@ -1542,7 +1655,7 @@ def get_unread_count():
 
 
 def get_errors(form, first=False):
-    """ A simple function that returns a list with all the form errors. """
+    """A simple function that returns a list with all the form errors."""
     if request.method == "GET":
         return []
     ret = []
@@ -1567,10 +1680,9 @@ def get_errors(form, first=False):
 
 
 def get_messages_inbox(page, uid=None):
-    """ Returns user's messages inbox as dictionary. """
+    """Returns user's messages inbox as dictionary."""
     if uid is None:
         uid = current_user.uid
-    Conversation = Message.alias()
     msgs = (
         Message.select(
             Message.mid,
@@ -1578,16 +1690,19 @@ def get_messages_inbox(page, uid=None):
             Sub.name.alias("sub"),
             Message.sentby,
             Message.receivedby,
-            Message.reply_to,
-            Message.subject,
-            Conversation.subject.alias("thread"),
+            Message.first,
+            MessageThread.subject,
             Message.content,
             Message.posted,
             Message.mtype,
             UserUnreadMessage.id.alias("unread_id"),
             UserMetadata.value.alias("sender_can_admin"),
         )
-        .join(Conversation, JOIN.LEFT_OUTER, on=(Conversation.mid == Message.reply_to))
+        .join(
+            MessageThread,
+            JOIN.LEFT_OUTER,
+            on=(MessageThread.mtid == Message.thread),
+        )
         .join(
             UserMessageBlock,
             JOIN.LEFT_OUTER,
@@ -1597,7 +1712,7 @@ def get_messages_inbox(page, uid=None):
             ),
         )
         .join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby))
-        .join(Sub, JOIN.LEFT_OUTER, on=(Sub.sid == Message.sub))
+        .join(Sub, JOIN.LEFT_OUTER, on=(Sub.sid == MessageThread.sub))
         .join(
             UserUnreadMessage,
             JOIN.LEFT_OUTER,
@@ -1639,26 +1754,24 @@ def get_messages_inbox(page, uid=None):
 
 
 def get_messages_sent(page, uid=None):
-    """ Returns messages sent """
+    """Returns messages sent"""
     if uid is None:
         uid = current_user.uid
-    Conversation = Message.alias()
     return process_msgs(
         Message.select(
             Message.mid,
             Message.sentby,
-            Message.reply_to,
+            Message.first,
             User.name.alias("username"),
             Sub.name.alias("sub"),
-            Message.subject,
-            Conversation.subject.alias("thread"),
+            MessageThread.subject,
             Message.content,
             Message.posted,
             Message.mtype,
         )
-        .join(Conversation, JOIN.LEFT_OUTER, on=(Conversation.mid == Message.reply_to))
+        .join(MessageThread)
         .join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.receivedby))
-        .join(Sub, JOIN.LEFT_OUTER, on=(Sub.sid == Message.sub))
+        .join(Sub, JOIN.LEFT_OUTER, on=(Sub.sid == MessageThread.sub))
         .join(
             UserMessageMailbox,
             JOIN.LEFT_OUTER,
@@ -1678,27 +1791,29 @@ def get_messages_sent(page, uid=None):
 
 
 def get_messages_saved(page, uid=None):
-    """ Returns saved messages """
+    """Returns saved messages"""
     if uid is None:
         uid = current_user.uid
-    Conversation = Message.alias()
     msgs = (
         Message.select(
             Message.mid,
             User.name.alias("username"),
             Sub.name.alias("sub"),
             Message.receivedby,
-            Message.reply_to,
-            Message.subject,
-            Conversation.subject.alias("thread"),
+            Message.first,
+            MessageThread.subject,
             Message.content,
             Message.posted,
             Message.mtype,
             UserUnreadMessage.id.alias("unread_id"),
         )
-        .join(Conversation, JOIN.LEFT_OUTER, on=(Conversation.mid == Message.reply_to))
+        .join(
+            MessageThread,
+            JOIN.LEFT_OUTER,
+            on=(MessageThread.mtid == Message.thread),
+        )
         .join(User, on=(User.uid == Message.sentby))
-        .join(Sub, JOIN.LEFT_OUTER, on=(Sub.sid == Message.sub))
+        .join(Sub, JOIN.LEFT_OUTER, on=(Sub.sid == MessageThread.sub))
         .join(
             UserUnreadMessage,
             JOIN.LEFT_OUTER,
@@ -1730,11 +1845,14 @@ def process_msgs(msgs):
     """Prepare message dictionaries for use in templates."""
 
     def process_msg(msg):
-        if msg["mtype"] == MessageType.MOD_TO_USER_AS_MOD:
+        if msg["mtype"] == MessageType.MOD_TO_USER_AS_MOD or (
+            msg["mtype"] == MessageType.USER_NOTIFICATION
+            and config.site.anonymous_modding
+        ):
             msg["username"] = None
             msg["sentby"] = None
-        if msg["thread"] is not None:
-            msg["subject"] = _("Re: %(subject)s", subject=msg["thread"])
+        if not msg["first"]:
+            msg["subject"] = _("Re: %(subject)s", subject=msg["subject"])
         msg["read"] = msg.get("unread_id") is None
         return msg
 
@@ -1784,6 +1902,7 @@ def getUserComments(uid, page, include_deleted_comments=False):
                 )
         else:
             com = com.where(SubPostComment.status.is_null())
+            com = com.where(Sub.status == 0)
 
         if "nsfw" not in current_user.prefs:
             com = com.where(SubPost.nsfw == 0)
@@ -1832,7 +1951,7 @@ def getSubMods(sid):
 
 
 def notify_mods(sid):
-    """ Send the sub mods an updated open report count. """
+    """Send the sub mods an updated open report count."""
     reports = (
         SubPostReport.select(fn.Count(SubPostReport.id))
         .join(SubPost)
@@ -2003,7 +2122,7 @@ def iter_validate_css(obj, uris):
 
 
 def validate_css(css, sid):
-    """ Validates CSS. Returns parsed stylesheet or (errcode, col, line)"""
+    """Validates CSS. Returns parsed stylesheet or (errcode, col, line)"""
     st = tinycss2.parse_stylesheet(css, skip_comments=True, skip_whitespace=True)
     # create a map for uris.
     uris = {}
@@ -2034,7 +2153,7 @@ def validate_css(css, sid):
 
 @cache.memoize(3)
 def get_security_questions():
-    """ Returns a list of tuples containing security questions and answers """
+    """Returns a list of tuples containing security questions and answers"""
     qs = SiteMetadata.select().where(SiteMetadata.key == "secquestion").dicts()
 
     return [
@@ -2043,19 +2162,21 @@ def get_security_questions():
 
 
 def pick_random_security_question():
-    """ Picks a random security question and saves the answer on the session """
+    """Picks a random security question and saves the answer on the session"""
     sc = random.choice(get_security_questions())
     session["sa"] = sc[2]
     return sc[1]
 
 
 def create_message(mfrom, to, subject, content, mtype):
-    """ Creates a message. """
+    """Creates a message."""
     posted = datetime.utcnow()
+    msg_thread = MessageThread.create(subject=subject)
     msg = Message.create(
         sentby=mfrom,
         receivedby=to,
-        subject=subject,
+        first=True,
+        thread=msg_thread.mtid,
         content=content,
         posted=posted,
         mtype=mtype,
@@ -2072,35 +2193,61 @@ def create_message(mfrom, to, subject, content, mtype):
     return msg
 
 
+def create_notification_message(mfrom, as_admin, sub, to, subject, content):
+    """Create a message to notify a user of a mod action."""
+    posted = datetime.utcnow()
+    if as_admin and config.site.admin_sub != "":
+        sub = Sub.get(fn.Lower(Sub.name) == config.site.admin_sub.lower()).sid
+    msg_thread = MessageThread.create(subject=subject, sub=sub)
+    msg = Message.create(
+        sentby=mfrom,
+        receivedby=to,
+        first=True,
+        thread=msg_thread.mtid,
+        content=content,
+        posted=posted,
+        mtype=MessageType.USER_NOTIFICATION,
+    )
+    UserUnreadMessage.create(uid=to, mid=msg.mid)
+    UserMessageMailbox.create(uid=to, mid=msg.mid, mailbox=MessageMailbox.INBOX)
+    SubMessageMailbox.create(thread=msg_thread.mtid, mailbox=MessageMailbox.PENDING)
+    socketio.emit(
+        "notification",
+        {"count": get_notification_count(to)},
+        namespace="/snt",
+        room="user" + to,
+    )
+    return msg
+
+
 def create_message_reply(message, content):
-    """ Creates a reply to a message. """
+    """Creates a reply to a message."""
     posted = datetime.utcnow()
     sender = message.receivedby.uid
-    if message.mtype == MessageType.USER_TO_USER:
-        mtype = MessageType.USER_TO_USER
-        recipient = message.sentby.uid
-    else:
+    thread = message.thread.mtid
+    if message.mtype != MessageType.USER_TO_USER and config.site.enable_modmail:
         mtype = MessageType.USER_TO_MODS
         recipient = None
-
-    reply_to = (
-        message.reply_to.get_id() if message.reply_to is not None else message.mid
-    )
+    else:
+        mtype = MessageType.USER_TO_USER
+        recipient = message.sentby.uid
 
     msg = Message.create(
         sentby=sender,
         receivedby=recipient,
-        subject="",
+        first=False,
         content=content,
         posted=posted,
-        reply_to=reply_to,
+        thread=thread,
         mtype=mtype,
-        sub=message.sub,
     )
-    Message.update(replies=Message.replies + 1).where(Message.mid == reply_to).execute()
+    MessageThread.update(replies=MessageThread.replies + 1).where(
+        MessageThread.mtid == thread
+    ).execute()
     UserMessageMailbox.create(uid=sender, mid=msg.mid, mailbox=MessageMailbox.SENT)
+    mt = MessageThread.get(MessageThread.mtid == thread)
 
-    if message.sub is None:
+    if mt.sub is None:
         UserUnreadMessage.create(uid=recipient, mid=msg.mid)
         UserMessageMailbox.create(
             uid=recipient, mid=msg.mid, mailbox=MessageMailbox.INBOX
@@ -2112,7 +2259,10 @@ def create_message_reply(message, content):
             room="user" + recipient,
         )
     else:
-        for mod_uid in getSubMods(message.sub)["all"]:
+        SubMessageMailbox.update(mailbox=MessageMailbox.INBOX).where(
+            SubMessageMailbox.mtid == thread
+        ).execute()
+        for mod_uid in getSubMods(mt.sub)["all"]:
             UserUnreadMessage.create(uid=mod_uid, mid=msg.mid)
             socketio.emit(
                 "notification",
@@ -2137,7 +2287,7 @@ def get_motto():
 
 
 def populate_feed(feed, posts):
-    """ Populates an AtomFeed `feed` with posts """
+    """Populates an AtomFeed `feed` with posts"""
     for post in posts:
         content = "<table><tr>"
         url = url_for("sub.view_post", sub=post["sub"], pid=post["pid"], _external=True)
@@ -2175,7 +2325,7 @@ def populate_feed(feed, posts):
 
 
 def metadata_to_dict(metadata):
-    """ Transforms metadata query objects into dicts """
+    """Transforms metadata query objects into dicts"""
     res = {}
     for mdata in metadata:
         if mdata.value == "0":
@@ -2263,6 +2413,7 @@ LOG_TYPE_ENABLE_CAPTCHAS = 72  # Use LOG_TYPE_ADMIN_CONFIG_CHANGE instead
 LOG_TYPE_STICKY_SORT_NEW = 73
 LOG_TYPE_STICKY_SORT_TOP_OR_BEST = 74
 LOG_TYPE_ADMIN_CONFIG_CHANGE = 75
+LOG_TYPE_LOCK_COMMENTS = 76
 
 
 def create_sitelog(action, uid, comment="", link=""):
@@ -2430,7 +2581,7 @@ def get_comment_tree(
     sticky_cid = postmeta.get("sticky_cid")
 
     def build_tree(tuff, rootcid=None):
-        """ Builds a comment tree """
+        """Builds a comment tree"""
         res = []
         for i in tuff[::]:
             if i["parentcid"] == rootcid:
@@ -2446,7 +2597,7 @@ def get_comment_tree(
     if root:
 
         def select_branch(commentslst, rootcid):
-            """ Finds a branch with a certain root and returns a new tree """
+            """Finds a branch with a certain root and returns a new tree"""
             for i in commentslst:
                 if i["cid"] == rootcid:
                     return i
@@ -2480,7 +2631,7 @@ def get_comment_tree(
     trimmed = False
 
     def recursive_check(tree, depth=0, trimmedtree=None, pcid=""):
-        """ Recursively checks tree to apply pagination limits """
+        """Recursively checks tree to apply pagination limits"""
         or_len = len(tree)
         if only_after and not trimmedtree:
             imf = list(filter(lambda x: x["cid"] == only_after, tree))
@@ -2673,7 +2824,7 @@ def get_comment_tree(
                 commdata[hist["cid"]]["history"].append(hist)
 
     def recursive_populate(tree):
-        """ Expands the tree with the data from `commdata` """
+        """Expands the tree with the data from `commdata`"""
         populated_tree = []
         for i in tree:
             if not i["cid"]:
@@ -2700,7 +2851,7 @@ def get_notif_count():
 
 
 def anti_double_post(func):
-    """ This decorator attempts to leverage Redis to prevent double-submissions to some endpoints. """
+    """This decorator attempts to leverage Redis to prevent double-submissions to some endpoints."""
 
     def wrapper(*args, **kwargs):
         parms = str(args) + str(kwargs)
@@ -3366,7 +3517,7 @@ def recent_activity(sidebar=True):
             parsed = BeautifulSoup(our_markdown(rec["content"]), features="lxml")
             for spoiler in parsed.findAll("spoiler"):
                 spoiler.string.replace_with("█" * len(spoiler.string))
-            stripped = parsed.findAll(text=True)
+            stripped = parsed.findAll(string=True)
             rec["content"] = word_truncate("".join(stripped).replace("\n", " "), 350)
         add_blur(rec)
 

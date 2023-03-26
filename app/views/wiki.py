@@ -9,7 +9,7 @@ bp = Blueprint("wiki", __name__)
 
 @bp.route("/welcome")
 def welcome():
-    """ Welcome page for new users """
+    """Welcome page for new users"""
     try:
         Wiki.select().where(Wiki.slug == "welcome").where(Wiki.is_global).get()
         return redirect(url_for("wiki.view", slug="welcome"))
@@ -25,7 +25,7 @@ except FileNotFoundError:
 
 @bp.route("/license")
 def show_license():
-    """ View API help page """
+    """View API help page"""
     return engine.get_template("site/license.html").render({"license": th_license})
 
 

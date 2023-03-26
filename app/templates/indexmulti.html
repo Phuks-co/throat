@@ -6,7 +6,7 @@
 <div class="sidebarlists">
   <h4 class="center">New posts from:</h4>
   <ul>
-    
+
     {% for sub in subs %}
       <li><a href="{{url_for('sub.view_sub', sub=sub.name)}}">/{{config.site.sub_prefix}}/{{sub.name}}</a>
       <div class="sidelocale">{{sub.title}}</div></li>

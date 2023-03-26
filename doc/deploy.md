@@ -50,7 +50,7 @@ location / {
     proxy_pass http://127.0.0.1:someport;
 }
 ```
- 
+
 To make `nginx` properly serve the websocket requests you will need to add the following snippet to your
 server block:
 
@@ -92,7 +92,7 @@ location /static {
 Database servers limit the number of connections, so you have to configure your `gunicorn` processes to use less than that limit, or you will see errors when your server is under load and a worker fails to acquire a database connection.
 
 The two types of async workers, `gevent` and `geventwebsocket` benefit from database connection pooling, which can be configured externally to the application (PgBouncer is an example) or internally using the `database.engine` variable in `config.yaml`.
- 
+
 To configure database pooling using `database.engine`, see [the connection pooling documentation for Peewee](http://docs.peewee-orm.com/en/latest/peewee/playhouse.html#connection-pool).  You will need to use one of the pooled database classes in `database.engine`, for example:
 
 ```

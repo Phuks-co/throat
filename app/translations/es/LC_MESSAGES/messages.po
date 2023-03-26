@@ -2,14 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2021-11-11 19:23-0300\n"
-"PO-Revision-Date: 2021-11-12 04:19\n"
+"POT-Creation-Date: 2022-07-17 14:33-0300\n"
+"PO-Revision-Date: 2022-07-17 17:42\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.0\n"
+"Generated-By: Babel 2.9.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Crowdin-Project: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "X-Crowdin-Project-ID: 2\n"
@@ -26,371 +26,355 @@ msgstr "Inicie sesión para acceder a esta página."
 msgid "Please reauthenticate to access this page."
 msgstr "Por favor, vuelva a autenticarse para acceder a esta página."
 
-#: app/badges.py:127 app/views/do.py:3246
+#: app/badges.py:127 app/views/do.py:3469
 msgid "Invalid file type. Only jpg, png and gif allowed."
 msgstr "Tipo de archivo inválido. Solo se permiten jpg, png y gif."
 
-#: app/config.py:89
+#: app/config.py:90
 msgid "Name of the site."
-msgstr ""
+msgstr "Nombre del sitio."
 
-#: app/config.py:94
+#: app/config.py:95
 msgid "Lema shown in the page's title."
-msgstr ""
+msgstr "Lema mostrado en el título de la página."
 
-#: app/config.py:99
+#: app/config.py:100
 msgid "Copyright line shown in the footer."
-msgstr ""
+msgstr "Línea de derechos de autor que se muestra en el pie de página."
 
-#: app/config.py:104
+#: app/config.py:105
 msgid "Name shown when a sub is owned by a deleted account or abandoned."
-msgstr ""
+msgstr "Nombre mostrado cuando un sub es propiedad de una cuenta borrada o abandonada."
 
-#: app/config.py:111
+#: app/config.py:112
 msgid "Enables setting security questions on the admin page. Users will be asked to answer one of these security questions before registering."
-msgstr ""
+msgstr "Permite configurar preguntas de seguridad en la página de administración. Se pedirá a los usuarios que respondan a una de estas preguntas de seguridad antes de registrarse."
 
-#: app/config.py:119
+#: app/config.py:120
 msgid "Allow everybody to upload files (by default it's only admins and users authorized through a metadata key)."
 msgstr ""
 
-#: app/config.py:127
+#: app/config.py:128
 msgid "For those who are allowed to upload files, allow video uploads (.mp4 and .webm) as well."
-msgstr ""
+msgstr "Para aquellos a los que se les permite subir archivos, permitir la subida de videos (.mp4 y .webm) también."
 
-#: app/config.py:134
+#: app/config.py:135
 msgid "Minimum level a user must have before being able to upload files. Set to zero to disable file upload level limits."
 msgstr ""
 
-#: app/config.py:142
+#: app/config.py:143
 msgid "Allow chat access for all users. If enabled, each user will have the option of disabling chat for themselves."
-msgstr ""
+msgstr "Permitir el acceso al chat para todos los usuarios. Si está activado, cada usuario tendrá la opción de desactivar el chat para sí mismo."
 
-#: app/config.py:150
+#: app/config.py:151
 msgid "Allow all users to view the site log. When disabled, only admins can view the sitelog."
 msgstr ""
 
-#: app/config.py:157
+#: app/config.py:158
 msgid "Forces all the sub logs and banned user lists to be public and removes the option to make them private."
 msgstr ""
 
-#: app/config.py:165
+#: app/config.py:166
 msgid "Show the \"Submit a post\" button on the frontpage."
-msgstr ""
+msgstr "Mostrar el botón \"Enviar un post\" en la página principal."
 
-#: app/config.py:170
+#: app/config.py:171
 msgid "Blocks anonymous users from being able to look at a particular user's posts or comments (IE blocks /u/<user>/posts and /u/<user>/comments)."
-msgstr ""
+msgstr "Bloquea que los usuarios anónimos puedan ver las publicaciones o comentarios de un usuario en particular (bloquea /u/<user>/posts y /u/<user>/comments)."
 
-#: app/config.py:178
+#: app/config.py:179
 msgid "SID of the sub for changelog entries."
 msgstr ""
 
-#: app/config.py:183
+#: app/config.py:184
 msgid "Amount of time in seconds the post author can edit a post's title after the post was created. Set to zero to disable title editing (default is 5 minutes)."
-msgstr ""
+msgstr "Cantidad de tiempo en segundos que el autor del post tiene para poder editar el título de un post después de que el post fue creado. Establecer en cero para desactivar la edición de títulos (el valor predeterminado es de 5 minutos)."
 
-#: app/config.py:191
+#: app/config.py:192
 msgid "Minimum level a user must have before being able to create a sub. Set to zero to disable sub creation level limits."
-msgstr ""
+msgstr "Nivel mínimo que debe tener un usuario antes de poder crear un sub. Establecer a cero para desactivar los límites."
 
-#: app/config.py:199
+#: app/config.py:200
 msgid "When enabled, only admins can create new subs, otherwise `sub_creation_min_level` controls who can create a sub."
-msgstr ""
+msgstr "Cuando está habilitado, sólo los administradores pueden crear subs nuevos, de lo contrario `sub_creation_min_level` controla quién puede crear un sub."
 
-#: app/config.py:207
+#: app/config.py:208
 msgid "Maximum amount of subs a single user can own. The actual amount of subs a user may register scales with user level (user level minus one) so a level 0 or level 1 user cannot register any subs. This scaling is disabled if `sub_creation_min_level` is zero."
-msgstr ""
+msgstr "Cantidad máxima de subs que un solo usuario puede poseer. La cantidad real de subs que un usuario puede registrar escala con el nivel de usuario (nivel de usuario menos uno) por lo que un usuario de nivel 0 o nivel 1 no puede registrar subs. Esta escala está desactivada si `sub_creation_min_level` es cero."
 
-#: app/config.py:217
+#: app/config.py:218
 msgid "Allows Sub Mods and Admins to view the edit history of posts."
-msgstr ""
+msgstr "Permite a moderadores y administradores ver el historial de edición de los posts."
 
-#: app/config.py:224
+#: app/config.py:225
 msgid "Removes the name of the Mod or Admin who took action on a post or user in notifications sent to user."
 msgstr ""
 
-#: app/config.py:232
+#: app/config.py:233
 msgid "Minimum level required for a user to be permitted to private message nonprivileged users. Set to zero to allow users of all levels to PM other users. Users of any level may PM site admins."
 msgstr ""
 
-#: app/config.py:241
+#: app/config.py:242
 msgid "Maximum amount of posts a user can create in a single sub in a day."
-msgstr ""
+msgstr "Cantidad máxima de posts que un usuario puede crear en un solo sub en un día."
 
-#: app/config.py:248
+#: app/config.py:249
 msgid "Maximum amount of posts a user can create in a single day."
-msgstr ""
+msgstr "Cantidad máxima de posts que un usuario puede crear en un solo día."
 
-#: app/config.py:253
+#: app/config.py:254
 msgid "Number of days after which posts will be archived."
-msgstr ""
+msgstr "Número de días después de los cuales se archivarán los posts."
 
-#: app/config.py:258
+#: app/config.py:259
 msgid "When enabled, archive sticky posts after 'archive_post_after' days, the same as regular posts. When disabled, sticky posts will not be archived."
 msgstr ""
 
-#: app/config.py:269
+#: app/config.py:270
 msgid "Enables or disables the recent activity sidebar and the page in /activity."
 msgstr ""
 
-#: app/config.py:276
+#: app/config.py:277
 msgid "Only show recent activity from default subs in the sidebar (recent activity for all subs will be shown in /activity)."
 msgstr ""
 
-#: app/config.py:284
+#: app/config.py:285
 msgid "If enabled, only show recent comments (and not posts) in the sidebar."
 msgstr ""
 
-#: app/config.py:291
+#: app/config.py:292
 msgid "Number of entries to display in the recent activity sidebar."
-msgstr ""
+msgstr "Número de entradas a mostrar en la barra lateral de actividad reciente."
 
-#: app/config.py:300
+#: app/config.py:301
 msgid "Show the 'Contact the Mods' button in sub sidebars, which provides a link to the modmail server."
 msgstr ""
 
-#: app/config.py:308
+#: app/config.py:309
 msgid "Allow users to make posts and comments."
-msgstr ""
+msgstr "Permitir a los usuarios crear posts y comentarios."
 
-#: app/config.py:313
+#: app/config.py:314
 msgid "Allow new users to register."
-msgstr ""
+msgstr "Permitir a nuevos usuarios registrarse."
 
-#: app/config.py:318
+#: app/config.py:319
 msgid "Allow users to see the usernames of the people they invited or were invited by."
 msgstr ""
 
-#: app/config.py:325
+#: app/config.py:326
 msgid "Level requirement before a user can generate invite codes."
 msgstr ""
 
-#: app/config.py:330
+#: app/config.py:331
 msgid "The number of invite codes each user is allowed to generate (see also site.invite_level)."
-msgstr ""
+msgstr "El número de códigos de invitación que puede generar cada usuario (ver también site.invite_level)."
 
-#: app/config.py:337
+#: app/config.py:338
 msgid "Require the user to solve a captcha to register or post."
-msgstr ""
+msgstr "Requerir que el usuario resuelva un captcha para registrarse o postear."
 
-#: app/config.py:342
+#: app/config.py:343
 msgid "Require an invite code to register."
-msgstr ""
+msgstr "Activar código de invitación para registrarse."
 
-#: app/config.py:347
+#: app/config.py:348
 msgid "If enabled, show the notification count on the page title icon.  Otherwise, show the notification count in parentheses in the page title."
 msgstr ""
 
-#: app/config.py:355
+#: app/config.py:356
 msgid "The maximum length of a user name, applied to new registrations. This should be set to a number between 2 and 64."
 msgstr ""
 
-#: app/config.py:369
+#: app/config.py:370
 msgid "If enabled, show NSFW content to anonymous users."
 msgstr ""
 
-#: app/config.py:376
+#: app/config.py:377
 msgid "If enabled, and 'site.nsfw.anon.show' is also enabled, blur NSFW content when it is shown to anonymous users."
 msgstr ""
 
-#: app/config.py:389
+#: app/config.py:390
 msgid "If enabled, set the NSFW preference of new users to show NSFW content."
 msgstr ""
 
-#: app/config.py:396
+#: app/config.py:397
 msgid "If enabled, and 'site.nsfw.new_user_default.show' is also enabled, set the NSFW preference of new users to blur NSFW content."
 msgstr ""
 
-#: app/config.py:408
+#: app/config.py:409
 msgid "If enabled, show upvotes and downvotes in addition to total score. Otherwise, only show upvotes and downloads to admins and mods in their own subs."
 msgstr ""
 
-#: app/config.py:421
+#: app/config.py:420
+msgid "If enabled, users will automatically upvote their own posts, and are allowed to change their vote.  If disabled, users cannot upvote or downvote their own posts."
+msgstr ""
+
+#: app/config.py:429
+msgid "If enabled, users will automatically upvote their own comments, and are allowed to change their vote.  If disabled, users cannot upvote or downvote their own comments."
+msgstr ""
+
+#: app/config.py:443
+msgid "If enabled, show the post score next to its title in the list of top posts in the last 24 hours."
+msgstr ""
+
+#: app/config.py:453
+msgid "If set, and site.enable_modmail is also set, when an admin removes a user's content, a reply by the user to the notification message will be sent to the modmail of this sub. If this is left empty, replies will go to the modmail of the sub in which the removed content was posted."
+msgstr ""
+
+#: app/config.py:469
 msgid "Max storage for image uploads for subs' stylesheets (in MiB)."
 msgstr ""
 
-#: app/misc.py:1542
+#: app/misc.py:1614
 #, python-format
 msgid "Error in the '%(field)s' field - %(error)s"
 msgstr "Error en el campo '%(field)s' - %(error)s"
 
-#: app/misc.py:1725
+#: app/misc.py:1802
 #, python-format
 msgid "Re: %(subject)s"
-msgstr ""
+msgstr "Re: %(subject)s"
 
 #: app/html/shared/post.html:83 app/html/shared/post.html:89
 #: app/html/site/log.html:28 app/html/sub/log.html:30 app/html/sub/post.html:44
 #: app/html/sub/post.html:46 app/html/sub/post.html:121
 #: app/html/sub/post.html:140 app/html/sub/post.html:190
 #: app/html/sub/post.html:199 app/html/sub/postcomments.html:31
-#: app/misc.py:1899 app/misc.py:2603 app/misc.py:2609 app/misc.py:2615
-#: app/misc.py:2620
+#: app/misc.py:1976 app/misc.py:2732 app/misc.py:2738 app/misc.py:2744
+#: app/misc.py:2749
 msgid "[Deleted]"
 msgstr "[Borrado]"
 
-#: app/misc.py:1968
+#: app/misc.py:2052
 msgid "URLs not allowed, uploaded files only"
 msgstr "No se permiten URLs, solo archivos subidos"
 
-#: app/misc.py:1988
+#: app/misc.py:2063
+msgid "Invalid characters in string."
+msgstr ""
+
+#: app/misc.py:2081
 msgid "@import token not allowed"
 msgstr "token @import no permitido"
 
-#: app/misc.py:2000
+#: app/misc.py:2097
 msgid "Invalid CSS"
 msgstr "CSS inválido"
 
-#: app/html/sub/postcomments.html:44 app/misc.py:2590
+#: app/html/sub/postcomments.html:44 app/misc.py:2719
 msgid "[Blocked]"
-msgstr ""
+msgstr "[Bloqueado]"
 
-#: app/misc.py:2678
+#: app/misc.py:2807
 msgid "Already processing previous request."
-msgstr ""
+msgstr "Ya está procesando la solicitud anterior."
 
-#: app/misc.py:2700
+#: app/misc.py:2829
 msgid "Unknown error. User disappeared"
 msgstr "Error desconocido. El usuario desapareció"
 
-#: app/misc.py:2707
+#: app/misc.py:2836
 msgid "Score balance is negative"
 msgstr "Balance de puntaje negativo"
 
-#: app/misc.py:2709
+#: app/misc.py:2838
 msgid "Invalid vote value"
 msgstr "Valor inválido para el voto"
 
-#: app/misc.py:2725 app/views/do.py:316 app/views/do.py:428 app/views/do.py:749
-#: app/views/do.py:782 app/views/do.py:1143 app/views/do.py:1235
-#: app/views/do.py:2034 app/views/do.py:2136 app/views/do.py:2289
-#: app/views/do.py:2304 app/views/do.py:2377 app/views/do.py:2462
-#: app/views/do.py:3046 app/views/do.py:3565 app/views/do.py:3628
-#: app/views/do.py:3729 app/views/do.py:3779 app/views/do.py:3909
-#: app/views/do.py:3970
+#: app/misc.py:2854 app/views/do.py:315 app/views/do.py:448 app/views/do.py:815
+#: app/views/do.py:851 app/views/do.py:1231 app/views/do.py:1337
+#: app/views/do.py:2181 app/views/do.py:2287 app/views/do.py:2440
+#: app/views/do.py:2455 app/views/do.py:2528 app/views/do.py:2613
+#: app/views/do.py:3266 app/views/do.py:3792 app/views/do.py:3855
+#: app/views/do.py:3956 app/views/do.py:4006 app/views/do.py:4136
+#: app/views/do.py:4197
 msgid "Post does not exist"
 msgstr "El post no existe"
 
-#: app/misc.py:2728
+#: app/misc.py:2857
+msgid "You can't vote on your own posts"
+msgstr "No puedes votar en tus propios posts"
+
+#: app/misc.py:2859
 msgid "You can't vote on deleted posts"
 msgstr "No puedes votar en posts borrados"
 
-#: app/misc.py:2761 app/views/do.py:2427 app/views/do.py:2731
-#: app/views/do.py:2775 app/views/do.py:2844 app/views/do.py:3852
-#: app/views/do.py:3965
+#: app/misc.py:2892 app/views/do.py:2578 app/views/do.py:2882
+#: app/views/do.py:2930 app/views/do.py:3028 app/views/do.py:4079
+#: app/views/do.py:4192
 msgid "Comment does not exist"
 msgstr "El comentario no existe"
 
-#: app/misc.py:2764
+#: app/misc.py:2895
 msgid "You can't vote on your own comments"
 msgstr "No puedes votar en tus propios comentarios"
 
-#: app/misc.py:2766
+#: app/misc.py:2897
 msgid "You can't vote on deleted comments"
 msgstr "No puedes votar en comentarios borrados"
 
-#: app/misc.py:2778
+#: app/misc.py:2909
 msgid "Invalid target"
 msgstr "Target inválido"
 
-#: app/misc.py:2781 app/views/do.py:1183 app/views/do.py:2037
-#: app/views/do.py:2739
+#: app/misc.py:2912 app/views/do.py:1285 app/views/do.py:2188
+#: app/views/do.py:2894
 msgid "You are banned on this sub."
 msgstr "Estás baneado en este sub."
 
-#: app/misc.py:2786 app/views/do.py:1186 app/views/do.py:1240
-#: app/views/do.py:2750
+#: app/misc.py:2917 app/views/do.py:1288 app/views/do.py:1342
+#: app/views/do.py:2905
 msgid "Post is archived"
 msgstr "El post está archivado"
 
-#: app/misc.py:3148
+#: app/misc.py:3271
 msgid "Invalid status request"
 msgstr "Estado inválido"
 
-#: app/notifications.py:284
+#: app/notifications.py:272
 msgid "Looks like nobody bothered to code the message for this notification :("
 msgstr "Oww, auch. No deberías poder ver este mensaje :("
 
-#: app/notifications.py:287
+#: app/notifications.py:275
 msgid "New notification."
 msgstr "Nueva notificación."
 
-#: app/notifications.py:289
+#: app/notifications.py:277
 #, python-format
 msgid "Post reply in %(prefix)s/%(sub)s"
 msgstr "Respuesta a tu post en %(prefix)s/%(sub)s"
 
-#: app/notifications.py:294
+#: app/notifications.py:282
 #, python-format
 msgid "%(name)s replied to your post titled %(title)s"
 msgstr "%(name)s respondió a tu comentario en el post titulado %(title)s"
 
-#: app/notifications.py:300
+#: app/notifications.py:288
 #, python-format
 msgid "Comment reply in %(prefix)s/%(sub)s"
 msgstr "Respuesta a un comentario en %(prefix)s/%(sub)s"
 
-#: app/notifications.py:305
+#: app/notifications.py:293
 #, python-format
 msgid "%(name)s replied to your comment in the post titled %(title)s"
 msgstr "%(name)s respondió a tu comentario en el post titulado %(title)s"
 
-#: app/notifications.py:311
+#: app/notifications.py:299
 #, python-format
 msgid "You were mentioned in %(prefix)s/%(sub)s"
 msgstr "Has sido mencionado en %(prefix)s/%(sub)s"
 
-#: app/notifications.py:316
+#: app/notifications.py:304
 #, python-format
 msgid "%(name)s mentioned you in the post titled %(title)s"
 msgstr "%(name)s mencionó su nombre en el post titulado %(title)s"
 
-#: app/notifications.py:322
-#, python-format
-msgid "Your post in %(prefix)s/%(sub)s was deleted"
-msgstr "Tu publicación en %(prefix)s/%(sub)s ha sido eliminada"
-
-#: app/notifications.py:327
-#, python-format
-msgid "%(name)s deleted your post titled %(title)s. %(comment)s"
-msgstr "%(name)s eliminó tu publicación titulada %(title)s. %(comment)s"
-
-#: app/notifications.py:334
-#, python-format
-msgid "You have been banned from %(prefix)s/%(sub)s"
-msgstr "Has sido baneado de %(prefix)s/%(sub)s"
-
-#: app/notifications.py:339
-#, python-format
-msgid "%(name)s banned you with reason: %(content)s"
-msgstr "%(name)s te ha baneado por el motivo: %(content)s"
-
-#: app/notifications.py:345
-#, python-format
-msgid "You have been unbanned from %(prefix)s/%(sub)s"
-msgstr "Has sido desbaneado de %(prefix)s/%(sub)s"
-
-#: app/notifications.py:350
-#, python-format
-msgid "%(name)s unbanned you."
-msgstr "%(name)s te ha desbaneado."
-
-#: app/notifications.py:352
-#, python-format
-msgid "You have been invited to moderate %(prefix)s/%(sub)s"
-msgstr "Has sido invitado a moderar %(prefix)s/%(sub)s"
-
-#: app/notifications.py:357
-#, python-format
-msgid "%(name)s invited you to the sub's mod team"
-msgstr "%(name)s te invitó al equipo de mod del sub"
-
-#: app/storage.py:187
+#: app/storage.py:190
 msgid "File type not allowed"
 msgstr "Tipo de archivo no permitido"
 
-#: app/storage.py:195
+#: app/storage.py:198
 #, python-format
 msgid "File size exceeds the maximum allowed size (%(size)s)"
 msgstr "El archivo excede el máximo permitido (%(size)s MB)"
@@ -415,7 +399,7 @@ msgid "Badge"
 msgstr "Medalla"
 
 #: app/forms/admin.py:32 app/forms/sub.py:72 app/forms/sub.py:78
-#: app/forms/user.py:46 app/forms/user.py:92 app/html/user/login.html:15
+#: app/forms/user.py:81 app/forms/user.py:92 app/html/user/login.html:15
 #: app/static/js/main.js:52
 msgid "Username"
 msgstr "Usuario"
@@ -604,17 +588,17 @@ msgid "Default sub page post sorting"
 msgstr "Orden de los posts por defecto"
 
 #: app/forms/sub.py:133 app/html/index.html:8 app/html/index.html:12
-#: app/html/sub.html:14
+#: app/html/sub.html:20
 msgid "Hot"
 msgstr "Activo"
 
 #: app/forms/sub.py:133 app/html/index.html:10 app/html/index.html:14
-#: app/html/sub.html:16 app/html/sub/post.html:434
+#: app/html/sub.html:22 app/html/sub/post.html:434
 msgid "New"
 msgstr "Nuevo"
 
 #: app/forms/sub.py:133 app/html/index.html:9 app/html/index.html:13
-#: app/html/sub.html:15 app/html/sub/post.html:424
+#: app/html/sub.html:21 app/html/sub/post.html:424
 msgid "Top"
 msgstr "Popular"
 
@@ -719,27 +703,27 @@ msgstr "el ban expira"
 msgid "Comment text"
 msgstr "Texto del comentario"
 
-#: app/forms/user.py:48 app/forms/user.py:105 app/forms/user.py:241
-#: app/html/user/login.html:18 app/html/user/password_reset.html:16
-#: app/static/js/main.js:55
-msgid "Password"
-msgstr "Contraseña"
-
-#: app/forms/user.py:50 app/html/user/login.html:22 app/static/js/main.js:59
-msgid "Remember me"
-msgstr "Recordarme"
-
-#: app/forms/user.py:75
+#: app/forms/user.py:65
 #, python-format
 msgid "Field must be exactly %(max)d character long."
 msgid_plural "Field must be exactly %(max)d characters long."
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/forms/user.py:81
+#: app/forms/user.py:71
 #, python-format
 msgid "Field must be between %(min)d and %(max)d characters long."
 msgstr ""
+
+#: app/forms/user.py:83 app/forms/user.py:105 app/forms/user.py:241
+#: app/html/user/login.html:18 app/html/user/password_reset.html:16
+#: app/static/js/main.js:55
+msgid "Password"
+msgstr "Contraseña"
+
+#: app/forms/user.py:85 app/html/user/login.html:22 app/static/js/main.js:59
+msgid "Remember me"
+msgstr "Recordarme"
 
 #: app/forms/user.py:95 app/forms/user.py:130
 msgid "Email Address (optional)"
@@ -836,11 +820,11 @@ msgstr "Idioma"
 
 #: app/forms/user.py:191
 msgid "Hide messages"
-msgstr ""
+msgstr "Ocultar mensajes"
 
 #: app/forms/user.py:191
 msgid "Show messages"
-msgstr ""
+msgstr "Mostrar mensajes"
 
 #: app/forms/user.py:196
 msgid "Hide posts and comments"
@@ -852,7 +836,7 @@ msgstr ""
 
 #: app/forms/user.py:198
 msgid "Show posts and comments"
-msgstr ""
+msgstr "Mostrar posts y comentarios"
 
 #: app/forms/user.py:206
 msgid "to"
@@ -865,10 +849,6 @@ msgstr "asunto"
 #: app/forms/user.py:212 app/forms/user.py:221
 msgid "message"
 msgstr "mensaje"
-
-#: app/html/chat.html:12 app/html/shared/layout.html:188
-msgid "Type here"
-msgstr "Escribe aquí"
 
 #: app/html/errors/layout.html:74 app/html/index.html:27
 #: app/html/shared/layout.html:170
@@ -885,7 +865,7 @@ msgstr "Servidor por %(host)s"
 msgid "Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries"
 msgstr "Página generada en __EXECUTION_TIME__ms con __DB_QUERIES__ consultas"
 
-#: app/html/index.html:49 app/html/sub.html:32
+#: app/html/index.html:49 app/html/sub.html:40
 msgid "There are no posts here, yet."
 msgstr "No hay posts aquí, todavía."
 
@@ -893,7 +873,7 @@ msgstr "No hay posts aquí, todavía."
 #: app/html/index.html:60 app/html/mod/closed.html:65
 #: app/html/mod/reports.html:64 app/html/mod/sub_reports.html:65
 #: app/html/mod/sub_reports_closed.html:67 app/html/site/log.html:105
-#: app/html/sub.html:42 app/html/sub/log.html:95 app/html/user/ignores.html:52
+#: app/html/sub.html:50 app/html/sub/log.html:99 app/html/user/ignores.html:52
 msgid "Previous page"
 msgstr "Página anterior"
 
@@ -901,34 +881,38 @@ msgstr "Página anterior"
 #: app/html/index.html:63 app/html/mod/closed.html:68
 #: app/html/mod/reports.html:67 app/html/mod/sub_reports.html:68
 #: app/html/mod/sub_reports_closed.html:70 app/html/site/log.html:109
-#: app/html/sub.html:45 app/html/sub/log.html:99 app/html/user/ignores.html:55
+#: app/html/sub.html:53 app/html/sub/log.html:103 app/html/user/ignores.html:55
 msgid "Next page"
 msgstr "Página siguiente"
 
+#: app/html/sub.html:15
+msgid "(show all)"
+msgstr "(mostrar todo)"
+
 #: app/html/admin/configuration.html:15 app/html/shared/sidebar/admin.html:16
 msgid "Site configuration"
-msgstr ""
+msgstr "Configuración del sitio"
 
 #: app/html/admin/configuration.html:16
 #, python-format
 msgid "See the <a href=\"%(url)s\">Site log</a> for the history of changes to configuration values."
-msgstr ""
+msgstr "Consulte el <a href=\"%(url)s\">log del sitio</a> para ver el historial de cambios en los valores de configuración."
 
 #: app/html/admin/configuration.html:23
 msgid "Setting Name"
-msgstr ""
+msgstr "Nombre"
 
 #: app/html/admin/configuration.html:24
 msgid "Current Value"
-msgstr ""
+msgstr "Valor actual"
 
 #: app/html/admin/configuration.html:35 app/static/js/Mod.js:131
 msgid "Enabled"
-msgstr ""
+msgstr "Activado"
 
 #: app/html/admin/configuration.html:37
 msgid "Disabled"
-msgstr ""
+msgstr "Desactivado"
 
 #: app/html/admin/configuration.html:67 app/html/sub/flairs.html:22
 #: app/html/sub/rules.html:28 app/html/sub/settings.html:133
@@ -952,7 +936,7 @@ msgid "(Optional) Write your post content here. Styling with Markdown format is 
 msgstr "(Opcional) Escribe el contenido del post aquí. Formateo con Markdown soportado."
 
 #: app/html/admin/createwiki.html:37 app/html/mod/reportdetails.html:229
-#: app/static/js/Post.js:837
+#: app/static/js/Post.js:838
 msgid "Submit"
 msgstr "Enviar"
 
@@ -1131,11 +1115,11 @@ msgstr "Demasiadas peticiones"
 msgid "Too much, too fast!"
 msgstr "¡Demasiado, demasiado rápido!"
 
-#: app/html/errors/429.html:12 app/views/do.py:116
+#: app/html/errors/429.html:12 app/views/do.py:115
 msgid "Whoa, calm down and wait a bit, then try again."
 msgstr "Tómate un segundo, respira bien hondo y espera un poco antes de probar de nuevo."
 
-#: app/html/errors/500.html:4 app/html/errors/500.html:10 app/views/do.py:1254
+#: app/html/errors/500.html:4 app/html/errors/500.html:10 app/views/do.py:1356
 msgid "Internal error"
 msgstr "Error interno"
 
@@ -1183,36 +1167,36 @@ msgstr "Reabrir"
 #: app/html/mod/closed.html:35 app/html/mod/reports.html:34
 #: app/html/mod/sub_reports.html:35 app/html/mod/sub_reports_closed.html:37
 msgid "Sub:"
-msgstr ""
+msgstr "Sub:"
 
 #: app/html/mod/closed.html:36 app/html/mod/reports.html:35
 #: app/html/mod/sub_reports.html:36 app/html/mod/sub_reports_closed.html:38
 msgid "Type:"
-msgstr ""
+msgstr "Tipo:"
 
 #: app/html/mod/closed.html:43 app/html/mod/reports.html:42
 #: app/html/mod/sub_reports.html:43 app/html/mod/sub_reports_closed.html:45
 msgid "Reported by:"
-msgstr ""
+msgstr "Reportado por:"
 
 #: app/html/mod/closed.html:46 app/html/mod/reportdetails.html:331
 #: app/html/mod/reports.html:45 app/html/mod/sub_reports.html:46
 #: app/html/mod/sub_reports_closed.html:48 app/html/sub/bans.html:84
 #: app/html/sub/bans.html:141
 msgid "Reason:"
-msgstr ""
+msgstr "Razón:"
 
 #: app/html/mod/closed.html:47 app/html/mod/reports.html:46
 #: app/html/mod/sub_reports.html:47 app/html/mod/sub_reports_closed.html:49
 msgid "User reported:"
-msgstr ""
+msgstr "Usuario reportado:"
 
 #: app/html/mod/closed.html:50 app/html/mod/reportdetails.html:248
 #: app/html/mod/reportdetails.html:323 app/html/mod/reports.html:49
 #: app/html/mod/sub_reports.html:50 app/html/mod/sub_reports_closed.html:52
 #: app/html/sub/log.html:22
 msgid "Time:"
-msgstr ""
+msgstr "Fecha/Hora:"
 
 #: app/html/mod/dashboard.html:5 app/html/mod/dashboard.html:15
 msgid "Mod dashboard"
@@ -1253,15 +1237,15 @@ msgstr ""
 
 #: app/html/mod/reportdetails.html:39
 msgid "All related reports are closed"
-msgstr ""
+msgstr "Todos los reportes relacionados están cerrados"
 
 #: app/html/mod/reportdetails.html:43
 msgid "Close All Reports for this Comment"
-msgstr ""
+msgstr "Cerrar todos los reportes para este comentario"
 
 #: app/html/mod/reportdetails.html:47
 msgid "Close All Reports for this Post"
-msgstr ""
+msgstr "Cerrar todos los reportes de este post"
 
 #: app/html/mod/reportdetails.html:65
 msgid "Reported User"
@@ -1310,11 +1294,11 @@ msgstr "Vista previa:"
 
 #: app/html/mod/reportdetails.html:143 app/html/sub/postcomments.html:81
 msgid "[post deleted by admin]"
-msgstr ""
+msgstr "[eliminado por administrador]"
 
 #: app/html/mod/reportdetails.html:145 app/html/sub/postcomments.html:78
 msgid "[post deleted by mod]"
-msgstr ""
+msgstr "[eliminado por moderador]"
 
 #: app/html/mod/reportdetails.html:147 app/html/mod/reportdetails.html:160
 #: app/html/sub/postcomments.html:75
@@ -1331,11 +1315,11 @@ msgstr "Vista previa del comentario:"
 
 #: app/html/mod/reportdetails.html:173
 msgid "[comment deleted by mod]"
-msgstr ""
+msgstr "[comentario eliminado por moderador]"
 
 #: app/html/mod/reportdetails.html:175
 msgid "[comment deleted by admin]"
-msgstr ""
+msgstr "[comentario eliminado por administrador]"
 
 #: app/html/mod/reportdetails.html:179 app/html/mod/reportdetails.html:182
 msgid "[comment deleted by user]"
@@ -1343,7 +1327,7 @@ msgstr "[comentario eliminado por el usuario]"
 
 #: app/html/mod/reportdetails.html:191 app/html/mod/reportdetails.html:193
 msgid "Posted"
-msgstr ""
+msgstr "Publicado"
 
 #: app/html/mod/reportdetails.html:199
 msgid "Go to comment"
@@ -1371,7 +1355,7 @@ msgstr ""
 
 #: app/html/mod/reportdetails.html:237
 msgid "No logs have been made yet on this report"
-msgstr ""
+msgstr "Aún no se han realizado registros en este reporte"
 
 #: app/html/mod/reportdetails.html:242
 msgid "Action Taken"
@@ -1388,15 +1372,15 @@ msgstr "Detalles"
 
 #: app/html/mod/reportdetails.html:251
 msgid "Action Taken:"
-msgstr ""
+msgstr "Acción tomada:"
 
 #: app/html/mod/reportdetails.html:253
 msgid "Report closed"
-msgstr ""
+msgstr "Reporte cerrado"
 
 #: app/html/mod/reportdetails.html:255
 msgid "Report reopened"
-msgstr ""
+msgstr "Reporte reabierto"
 
 #: app/html/mod/reportdetails.html:257
 msgid "Post deleted"
@@ -1437,15 +1421,15 @@ msgstr "Ha dejado una nota"
 #: app/html/mod/reportdetails.html:278 app/html/sub/bans.html:66
 #: app/html/sub/bans.html:125
 msgid "By:"
-msgstr ""
+msgstr "Por:"
 
 #: app/html/mod/reportdetails.html:285
 msgid "Details:"
-msgstr ""
+msgstr "Detalles:"
 
 #: app/html/mod/reportdetails.html:287
 msgid "Closed all reports related to: "
-msgstr ""
+msgstr "Cerrados todos los informes relacionados a: "
 
 #: app/html/mod/reportdetails.html:288 app/html/shared/post.html:117
 #: app/html/sub/post.html:274 app/html/sub/postcomments.html:122
@@ -1454,7 +1438,7 @@ msgstr "reportar"
 
 #: app/html/mod/reportdetails.html:301
 msgid "Other reports on this comment:"
-msgstr ""
+msgstr "Otros reportes para este comentario:"
 
 #: app/html/mod/reportdetails.html:303
 msgid "Other reports on this post:"
@@ -1462,7 +1446,7 @@ msgstr "Otros reportes para este post:"
 
 #: app/html/mod/reportdetails.html:308
 msgid "There are no other reports on this comment"
-msgstr ""
+msgstr "No hay ningún otro reporte para este comentario"
 
 #: app/html/mod/reportdetails.html:310
 msgid "There are no other reports on this post"
@@ -1470,11 +1454,11 @@ msgstr "No hay ningún otro reporte para este post"
 
 #: app/html/mod/reportdetails.html:330
 msgid "Reporter:"
-msgstr ""
+msgstr "Reportado por:"
 
 #: app/html/mod/reportdetails.html:332
 msgid "Status:"
-msgstr ""
+msgstr "Estado:"
 
 #: app/html/mod/reports.html:15
 msgid "Includes all open reports for subs you can moderate."
@@ -1491,7 +1475,7 @@ msgstr "Reportes abiertos para "
 
 #: app/html/mod/sub_reports.html:16
 msgid "Includes all open reports for this sub."
-msgstr ""
+msgstr "Incluye todos los reportes abiertos para este sub."
 
 #: app/html/mod/sub_reports_closed.html:16
 msgid "Closed Reports for "
@@ -1540,6 +1524,10 @@ msgstr "Cerrar sesión"
 msgid "Chat"
 msgstr "Chat"
 
+#: app/html/shared/layout.html:191
+msgid "Type here"
+msgstr "Escribe aquí"
+
 #: app/html/shared/post.html:7 app/html/sub/post.html:74
 #: app/html/sub/postcomments.html:15
 msgid "Upvote"
@@ -1564,13 +1552,13 @@ msgstr "Anuncio"
 msgid "Not safe for work"
 msgstr ""
 
-#: app/html/shared/post.html:45 app/html/shared/sidebar/home.html:27
-#: app/html/shared/sidebar/home.html:51 app/html/shared/sidebar/sub.html:23
+#: app/html/shared/post.html:45 app/html/shared/sidebar/home.html:31
+#: app/html/shared/sidebar/home.html:55 app/html/shared/sidebar/sub.html:23
 #: app/html/site/activity.html:17 app/html/site/activity.html:19
 #: app/html/sub/post.html:102 app/html/user/messages/notifications.html:26
 #: app/html/user/messages/notifications.html:31
 #: app/html/user/messages/notifications.html:36 app/static/js/Socket.js:190
-#: app/templates/indexpost.html:34 app/templates/usercomments.html:46
+#: app/templates/indexpost.html:36 app/templates/usercomments.html:46
 msgid "NSFW"
 msgstr "NSFW"
 
@@ -1721,31 +1709,31 @@ msgstr "Crea un sub"
 msgid "Top posts in the last 24 hours"
 msgstr "Posts más votados en las últimas 24 horas"
 
-#: app/html/shared/sidebar/home.html:30 app/html/shared/sidebar/home.html:54
-#: app/html/shared/sidebar/home.html:78
+#: app/html/shared/sidebar/home.html:34 app/html/shared/sidebar/home.html:58
+#: app/html/shared/sidebar/home.html:82
 #, python-format
 msgid "%(timeago)s in %(sub)s"
 msgstr "%(timeago)s en %(sub)s"
 
-#: app/html/shared/sidebar/home.html:41 app/html/site/activity.html:11
+#: app/html/shared/sidebar/home.html:45 app/html/site/activity.html:11
 msgid "Recent activity"
 msgstr "Actividad reciente"
 
-#: app/html/shared/sidebar/home.html:46
+#: app/html/shared/sidebar/home.html:50
 #, python-format
 msgid "%(user)s commented: %(text)s"
 msgstr "%(user)s comentó: %(text)s"
 
-#: app/html/shared/sidebar/home.html:48
+#: app/html/shared/sidebar/home.html:52
 #, python-format
 msgid "%(user)s posted: %(text)s"
 msgstr "%(user)s publicó: %(text)s"
 
-#: app/html/shared/sidebar/home.html:65
+#: app/html/shared/sidebar/home.html:69
 msgid "Sub of the day"
 msgstr "Sub del día"
 
-#: app/html/shared/sidebar/home.html:85 app/html/site/log.html:7
+#: app/html/shared/sidebar/home.html:89 app/html/site/log.html:7
 msgid "Site logs"
 msgstr "Logs del sitio"
 
@@ -1783,7 +1771,7 @@ msgstr ""
 msgid "All Closed Reports"
 msgstr ""
 
-#: app/html/shared/sidebar/mod.html:11 app/html/shared/sidebar/sub.html:127
+#: app/html/shared/sidebar/mod.html:11 app/html/shared/sidebar/sub.html:139
 msgid "Banned Users"
 msgstr "Usuarios baneados"
 
@@ -1832,46 +1820,50 @@ msgstr ""
 msgid "... or pick a pre-defined one"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:88 app/html/shared/sidebar/sub.html:118
+#: app/html/shared/sidebar/sub.html:85
+msgid "Show posts with flair..."
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:100 app/html/shared/sidebar/sub.html:130
 #: app/html/shared/sidebar/sub_mod.html:9
 msgid "Moderators"
 msgstr "Moderadores"
 
-#: app/html/shared/sidebar/sub.html:91 app/html/sub/mods.html:28
+#: app/html/shared/sidebar/sub.html:103 app/html/sub/mods.html:28
 #: app/html/sub/mods.html:35
 msgid "Owner"
 msgstr "Dueño"
 
-#: app/html/shared/sidebar/sub.html:101
+#: app/html/shared/sidebar/sub.html:113
 msgid "Message the Mods"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:106
+#: app/html/shared/sidebar/sub.html:118
 #, python-format
 msgid "Created by <a href=\"/u/%(name)s\">%(name)s</a>"
 msgstr "Creado por <a href=\"/u/%(name)s\">%(name)s</a>"
 
-#: app/html/shared/sidebar/sub.html:111 app/html/shared/sidebar/sub_mod.html:3
+#: app/html/shared/sidebar/sub.html:123 app/html/shared/sidebar/sub_mod.html:3
 msgid "Settings"
 msgstr "Configuración"
 
-#: app/html/shared/sidebar/sub.html:112
+#: app/html/shared/sidebar/sub.html:124
 msgid "Edit flairs"
 msgstr "Editar flairs"
 
-#: app/html/shared/sidebar/sub.html:113
+#: app/html/shared/sidebar/sub.html:125
 msgid "Edit rules"
 msgstr "Editar reglas"
 
-#: app/html/shared/sidebar/sub.html:114
+#: app/html/shared/sidebar/sub.html:126
 msgid "Edit stylesheet"
 msgstr "Editar hoja de estilos"
 
-#: app/html/shared/sidebar/sub.html:115
+#: app/html/shared/sidebar/sub.html:127
 msgid "Sub Moderation"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:124
+#: app/html/shared/sidebar/sub.html:136
 msgid "Sub Log"
 msgstr "Logs del sub"
 
@@ -2080,19 +2072,19 @@ msgstr ""
 
 #: app/html/site/log.html:80
 msgid "Disabled captchas"
-msgstr ""
+msgstr "Captchas desactivados"
 
 #: app/html/site/log.html:82
 msgid "Enabled captchas"
-msgstr ""
+msgstr "Captchas activados"
 
 #: app/html/site/log.html:84
 #, python-format
 msgid "Changed <code>%(setting)s</code> to <code>%(value)s<code>"
-msgstr ""
+msgstr "Cambió <code>%(setting)s</code> a <code>%(value)s<code>"
 
 #: app/html/site/log.html:97 app/html/sub/createpost.html:85
-#: app/html/sub/log.html:86
+#: app/html/sub/log.html:90
 msgid "Link"
 msgstr "Enlace"
 
@@ -2141,7 +2133,7 @@ msgid "Created:"
 msgstr ""
 
 #: app/html/sub/bans.html:81 app/html/sub/bans.html:140
-#: app/html/sub/log.html:79
+#: app/html/sub/log.html:83
 msgid "User:"
 msgstr ""
 
@@ -2169,14 +2161,27 @@ msgstr "Eliminado"
 msgid "Removed:"
 msgstr ""
 
+#: app/html/sub/blocked.html:8
+#, python-format
+msgid "<a href=\"%(url)s\">/%(prefix)s/%(sub)s</a> is not available."
+msgstr ""
+
+#: app/html/sub/blocked.html:11
+msgid "The sub has been banned by the administration due to ToS/rule violations."
+msgstr ""
+
+#: app/html/sub/blocked.html:13
+msgid "The sub is temporally quarantined and will be back soon."
+msgstr ""
+
 #: app/html/sub/create.html:4 app/html/sub/create.html:12
 #: app/html/sub/create.html:27
 msgid "Create sub"
-msgstr ""
+msgstr "Crea un sub"
 
 #: app/html/sub/create.html:13
 msgid "Create a sub for you, your friends, or for your favorite community"
-msgstr ""
+msgstr "Crea un sub para ti, tus amigos, o para tu comunidad favorita"
 
 #: app/html/sub/create.html:20
 msgid "Alphanumeric characters"
@@ -2418,6 +2423,14 @@ msgid "Changed the comment sort order of a sticky post"
 msgstr ""
 
 #: app/html/sub/log.html:76
+msgid "Locked comments on a post"
+msgstr ""
+
+#: app/html/sub/log.html:78
+msgid "Unlocked comments on a post"
+msgstr ""
+
+#: app/html/sub/log.html:80
 #, python-format
 msgid "[Type %(type)i]"
 msgstr "[Tipo %(type)i]"
@@ -2521,22 +2534,22 @@ msgid "Score: %(score)i"
 msgstr ""
 
 #: app/html/sub/post.html:115 app/html/sub/post.html:134
-#: app/templates/indexpost.html:40 app/templates/indexpost.html:50
+#: app/templates/indexpost.html:44 app/templates/indexpost.html:54
 #: app/templates/usercomments.html:40
 msgid "[Deleted by User]"
 msgstr "[Eliminado por el usuario]"
 
 #: app/html/sub/post.html:117 app/html/sub/post.html:136
 msgid "[Deleted by Mod]"
-msgstr ""
+msgstr "[Eliminado por un moderador]"
 
 #: app/html/sub/post.html:119 app/html/sub/post.html:138
 msgid "[Deleted by Admin]"
-msgstr ""
+msgstr "[Eliminado por un administrador]"
 
 #: app/html/sub/post.html:168
 msgid "Viewing title history:"
-msgstr ""
+msgstr "Viendo historial de títulos:"
 
 #: app/html/sub/post.html:212
 msgid "unsave"
@@ -2654,11 +2667,11 @@ msgstr "Vista previa del comentario"
 
 #: app/html/sub/post.html:376
 msgid "This post is closed to new comments.  It has been locked by the moderators."
-msgstr ""
+msgstr "Este post está cerrado a nuevos comentarios. Ha sido bloqueado por los moderadores."
 
 #: app/html/sub/post.html:380
 msgid "This post is closed to new comments.  It has been automatically archived."
-msgstr ""
+msgstr "Este post está cerrado a nuevos comentarios. Se ha archivado automáticamente."
 
 #: app/html/sub/post.html:385
 msgid "No comments, yet..."
@@ -2666,7 +2679,7 @@ msgstr "No hay comentarios, todavía..."
 
 #: app/html/sub/post.html:388
 msgid "Show comments"
-msgstr ""
+msgstr "Mostrar comentarios"
 
 #: app/html/sub/post.html:391
 #, python-format
@@ -2684,7 +2697,7 @@ msgstr ""
 #: app/html/sub/post.html:403
 #, python-format
 msgid "Sort by: <b>%(currsort)s</b>"
-msgstr ""
+msgstr "Ordenar por: <b>%(currsort)s</b>"
 
 #: app/html/sub/post.html:413
 msgid "Best"
@@ -2702,7 +2715,7 @@ msgstr "<span class=\"cscore\">%(score)i</span> puntos</b> (+<b>%(upvotes)i</b>|
 #: app/html/sub/postcomments.html:50
 #, python-format
 msgid "<span class=\"cscore\">%(score)i</span> points</b>"
-msgstr ""
+msgstr "<span class=\"cscore\">%(score)i</span> puntos</b>"
 
 #: app/html/sub/postcomments.html:57
 #, python-format
@@ -2712,11 +2725,11 @@ msgstr "Editado %(timeago)s"
 #: app/html/sub/postcomments.html:84
 #, python-format
 msgid "[You have blocked <a href=\"%(link)s\">%(name)s</a>]"
-msgstr ""
+msgstr "[Has bloqueado a <a href=\"%(link)s\">%(name)s</a>]"
 
 #: app/html/sub/postcomments.html:112
 msgid "blocked users"
-msgstr ""
+msgstr "usuarios bloqueados"
 
 #: app/html/sub/postcomments.html:115
 #: app/html/user/messages/notifications.html:105
@@ -2903,7 +2916,7 @@ msgstr "Olvidaste tu contraseña?"
 
 #: app/html/user/ignores.html:6 app/html/user/ignores.html:21
 msgid "Blocked Users"
-msgstr ""
+msgstr "Usuarios bloqueados"
 
 #: app/html/user/ignores.html:23
 msgid "You can use this page to manage the users you have blocked. You can choose to hide or show private messages from blocked users, and you can choose to hide, blur or show posts and comments by blocked users. To add users to this list, use the “block” link on their user profile or the “block sender” link on their messages."
@@ -3055,12 +3068,12 @@ msgstr "Enviar mensaje"
 
 #: app/html/user/profile.html:190
 msgid "Message preview"
-msgstr ""
+msgstr "Vista previa del mensaje"
 
 #: app/html/user/profile.html:202
 #, python-format
 msgid "Block %(user)s"
-msgstr ""
+msgstr "Bloquear a %(user)s"
 
 #: app/html/user/profile.html:206
 #, python-format
@@ -3093,51 +3106,51 @@ msgstr ""
 #: app/html/user/email/password-recovery.html:2
 #, python-format
 msgid "Hi %(name)s,"
-msgstr ""
+msgstr "Hola %(name)s,"
 
 #: app/html/user/email/confirm-email-change.html:4
 #, python-format
 msgid "To confirm this email address for your account on %(site)s"
-msgstr ""
+msgstr "Para confirmar esta dirección de correo electrónico para tu cuenta en %(site)s"
 
 #: app/html/user/email/confirm-email-change.html:6
 #: app/html/user/email/login-link.html:6
 #: app/html/user/email/password-recovery.html:7
 msgid "click here."
-msgstr ""
+msgstr "haz clic aquí."
 
 #: app/html/user/email/confirm-email-change.html:9
 #: app/html/user/email/login-link.html:9
 #: app/html/user/email/password-recovery.html:10
 msgid "Or you can paste the following link in your browser's address bar:"
-msgstr ""
+msgstr "O puedes pegar el siguiente enlace en la barra de direcciones de tu navegador:"
 
 #: app/html/user/email/confirm-email-change.html:11
 #: app/html/user/email/login-link.html:11
 #: app/html/user/email/password-recovery.html:12
 msgid "Thanks,"
-msgstr ""
+msgstr "Gracias,"
 
 #: app/html/user/email/confirm-email-change.html:11
 #: app/html/user/email/login-link.html:11
 #: app/html/user/email/password-recovery.html:12
 #, python-format
 msgid "The %(site)s Team"
-msgstr ""
+msgstr "El equipo de %(site)s"
 
 #: app/html/user/email/login-link.html:4
 #, python-format
 msgid "Thank you for registering on %(site)s! To confirm your account and log in,"
-msgstr ""
+msgstr "¡Gracias por registrarte en %(site)s! Para confirmar tu cuenta e iniciar sesión,"
 
 #: app/html/user/email/password-recovery.html:4
 #, python-format
 msgid "Somebody (most likely you) has requested a password reset for your account on %(site)s."
-msgstr ""
+msgstr "Alguien (probablemente tú) ha solicitado un restablecimiento de contraseña para tu cuenta en %(site)s."
 
 #: app/html/user/email/password-recovery.html:5
 msgid "To proceed, "
-msgstr ""
+msgstr "Para continuar, "
 
 #: app/html/user/messages/notifications.html:24
 #, python-format
@@ -3373,17 +3386,17 @@ msgstr "Error: %1"
 
 #: app/static/js/Mod.js:24 app/static/js/Mod.js:39 app/static/js/Mod.js:68
 #: app/static/js/Mod.js:83 app/static/js/Post.js:425 app/static/js/Post.js:446
-#: app/static/js/Post.js:486 app/static/js/Post.js:960 app/static/js/Util.js:77
+#: app/static/js/Post.js:486 app/static/js/Post.js:961 app/static/js/Util.js:77
 msgid "Could not contact the server"
 msgstr "No se pudo contactar al servidor"
 
 #: app/static/js/Mod.js:132
 msgid "Enable"
-msgstr ""
+msgstr "Activar"
 
 #: app/static/js/Mod.js:138
 msgid "Change"
-msgstr ""
+msgstr "Cambiar"
 
 #: app/static/js/Poll.js:75
 msgid "Voting..."
@@ -3485,59 +3498,59 @@ msgstr "1 comentario"
 msgid "%1 comments"
 msgstr "%1 comentarios"
 
-#: app/static/js/Post.js:804
+#: app/static/js/Post.js:805
 msgid "Could not contact the server "
 msgstr "No se pudo contactar al servidor "
 
-#: app/static/js/Post.js:810
+#: app/static/js/Post.js:811
 msgid "Report post"
 msgstr "Reportar post"
 
-#: app/static/js/Post.js:811
+#: app/static/js/Post.js:812
 msgid "This report will be forwarded to the site administration"
 msgstr "Este informe será remitido a la administración del sitio"
 
-#: app/static/js/Post.js:814
+#: app/static/js/Post.js:815
 msgid "Select a reason to report this post:"
 msgstr "Seleccione una razón para reportar este post:"
 
-#: app/static/js/Post.js:816 app/static/js/Post.js:826
+#: app/static/js/Post.js:817 app/static/js/Post.js:827
 msgid "Select one..."
 msgstr "Seleccione una..."
 
-#: app/static/js/Post.js:817
+#: app/static/js/Post.js:818
 msgid "SPAM"
 msgstr "SPAM"
 
-#: app/static/js/Post.js:818
+#: app/static/js/Post.js:819
 msgid "TOS violation"
 msgstr "Violación de los términos de uso"
 
-#: app/static/js/Post.js:819
+#: app/static/js/Post.js:820
 msgid "Sub Rule violation"
 msgstr "Violación de una regla del sub"
 
-#: app/static/js/Post.js:820
+#: app/static/js/Post.js:821
 msgid "Other"
 msgstr "Otra"
 
-#: app/static/js/Post.js:824
+#: app/static/js/Post.js:825
 msgid "Which Sub rule did this post violate?"
 msgstr "¿Qué regla del sub violó este post?"
 
-#: app/static/js/Post.js:828
+#: app/static/js/Post.js:829
 msgid "Other sub rule"
 msgstr "Otra regla"
 
-#: app/static/js/Post.js:832
+#: app/static/js/Post.js:833
 msgid "Explain why you're reporting this post:"
 msgstr "Describe por qué reportas este post:"
 
-#: app/static/js/Post.js:953
+#: app/static/js/Post.js:954
 msgid "Error: "
 msgstr "Error: "
 
-#: app/static/js/Post.js:956
+#: app/static/js/Post.js:957
 msgid "Your report has been sent and will be reviewed by the site administrators."
 msgstr "Su informe ha sido enviado y será revisado por la administración del sitio."
 
@@ -3589,18 +3602,6 @@ msgstr "¿Está seguro que desea eliminar todos los votos emitidos por este usua
 msgid "Are you sure you want to unban this user?"
 msgstr "¿Estás seguro de que quieres desbanear a este usuario?"
 
-#: app/static/js/utils/MatrixUtils.js:208
-msgid "left the room"
-msgstr "salió de la sala"
-
-#: app/static/js/utils/MatrixUtils.js:211
-msgid "joined the room"
-msgstr "se unió la sala"
-
-#: app/static/js/utils/MatrixUtils.js:223
-msgid "message deleted"
-msgstr "mensaje borrado"
-
 #: app/static/js/utils/TextConfirm.js:7
 msgid "Are you sure?"
 msgstr "¿Estás seguro?"
@@ -3613,7 +3614,7 @@ msgstr "sí"
 msgid "no"
 msgstr "no"
 
-#: app/templates/indexpost.html:42 app/templates/indexpost.html:52
+#: app/templates/indexpost.html:46 app/templates/indexpost.html:56
 #: app/templates/usercomments.html:42
 msgid "[Deleted by Mod or Admin]"
 msgstr "[Eliminado por moderador o administrador]"
@@ -3655,11 +3656,11 @@ msgstr "El usuario tiene caracteres inválidos."
 msgid "Username is not available."
 msgstr "Usuario no disponible."
 
-#: app/views/auth.py:162 app/views/auth.py:331 app/views/do.py:180
+#: app/views/auth.py:162 app/views/auth.py:331 app/views/do.py:179
 msgid "We do not accept emails from your email provider."
 msgstr "No aceptamos correos electrónicos de su proveedor de correo electrónico."
 
-#: app/views/auth.py:171 app/views/auth.py:338 app/views/do.py:189
+#: app/views/auth.py:171 app/views/auth.py:338 app/views/do.py:188
 msgid "E-mail address is already in use."
 msgstr "La dirección de e-mail ya está en uso."
 
@@ -3688,475 +3689,578 @@ msgstr "Tu correo electrónico ya está confirmado."
 msgid "Invalid username or password."
 msgstr "Usuario o contraseña inválidos."
 
-#: app/views/do.py:194
+#: app/views/do.py:193
 msgid "Incorrect password"
 msgstr "Contraseña incorrecta"
 
-#: app/views/do.py:208
+#: app/views/do.py:207
 msgid "Password change failed. Please try again later"
 msgstr ""
 
-#: app/views/do.py:220
+#: app/views/do.py:219
 msgid "To confirm, click the link in the email we sent to you. You may want to check your spam folder, just in case ;)"
 msgstr ""
 
-#: app/views/do.py:234
+#: app/views/do.py:233
 #, python-format
 msgid "Confirm your email address for your %(site)s account"
 msgstr ""
 
-#: app/views/do.py:264
+#: app/views/do.py:263
 msgid "Wrong password"
 msgstr "Contraseña incorrecta"
 
-#: app/views/do.py:266
+#: app/views/do.py:265
 msgid "YES"
 msgstr "SI"
 
-#: app/views/do.py:267
+#: app/views/do.py:266
 msgid "Type \"YES\" in the box"
 msgstr "Escribe \"SI\" en el cuadro"
 
-#: app/views/do.py:286 app/views/do.py:495 app/views/do.py:528
-#: app/views/do.py:588 app/views/do.py:645 app/views/do.py:680
-#: app/views/do.py:716 app/views/do.py:744 app/views/do.py:777
-#: app/views/do.py:811 app/views/do.py:1437 app/views/do.py:1582
-#: app/views/do.py:1677 app/views/do.py:1780 app/views/do.py:1829
-#: app/views/do.py:1870 app/views/do.py:1922 app/views/do.py:2512
-#: app/views/do.py:2568 app/views/do.py:2618 app/views/do.py:3914
-#: app/views/do.py:3975
+#: app/views/do.py:285 app/views/do.py:539 app/views/do.py:575
+#: app/views/do.py:639 app/views/do.py:699 app/views/do.py:737
+#: app/views/do.py:776 app/views/do.py:807 app/views/do.py:843
+#: app/views/do.py:880 app/views/do.py:1552 app/views/do.py:1696
+#: app/views/do.py:1801 app/views/do.py:1906 app/views/do.py:1959
+#: app/views/do.py:2013 app/views/do.py:2069 app/views/do.py:2663
+#: app/views/do.py:2719 app/views/do.py:2769 app/views/do.py:4141
+#: app/views/do.py:4202
 msgid "Sub does not exist"
 msgstr "El sub no existe"
 
-#: app/views/do.py:319
+#: app/views/do.py:320 app/views/do.py:453 app/views/do.py:542
+#: app/views/do.py:578 app/views/do.py:642 app/views/do.py:702
+#: app/views/do.py:740 app/views/do.py:779 app/views/do.py:810
+#: app/views/do.py:846 app/views/do.py:883 app/views/do.py:982
+#: app/views/do.py:1279 app/views/do.py:1359 app/views/do.py:1699
+#: app/views/do.py:1804 app/views/do.py:1909 app/views/do.py:2016
+#: app/views/do.py:2185 app/views/do.py:2891 app/views/do.py:2945
+#: app/views/do.py:3040 app/views/do.py:3154 app/views/do.py:3386
+#: app/views/do.py:3513
+msgid "Sub is disabled"
+msgstr ""
+
+#: app/views/do.py:323
 msgid "Post was already deleted"
 msgstr "El post ya fue borrado"
 
-#: app/views/do.py:326 app/views/do.py:442 app/views/do.py:498
-#: app/views/do.py:591 app/views/do.py:687 app/views/do.py:724
-#: app/views/do.py:767 app/views/do.py:1440 app/views/do.py:2734
-#: app/views/do.py:2790 app/views/do.py:2865 app/views/do.py:3057
-#: app/views/do.py:3920 app/views/do.py:3981
+#: app/views/do.py:330 app/views/do.py:467 app/views/do.py:545
+#: app/views/do.py:645 app/views/do.py:747 app/views/do.py:787
+#: app/views/do.py:833 app/views/do.py:1555 app/views/do.py:2885
+#: app/views/do.py:2950 app/views/do.py:3054 app/views/do.py:3277
+#: app/views/do.py:4147 app/views/do.py:4208
 msgid "Not authorized"
 msgstr "No autorizado"
 
-#: app/views/do.py:333
+#: app/views/do.py:337
 msgid "Cannot delete without reason"
 msgstr "No se puede borrar sin una razón"
 
-#: app/views/do.py:431
+#: app/views/do.py:343
+#, python-format
+msgid "The site administrators deleted your post %(postlink)s from %(sublink)s. Reason: %(reason)s"
+msgstr ""
+
+#: app/views/do.py:352
+#, python-format
+msgid "The moderators of %(sublink)s deleted your post %(postlink)s. Reason: %(reason)s"
+msgstr ""
+
+#: app/views/do.py:365
+msgid "Moderation action: post deleted"
+msgstr ""
+
+#: app/views/do.py:456
 msgid "Post is not deleted"
 msgstr "El post no fue borrado"
 
-#: app/views/do.py:435
+#: app/views/do.py:460
 msgid "Can not un-delete a self-deleted post"
 msgstr "No se puede restaurar un post borrado por el usuario"
 
-#: app/views/do.py:445
+#: app/views/do.py:470
 msgid "Cannot un-delete without reason"
 msgstr "No se puede restaurar sin una razón"
 
-#: app/views/do.py:541
+#: app/views/do.py:476
+#, python-format
+msgid "The site administrators restored your post %(postlink)s to %(sublink)s. Reason: %(reason)s"
+msgstr ""
+
+#: app/views/do.py:484
+#, python-format
+msgid "The moderators of %(sublink)s restored your post %(postlink)s. Reason: %(reason)s"
+msgstr ""
+
+#: app/views/do.py:497
+msgid "Moderation action: post restored"
+msgstr ""
+
+#: app/views/do.py:592
 msgid "At least one kind of post must be permitted"
 msgstr ""
 
-#: app/views/do.py:602
+#: app/views/do.py:656
 msgid "No flair text"
 msgstr ""
 
-#: app/views/do.py:607 app/views/do.py:816 app/views/do.py:856
-#: app/views/do.py:882 app/views/do.py:1396 app/views/do.py:1446
-#: app/views/do.py:1601 app/views/do.py:1673 app/views/do.py:1776
-#: app/views/do.py:1825 app/views/do.py:1866
+#: app/views/do.py:661 app/views/do.py:888 app/views/do.py:937
+#: app/views/do.py:963 app/views/do.py:1511 app/views/do.py:1561
+#: app/views/do.py:1718 app/views/do.py:1797 app/views/do.py:1902
+#: app/views/do.py:1955 app/views/do.py:2009
 msgid "User does not exist"
 msgstr "El usuario no existe"
 
-#: app/views/do.py:630 app/views/do.py:694 app/views/do.py:760
-#: app/views/do.py:2525 app/views/do.py:2580
+#: app/views/do.py:684 app/views/do.py:754 app/views/do.py:826
+#: app/views/do.py:2676 app/views/do.py:2731
 msgid "Flair does not exist"
 msgstr ""
 
-#: app/views/do.py:657
+#: app/views/do.py:714
 msgid "Free-form user flairs are disabled for this sub"
 msgstr ""
 
-#: app/views/do.py:790
+#: app/views/do.py:859
 msgid "Post has no flair"
 msgstr ""
 
-#: app/views/do.py:851 app/views/do.py:877
+#: app/views/do.py:932 app/views/do.py:958
 msgid "Badge does not exist"
 msgstr ""
 
-#: app/views/do.py:898 app/views/do.py:928 app/views/do.py:954
-#: app/views/do.py:984
+#: app/views/do.py:979 app/views/do.py:1012 app/views/do.py:1038
+#: app/views/do.py:1068
 msgid "sub not found"
 msgstr "sub no encontrado"
 
-#: app/views/do.py:901
+#: app/views/do.py:985
 msgid "already subscribed"
 msgstr "ya suscrito"
 
-#: app/views/do.py:931
+#: app/views/do.py:1015
 msgid "not subscribed"
 msgstr "no suscrito"
 
-#: app/views/do.py:957
+#: app/views/do.py:1041
 msgid "already blocked"
 msgstr "ya bloqueado"
 
-#: app/views/do.py:987
+#: app/views/do.py:1071
 msgid "sub not blocked"
 msgstr "sub no bloqueado"
 
-#: app/views/do.py:1105
+#: app/views/do.py:1193
 msgid "Post/Comment not found"
 msgstr ""
 
-#: app/views/do.py:1111 app/views/do.py:1177
+#: app/views/do.py:1199 app/views/do.py:1274
 msgid "Post not found"
 msgstr "Post no encontrado"
 
-#: app/views/do.py:1113
+#: app/views/do.py:1201
 msgid "Error"
 msgstr "Error"
 
-#: app/views/do.py:1116
+#: app/views/do.py:1204
 msgid "Nothing to distinguish"
 msgstr ""
 
-#: app/views/do.py:1119
+#: app/views/do.py:1207
 msgid "You are not the author of the item"
 msgstr ""
 
-#: app/views/do.py:1123
+#: app/views/do.py:1211
 msgid "You must be a mod or admin"
 msgstr ""
 
-#: app/views/do.py:1180 app/views/do.py:1237
+#: app/views/do.py:1282 app/views/do.py:1339
 msgid "Post was deleted"
 msgstr "El post fue eliminado"
 
-#: app/views/do.py:1227
+#: app/views/do.py:1329
 msgid "Posting has been temporarily disabled"
 msgstr ""
 
-#: app/views/do.py:1247
+#: app/views/do.py:1349
 msgid "Comments are closed on this post."
 msgstr "Los comentarios están cerrados en este post."
 
-#: app/views/do.py:1259
+#: app/views/do.py:1365
 msgid "You are currently banned from commenting"
 msgstr ""
 
-#: app/views/do.py:1269 app/views/do.py:1278
+#: app/views/do.py:1375 app/views/do.py:1384
 msgid "Parent comment does not exist"
 msgstr "El comentario padre no existe"
 
-#: app/views/do.py:1419 app/views/do.py:1999 app/views/do.py:2016
-#: app/views/do.py:2070 app/views/do.py:2081
+#: app/views/do.py:1534 app/views/do.py:2146 app/views/do.py:2163
+#: app/views/do.py:2221 app/views/do.py:2232
 msgid "Message does not exist"
 msgstr "El mensaje no existe"
 
-#: app/views/do.py:1422
+#: app/views/do.py:1537
 msgid "Invalid message"
 msgstr ""
 
-#: app/views/do.py:1467
+#: app/views/do.py:1582
 msgid "Expiration time too far into the future"
 msgstr "Tiempo de caducidad demasiado lejos en el futuro"
 
-#: app/views/do.py:1470
+#: app/views/do.py:1585
 msgid "Invalid expiration time"
 msgstr ""
 
-#: app/views/do.py:1474
+#: app/views/do.py:1589
 msgid "Expiration date is in the past"
 msgstr ""
 
-#: app/views/do.py:1480
-msgid "Janitors may only create temporary bans"
-msgstr ""
-
-#: app/views/do.py:1482
-#, python-format
-msgid "You have been permanently banned. Reason: %(reason)s"
-msgstr ""
-
-#: app/views/do.py:1487
-#, python-format
-msgid "You have been banned for %(num)d day. Reason: %(reason)s"
-msgid_plural "You have been banned for %(num)d days. Reason: %(reason)s"
-msgstr[0] ""
-msgstr[1] ""
-
-#: app/views/do.py:1495
+#: app/views/do.py:1593
 msgid "Already banned"
 msgstr ""
 
-#: app/views/do.py:1545
+#: app/views/do.py:1599
+msgid "Janitors may only create temporary bans"
+msgstr ""
+
+#: app/views/do.py:1601
+msgid "Moderation action: permanent ban"
+msgstr ""
+
+#: app/views/do.py:1602
+#, python-format
+msgid "You have been permanently banned from %(sublink)s. Reason: %(reason)s"
+msgstr ""
+
+#: app/views/do.py:1608
+msgid "Moderation action: temporary ban"
+msgstr ""
+
+#: app/views/do.py:1609
+#, python-format
+msgid "You have been banned from %(sublink)s for %(num)d day. Reason: %(reason)s"
+msgid_plural "You have been banned from %(sublink)s for %(num)d days. Reason: %(reason)s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: app/views/do.py:1659
 #, python-format
 msgid "banned for: %(reason)s, until %(expires)s"
 msgstr "baneado por: %(reason)s, hasta %(expires)s"
 
-#: app/views/do.py:1551
+#: app/views/do.py:1665
 #, python-format
 msgid "banned for: %(reason)s, permanent"
 msgstr "baneado por: %(reason)s, permanente"
 
-#: app/views/do.py:1609
+#: app/views/do.py:1726
 msgid "User is already a mod"
 msgstr "El usuario ya es un mod"
 
-#: app/views/do.py:1617
+#: app/views/do.py:1734
 msgid "User has a pending invite"
 msgstr "El usuario tiene una invitación pendiente"
 
-#: app/views/do.py:1624
+#: app/views/do.py:1741
 msgid "Invalid power level"
 msgstr ""
 
-#: app/views/do.py:1638
+#: app/views/do.py:1755
 msgid "User can't mod more than 20 subs"
 msgstr "El usuario no puede moderar más de 20 subs"
 
-#: app/views/do.py:1694 app/views/do.py:3413
+#: app/views/do.py:1763
+msgid "Invitation to become a moderator"
+msgstr ""
+
+#: app/views/do.py:1769
+#, python-format
+msgid "%(userlink)s invited you to moderate %(sublink)s. Please [click here](%(invitelink)s) to accept or reject the invitation."
+msgstr ""
+
+#: app/views/do.py:1822 app/views/do.py:3640
 msgid "User is not banned"
 msgstr ""
 
-#: app/views/do.py:1702
+#: app/views/do.py:1830
 msgid "Janitors may only remove bans placed by themselves"
 msgstr ""
 
-#: app/views/do.py:1763
+#: app/views/do.py:1843
+msgid "Moderation action: ban removed"
+msgstr ""
+
+#: app/views/do.py:1846
+#, python-format
+msgid "You are no longer banned from posting in %(sublink)s."
+msgstr ""
+
+#: app/views/do.py:1889
 msgid "Ban removed"
 msgstr "Ban eliminado"
 
-#: app/views/do.py:1797
+#: app/views/do.py:1927
 msgid "User is not mod"
 msgstr "El usuario no es un mod"
 
-#: app/views/do.py:1814 app/views/do.py:1855
+#: app/views/do.py:1944 app/views/do.py:1998
 msgid "Access denied"
 msgstr "Acceso denegado"
 
-#: app/views/do.py:1841
+#: app/views/do.py:1971
 msgid "User has not been invited to moderate the sub"
 msgstr ""
 
-#: app/views/do.py:1879 app/views/do.py:1934
+#: app/views/do.py:1979
+msgid "Moderation invitation revoked"
+msgstr ""
+
+#: app/views/do.py:1983
+#, python-format
+msgid "%(userlink)s cancelled your invitation to moderate %(sublink)s."
+msgstr ""
+
+#: app/views/do.py:2026 app/views/do.py:2081
 msgid "You have not been invited to mod this sub"
 msgstr "No has sido invitado a moderar este sub"
 
-#: app/views/do.py:1892
+#: app/views/do.py:2039
 msgid "You can't mod more than 20 subs"
 msgstr "No puedes moderar mas de 20 subs"
 
-#: app/views/do.py:1955
+#: app/views/do.py:2102
 msgid "Message not found"
 msgstr "Mensaje no encontrado"
 
-#: app/views/do.py:2026
+#: app/views/do.py:2173
 msgid "Missing title"
 msgstr "Falta el título"
 
-#: app/views/do.py:2029
+#: app/views/do.py:2176
 msgid "Title too short."
 msgstr "El título es muy corto."
 
-#: app/views/do.py:2041
+#: app/views/do.py:2192
 msgid "You cannot edit the post title anymore"
 msgstr "Ya no puedes editar el título del post"
 
-#: app/views/do.py:2045
+#: app/views/do.py:2196
 msgid "You did not post this!"
 msgstr "¡No has publicado esto!"
 
-#: app/views/do.py:2060
+#: app/views/do.py:2211
 msgid "Bork bork"
 msgstr "Ñaca ñaca"
 
-#: app/views/do.py:2101
+#: app/views/do.py:2252
 msgid "Removed announcement"
 msgstr ""
 
-#: app/views/do.py:2128
+#: app/views/do.py:2279
 msgid "Post already announced"
 msgstr ""
 
-#: app/views/do.py:2182
+#: app/views/do.py:2333
 msgid "Domain is already banned"
 msgstr "El dominio ya está baneado"
 
-#: app/views/do.py:2211
+#: app/views/do.py:2362
 msgid "Domain is not banned"
 msgstr "El dominio no está baneado"
 
-#: app/views/do.py:2292
+#: app/views/do.py:2443
 msgid "Already saved"
 msgstr ""
 
-#: app/views/do.py:2311
+#: app/views/do.py:2462
 msgid "Post was not saved"
 msgstr ""
 
-#: app/views/do.py:2404
+#: app/views/do.py:2555
 msgid "This sub already has three sticky posts"
 msgstr ""
 
-#: app/views/do.py:2630
+#: app/views/do.py:2781
 msgid "Rule does not exist"
 msgstr "La regla no existe"
 
-#: app/views/do.py:2652
+#: app/views/do.py:2803
 msgid "Rule has invalid characters"
 msgstr ""
 
-#: app/views/do.py:2665
+#: app/views/do.py:2816
 #, python-format
 msgid "Set a new password on %(site)s"
 msgstr ""
 
-#: app/views/do.py:2697 app/views/do.py:2700 app/views/do.py:2706
+#: app/views/do.py:2848 app/views/do.py:2851 app/views/do.py:2857
 msgid "Password recovery link expired"
 msgstr ""
 
-#: app/views/do.py:2714
+#: app/views/do.py:2865
 msgid "Password change failed. Please try again later."
 msgstr ""
 
-#: app/views/do.py:2742
+#: app/views/do.py:2897
 msgid "You can't edit a deleted comment"
 msgstr "No puedes editar un comentario borrado"
 
-#: app/views/do.py:2746
+#: app/views/do.py:2901
 msgid "You can't edit a comment on a deleted post"
 msgstr ""
 
-#: app/views/do.py:2778
+#: app/views/do.py:2933
 msgid "Comment is already deleted"
+msgstr "El comentario ya ha sido eliminado"
+
+#: app/views/do.py:2960
+#, python-format
+msgid "The site administrators deleted a comment you made on the post %(postlink)s. Reason: %(reason)s"
 msgstr ""
 
-#: app/views/do.py:2854
+#: app/views/do.py:2967
+#, python-format
+msgid "The moderators of %(sublink)s deleted a comment you made on the post %(postlink)s. Reason: %(reason)s"
+msgstr ""
+
+#: app/views/do.py:2980
+msgid "Moderation action: comment deleted"
+msgstr ""
+
+#: app/views/do.py:3043
 msgid "Comment is not deleted"
-msgstr ""
+msgstr "El comentario no se ha eliminado"
 
-#: app/views/do.py:2858
+#: app/views/do.py:3047
 msgid "Can not un-delete a self-deleted comment"
 msgstr ""
 
-#: app/views/do.py:2909 app/views/do.py:2922
+#: app/views/do.py:3059
+#, python-format
+msgid "The site administrators restored a comment you made on the post %(postlink)s in %(sublink)s. Reason: %(reason)s"
+msgstr ""
+
+#: app/views/do.py:3067
+#, python-format
+msgid "The moderators of %(sublink)s restored a comment you made on the post %(postlink)s. Reason: %(reason)s"
+msgstr ""
+
+#: app/views/do.py:3080
+msgid "Moderation action: comment restored"
+msgstr ""
+
+#: app/views/do.py:3125 app/views/do.py:3138
 msgid "Not authenticated"
 msgstr "No autenticado"
 
-#: app/views/do.py:3032
+#: app/views/do.py:3252
 msgid "Missing text"
 msgstr "Falta el texto"
 
-#: app/views/do.py:3081 app/views/do.py:3117
+#: app/views/do.py:3301 app/views/do.py:3337
 msgid "User not found"
 msgstr "Usuario no encontrado"
 
-#: app/views/do.py:3084 app/views/do.py:3119
+#: app/views/do.py:3304 app/views/do.py:3339
 msgid "Site administrators cannot be blocked"
 msgstr ""
 
-#: app/views/do.py:3188
+#: app/views/do.py:3411
 msgid "File name too long."
 msgstr "El nombre del archivo es muy largo."
 
-#: app/views/do.py:3202
+#: app/views/do.py:3425
 msgid "File name too short or missing."
 msgstr "El nombre del archivo es muy corto o no fue enviado."
 
-#: app/views/do.py:3216
+#: app/views/do.py:3439
 msgid "Invalid file name."
 msgstr "Nombre de archivo inválido."
 
-#: app/views/do.py:3231
+#: app/views/do.py:3454
 msgid "Please select a file to upload."
 msgstr "Por favor seleccione un archivo a subir."
 
-#: app/views/do.py:3262
+#: app/views/do.py:3485
 msgid "Not enough available space to upload file."
 msgstr "No tienes suficiente espacio disponible para subir este archivo."
 
-#: app/views/do.py:3568 app/views/do.py:3631
+#: app/views/do.py:3795 app/views/do.py:3858
 msgid "Post is not a poll"
 msgstr "El post no es una encuesta"
 
-#: app/views/do.py:3575
+#: app/views/do.py:3802
 msgid "Poll option does not exist"
 msgstr ""
 
-#: app/views/do.py:3582
+#: app/views/do.py:3809
 msgid "Already voted"
 msgstr "Ya has votado"
 
-#: app/views/do.py:3591 app/views/do.py:3601 app/views/do.py:3638
-#: app/views/do.py:3648
+#: app/views/do.py:3818 app/views/do.py:3828 app/views/do.py:3865
+#: app/views/do.py:3875
 msgid "Poll is closed"
 msgstr "Encuesta cerrada"
 
-#: app/views/do.py:3611
+#: app/views/do.py:3838
 msgid "Insufficient user level"
 msgstr "Nivel insuficiente"
 
-#: app/views/do.py:3745 app/views/do.py:3751
+#: app/views/do.py:3972 app/views/do.py:3978
 msgid "Poll already closed."
 msgstr "Encuesta ya cerrada."
 
-#: app/views/do.py:3782
+#: app/views/do.py:4009
 msgid "Post was removed"
 msgstr "El post fue eliminado"
 
-#: app/views/do.py:3791 app/views/do.py:3864
+#: app/views/do.py:4018 app/views/do.py:4091
 msgid "You have already reported this post"
 msgstr "Ya has reportado este post"
 
-#: app/views/do.py:3797 app/views/do.py:3870
+#: app/views/do.py:4024 app/views/do.py:4097
 msgid "Report reason too short."
 msgstr ""
 
-#: app/views/do.py:3799 app/views/do.py:3872
+#: app/views/do.py:4026 app/views/do.py:4099
 msgid "Report reason too long."
 msgstr ""
 
-#: app/views/do.py:3804 app/views/do.py:3877
+#: app/views/do.py:4031 app/views/do.py:4104
 msgid "You are banned from this sub."
 msgstr "Estás baneado de este sub."
 
-#: app/views/do.py:3855
+#: app/views/do.py:4082
 msgid "Comment was removed"
 msgstr "El comentario fue eliminado"
 
-#: app/views/do.py:3904 app/views/do.py:3960
+#: app/views/do.py:4131 app/views/do.py:4187
 msgid "Report does not exist"
 msgstr "El informe no existe"
 
-#: app/views/do.py:3917 app/views/do.py:3978
+#: app/views/do.py:4144 app/views/do.py:4205
 msgid "Invalid action"
 msgstr "Acción inválida"
 
-#: app/views/do.py:3923 app/views/do.py:3984
+#: app/views/do.py:4150 app/views/do.py:4211
 msgid "This report has already been closed"
 msgstr ""
 
-#: app/views/do.py:3926 app/views/do.py:3987
+#: app/views/do.py:4153 app/views/do.py:4214
 msgid "This report is already open"
 msgstr ""
 
-#: app/views/do.py:3949 app/views/do.py:4015
+#: app/views/do.py:4176 app/views/do.py:4242
 msgid "Failed to update report"
 msgstr "Error al actualizar el reporte"
 
-#: app/views/do.py:4053 app/views/do.py:4109
+#: app/views/do.py:4280 app/views/do.py:4336
 msgid "No related reports to close"
 msgstr ""
 
-#: app/views/do.py:4225
+#: app/views/do.py:4452
 msgid "Error: not a number"
-msgstr ""
+msgstr "Error: no es un número"
 
 #: app/views/subs.py:121
 msgid "Sub does not exist."
@@ -4164,15 +4268,15 @@ msgstr "El sub no existe."
 
 #: app/views/subs.py:134
 msgid "Please select a flair for your post."
-msgstr ""
+msgstr "Por favor, selecciona un adorno para tu publicación."
 
 #: app/views/subs.py:140
 msgid "Invalid flair."
-msgstr ""
+msgstr "Adorno inválido."
 
 #: app/views/subs.py:145
 msgid "That post type is not allowed in this sub."
-msgstr ""
+msgstr "Ese tipo de post no está permitido en este sub."
 
 #: app/views/subs.py:153
 msgid "Posting has been temporarily disabled."
@@ -4200,7 +4304,7 @@ msgstr "El título es demasiado corto y/o contiene espacios en blanco."
 
 #: app/views/subs.py:210
 msgid "No link provided."
-msgstr ""
+msgstr "No se ha proporcionado ningún enlace."
 
 #: app/views/subs.py:220
 #, python-format
@@ -4213,11 +4317,11 @@ msgstr "Este dominio está bloqueado."
 
 #: app/views/subs.py:238
 msgid "Not enough poll options provided."
-msgstr ""
+msgstr "No se han proporcionado suficientes opciones para la encuesta."
 
 #: app/views/subs.py:242
 msgid "Poll option text is too long."
-msgstr ""
+msgstr "El texto de la opción de la encuesta es demasiado largo."
 
 #: app/views/subs.py:251
 msgid "Poll closing time is too far in the future."
@@ -4231,33 +4335,33 @@ msgstr "Hora de cierre inválida."
 msgid "The closing time is in the past!"
 msgstr "¡La hora de cierre está en el pasado!"
 
-#: app/views/subs.py:387
+#: app/views/subs.py:389
 msgid "Sub name has invalid characters"
 msgstr "El nombre del sub tiene caracteres inválidos"
 
-#: app/views/subs.py:392
+#: app/views/subs.py:394
 msgid "Invalid sub name"
 msgstr "Nombre inválido"
 
-#: app/views/subs.py:398
+#: app/views/subs.py:400
 msgid "Sub is already registered"
 msgstr "Este sub ya se encuentra registrado"
 
-#: app/views/subs.py:406
+#: app/views/subs.py:408
 msgid "Only Site Admins may create new subs. Please contact an administrator to request a new sub."
 msgstr "Sólo los administradores del sitio pueden crear nuevos subs. Póngase en contacto con un administrador para solicitar un nuevo sub."
 
-#: app/views/subs.py:420
+#: app/views/subs.py:422
 #, python-format
 msgid "You must be at least level %(level)i."
 msgstr "Debes ser por lo menos nivel %(level)i."
 
-#: app/views/subs.py:436
+#: app/views/subs.py:438
 #, python-format
 msgid "You cannot own more than %(max)i subs."
 msgstr "No puedes poseer más de %(max)i subs."
 
-#: app/views/subs.py:447
+#: app/views/subs.py:449
 #, python-format
 msgid "You cannot own more than %(max)i subs. Try leveling up your account."
 msgstr "No puedes poseer más de %(max)i subs. Intenta subir de nivel tu cuenta."
@@ -4285,4 +4389,3 @@ msgstr "El enlace para restablecer la contraseña no es válido o ha caducado"
 #: app/views/wiki.py:23
 msgid "License file was deleted :("
 msgstr "El archivo de licencia ha sido borrado :("
-

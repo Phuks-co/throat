@@ -62,7 +62,7 @@ def view_deleted_user(user):
 
 @bp.route("/u/<user>")
 def view(user):
-    """ WIP: View user's profile, posts, comments, badges, etc """
+    """WIP: View user's profile, posts, comments, badges, etc"""
     try:
         user = User.get(fn.lower(User.name) == user.lower())
     except User.DoesNotExist:
@@ -96,7 +96,7 @@ def view(user):
     level, xp = misc.get_user_level(user.uid)
 
     if xp > 0:
-        currlv = (level ** 2) * 10
+        currlv = (level**2) * 10
         nextlv = ((level + 1) ** 2) * 10
 
         required_xp = nextlv - currlv
@@ -172,7 +172,7 @@ def view(user):
 @bp.route("/u/<user>/posts", defaults={"page": 1})
 @bp.route("/u/<user>/posts/<int:page>")
 def view_user_posts(user, page):
-    """ WIP: View user's recent posts """
+    """WIP: View user's recent posts"""
     try:
         user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
@@ -209,7 +209,7 @@ def view_user_posts(user, page):
 @bp.route("/u/<user>/savedposts/<int:page>")
 @login_required
 def view_user_savedposts(user, page):
-    """ WIP: View user's saved posts """
+    """WIP: View user's saved posts"""
     if current_user.name.lower() == user.lower():
         posts = misc.getPostList(
             misc.postListQueryBase(noAllFilter=True, noUserFilter=True)
@@ -232,7 +232,7 @@ def view_user_savedposts(user, page):
 @bp.route("/u/<user>/comments", defaults={"page": 1})
 @bp.route("/u/<user>/comments/<int:page>")
 def view_user_comments(user, page):
-    """ WIP: View user's recent comments """
+    """WIP: View user's recent comments"""
     try:
         user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
@@ -259,7 +259,7 @@ def view_user_comments(user, page):
 @bp.route("/uploads/<int:page>")
 @login_required
 def view_user_uploads(page):
-    """ View user uploads """
+    """View user uploads"""
     uploads = (
         UserUploads.select()
         .join(SubPost)
@@ -377,7 +377,7 @@ def delete_account():
 @gevent_required  # Starts an async task (email).
 @ratelimit(SIGNUP_LIMIT)
 def password_recovery():
-    """ Endpoint for the password recovery form """
+    """Endpoint for the password recovery form"""
     if current_user.is_authenticated:
         return redirect(url_for("home.index"))
     form = PasswordRecoveryForm()
@@ -411,7 +411,7 @@ def recovery_email_sent():
 @bp.route("/reset/<token>")
 @ratelimit(SIGNUP_LIMIT)
 def password_reset(token):
-    """ The page that actually resets the password """
+    """The page that actually resets the password"""
     user = None
     try:
         user = User.get(User.uid == uid_from_recovery_token(token))
@@ -432,7 +432,7 @@ def password_reset(token):
 @bp.route("/settings/blocks/<int:page>")
 @login_required
 def view_ignores(page):
-    """ View user's blocked users. """
+    """View user's blocked users."""
     if current_user.can_admin:
         abort(404)
     menu = request.args.get("menu", "user")

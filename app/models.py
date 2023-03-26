@@ -72,7 +72,7 @@ timing_logger = logging.getLogger("app.sql_timing")
 
 
 def peewee_count_queries(dex, sql, *args, **kwargs):
-    """ Used to count and display number of queries """
+    """Used to count and display number of queries"""
     try:
         if not hasattr(g, "pqc"):
             g.pqc = 0
@@ -120,13 +120,12 @@ class User(BaseModel):
     joindate = DateTimeField(null=True)
     name = CharField(null=True, unique=True, max_length=64)
     password = CharField(null=True)
-
+    email_forwarded_notifications = CharField(null=True)
     score = IntegerField(default=0)  # AKA phuks taken
     given = IntegerField(default=0)  # AKA phuks given
     # status: 0 = OK; 10 = deleted; 5 = site-ban
     status = IntegerField(default=0)
     resets = IntegerField(default=0)
-
     language = CharField(default=None, null=True, max_length=11)
 
     def __repr__(self):
@@ -200,7 +199,7 @@ class Sub(BaseModel):
     nsfw = BooleanField(default=False)
     sid = CharField(primary_key=True, max_length=40)
     sidebar = TextField(default="")
-    status = IntegerField(null=True)
+    status = IntegerField(null=False, default=0)
     title = CharField(null=True, max_length=50)
     sort = CharField(null=True, max_length=32)
     creation = DateTimeField(default=datetime.datetime.utcnow)
@@ -225,7 +224,7 @@ class Sub(BaseModel):
             return None
 
     def update_metadata(self, key, value, boolean=True):
-        """ Updates `key` for submetadata. Only works for single keys. """
+        """Updates `key` for submetadata. Only works for single keys."""
         if boolean:
             if value:
                 value = "1"
@@ -332,7 +331,7 @@ class SubPost(BaseModel):
 
 
 class SubPostPollOption(BaseModel):
-    """ List of options for a poll """
+    """List of options for a poll"""
 
     pid = ForeignKeyField(db_column="pid", model=SubPost, field="pid")
     text = CharField()
@@ -345,7 +344,7 @@ class SubPostPollOption(BaseModel):
 
 
 class SubPostPollVote(BaseModel):
-    """ List of options for a poll """
+    """List of options for a poll"""
 
     pid = ForeignKeyField(db_column="pid", model=SubPost, field="pid")
     uid = ForeignKeyField(db_column="uid", model=User)
@@ -460,7 +459,7 @@ class SubStylesheet(BaseModel):
 
 
 class SubSubscriber(BaseModel):
-    """ Stores subscribed and blocked subs """
+    """Stores subscribed and blocked subs"""
 
     order = IntegerField(null=True)
     sid = ForeignKeyField(db_column="sid", null=True, model=Sub, field="sid")
@@ -726,7 +725,7 @@ class APIToken(BaseModel):
 
 
 class APITokenSettings(BaseModel):
-    """ API Token settings. Mainly used for IP whitelisting """
+    """API Token settings. Mainly used for IP whitelisting"""
 
     token = ForeignKeyField(model=APIToken, field="id")
     key = CharField()
@@ -818,17 +817,21 @@ class InviteCode(BaseModel):
 
         return (
             InviteCode.select()
-            .where(InviteCode.code == invite_code)
+            .join(User)
+            .where(InviteCode.code == invite_code.strip())
             .where(
-                InviteCode.expires.is_null()
-                | (InviteCode.expires > datetime.datetime.utcnow())
+                (
+                    InviteCode.expires.is_null()
+                    | (InviteCode.expires > datetime.datetime.utcnow())
+                )
+                & (User.status == UserStatus.OK)
             )
             .where(InviteCode.max_uses > InviteCode.uses)
             .get()
         )
 
     def __repr__(self):
-        return f"<InviteCode {self.code}>"
+        return f"<InviteCode {self.code}>".strip()
 
     class Meta:
         table_name = "invite_code"
@@ -847,11 +850,13 @@ class Wiki(BaseModel):
 
 
 class Notification(BaseModel):
-    """ Holds user notifications. """
+    """Holds user notifications."""
 
     # Notification type. Can be one of:
     # - POST_REPLY, COMMENT_REPLY
     # - POST_MENTION, COMMENT_MENTION
+
+    # These were used in old notifications, but are now sent as messages.
     # - SUB_BAN, SUB_UNBAN
     # - MOD_INVITE, MOD_INVITE_JANITOR, MOD_INVITE_OWNER
     # - POST_DELETE, POST_UNDELETE
@@ -887,7 +892,7 @@ class MessageType(IntEnum):
     MOD_TO_USER_AS_USER = 102
     MOD_TO_USER_AS_MOD = 103
     MOD_DISCUSSION = 104
-    USER_BAN_APPEAL = 105
+    USER_NOTIFICATION = 105
     MOD_NOTIFICATION = 106
 
 
@@ -900,13 +905,33 @@ class MessageMailbox(IntEnum):
     ARCHIVED = 203  # Modmail only.
     TRASH = 204
     DELETED = 205
+    PENDING = 206  # Modmail only.
+
+
+class MessageThread(BaseModel):
+    """Fields shared by all messages in a private message thread."""
+
+    mtid = PrimaryKeyField()
+    replies = IntegerField(default=0)
+    subject = CharField()
+    # Relevant for modmail messages, otherwise NULL.
+    sub = ForeignKeyField(db_column="sid", null=True, model=Sub, field="sid")
+
+    def __repr__(self):
+        return f'<MessageThread "{self.mtid}"'
+
+    class Meta:
+        table_name = "message_thread"
 
 
 class Message(BaseModel):
     mid = PrimaryKeyField()
+    thread = ForeignKeyField(db_column="mtid", model=MessageThread, field="mtid")
     content = TextField(null=True)
     mtype = IntegerField(null=True)
     posted = DateTimeField(null=True)
+    # True if this message is the first in its thread.
+    first = BooleanField(default=False)
 
     # Relevant for messages to individual users, otherwise NULL.
     receivedby = ForeignKeyField(
@@ -921,14 +946,6 @@ class Message(BaseModel):
         backref="user_sentby_set",
         field="uid",
     )
-    reply_to = ForeignKeyField(
-        db_column="reply_to", null=True, model="self", field="mid"
-    )
-    replies = IntegerField(default=0)
-    subject = CharField(null=True)
-
-    # Relevant for modmail messages, otherwise NULL.
-    sub = ForeignKeyField(db_column="sid", null=True, model=Sub, field="sid")
 
     def __repr__(self):
         return f'<Message "{self.mid}"'
@@ -958,3 +975,34 @@ class UserMessageMailbox(BaseModel):
 
     class Meta:
         table_name = "user_message_mailbox"
+
+
+class SubMessageMailbox(BaseModel):
+    thread = ForeignKeyField(db_column="mtid", model=MessageThread, field="mtid")
+    mailbox = IntegerField(default=MessageMailbox.INBOX)
+    highlighted = BooleanField(default=False)
+
+    def __repr__(self):
+        return f'<SubMessageMailbox "{self.id}"'
+
+    class Meta:
+        table_name = "sub_message_mailbox"
+
+
+class SubMessageLogAction(IntEnum):
+    CHANGE_MAILBOX = 1
+    HIGHLIGHT = 2
+
+
+class SubMessageLog(BaseModel):
+    action = IntegerField(default=SubMessageLogAction.CHANGE_MAILBOX)
+    thread = ForeignKeyField(db_column="mtid", model=MessageThread, field="mtid")
+    uid = ForeignKeyField(db_column="uid", model=User, field="uid")
+    desc = CharField(null=True)
+    updated = DateTimeField(default=datetime.datetime.utcnow)
+
+    def __repr__(self):
+        return f'<SubMessageLog "{self.id}"'
+
+    class Meta:
+        table_name = "sub_message_log"

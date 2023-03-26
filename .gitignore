@@ -85,3 +85,5 @@ configs
 stor
 
 *.mo
+Pipfile
+Pipfile.lock

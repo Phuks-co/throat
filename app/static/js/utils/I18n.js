@@ -25,7 +25,7 @@ function _(){
     let args = Array.from(arguments);
     args.shift();
     let lang = document.getElementsByTagName('html')[0].getAttribute('lang');
-    
+
     if(!languages[lang] || !languages[lang][string]){
         return strfmt.apply(strfmt, [string, ...args]);
     }

@@ -23,6 +23,7 @@ services:
     image: redis
   throat:
     build: .
+    image: throat_throat
     stdin_open: true
     tty: true
     volumes:

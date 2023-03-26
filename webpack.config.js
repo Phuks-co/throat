@@ -20,6 +20,11 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.wasm$/,
+        use: {loader: 'base64-loader'},
+        type: 'javascript/auto',
+      },
+      {
         test: /\.js$/,
         exclude: /(node_modules|bower_components|ext)/,
         use: {
@@ -43,12 +48,21 @@ module.exports = {
           verbose: false
         }
       },
+      { // Special case for Hydrogen files.
+        test: /(.svg|hydrogen-view-sdk\/asset-build\/assets\/main.js)$/,
+        exclude: [
+            path.resolve(__dirname, 'app/static')
+        ],
+        loader: 'url-loader'
+      },
       {
-        test: /\.svg$/,
-        exclude: [/sprite\.svg/],
+        test: /.svg$/,
+        exclude: [
+            path.resolve(__dirname, 'node_modules')
+        ],
         loader: 'svg-inline-loader'
       },
-      { test: /\.(woff|woff2|eot|ttf)$/, loader: 'url-loader?limit=100000' }
+      { test: /\.(woff|woff2|eot|ttf|html)$/, loader: 'url-loader?limit=100000' }
 
     ],
   },
