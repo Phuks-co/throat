@@ -62,14 +62,14 @@
               <th>Created</th>
               <th>Owner</th>
               <th>Mods</th>
-              <th>Subs</th>
+              <th>Subscribers</th>
               <th>Posts</th>
               <th>Comms</th>
             </tr>
           </thead>
           <tbody>
             {% for sub in subs %}
-            {% set subInfo = func.getSubData(sub.sid, simple=False) %}
+            {% set subInfo = func.getSubData(sub.sid, simple=False) %} <!-- not used for now -->
             {% set subMods = func.getSubMods(sub.sid) %}
             <tr>
               <td>
@@ -82,8 +82,8 @@
                 {% endfor %}
               </td>
               <td>{{subMods.mods|count}}</td>
-              <td>{{subInfo.subs}}</td>
-              <td>{{subInfo.posts}}</td>
+              <td>{{sub.subscribers}}</td>
+              <td>{{sub.posts}}</td>
               <td>xx</td>
             </tr>
             {% endfor %}
