@@ -58,6 +58,6 @@
 @def pagefoot():
 
   @if not current_user.block_styles():
-    <style>@{subInfo['stylesheet']!!html}</style>
+    <link rel="stylesheet" href="@{url_for('sub.get_css', sub=sub['name'])}">
   @end
 @end

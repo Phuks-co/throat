@@ -764,3 +764,14 @@ def view_perm(sub, pid, slug, cid):
         include_history=include_history,
     )
     return view_post(post["name"], pid, slug, comment_tree, cid)
+
+
+@blueprint.route("/<sub>/custom.css")
+def get_css(sub):
+    try:
+        sub = Sub.get((fn.Lower(Sub.name) == sub.lower()) & (Sub.status == 0))
+    except Sub.DoesNotExist:
+        abort(404)
+
+    subInfo = misc.getSubData(sub.sid)
+    return Response(subInfo["stylesheet"], mimetype="text/css")
