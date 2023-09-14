@@ -451,6 +451,6 @@
 
   <label id="pagefoot-admin" data-value="@{current_user.is_admin()}" class="hide"></label>
   @if not current_user.block_styles():
-    <style>@{subInfo['stylesheet']!!html}</style>
+    <link rel="stylesheet" href="@{url_for('sub.get_css', sub=post['sub'])}">
   @end
 @end
