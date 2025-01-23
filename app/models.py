@@ -56,7 +56,7 @@ def db_init_app(app):
         raise RuntimeError(
             "Database engine not a subclass of peewee.Database: %s" % engine
         )
-
+    print(name, dbconnect)
     dbm = database_class(name, **dbconnect)
     dbm.execute_sql = functools.partial(peewee_count_queries, dbm.execute_sql)
     dbp.initialize(dbm)

@@ -1,0 +1,145 @@
+{% macro singlePost(post, sub, announcement=False) %}
+<div pid="{{ post['pid'] }}" class="post @{(post['distinguish'] == 1 and 'mod' or '')} @{(post['distinguish'] == 2 and 'admin' or '')}">
+    <div class="misctainer">
+        <div class="votebuttons">
+            {% if post['userstatus'] != 10 and post.posted_days_ago < 60 %}
+            <div title="{{_('Upvote')}}" class="upvote @{(post.get('positive') == 1) and 'upvoted' or ''}" data-pid="{{post['pid']}}" data-icon="upvote"></div>
+            <div class="score">{{post.score}}</div>
+            <div title="{{_('Downvote')}}" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="{{post['pid']}}" data-icon="downvote"></div>
+            {% else %}
+            <div class="score archived">{{post.score}}</div>
+            {% endif %}
+        </div>
+        <div class="thcontainer">
+            {% if post['link'] == None %}
+            <a href="/@{config.site.sub_prefix}/@{post['sub']}/{{post['pid']}}/@{func.slugify(post['title'])}">
+            {% else %}
+            <a target="_blank" rel="noopener nofollow ugc" href="{{post['link']}}">
+            {% endif %}
+                <div class="thumbnail">
+                    {% if post['link'] != None %}
+                    {% if post['thumbnail'] == '' %}
+                    <span class="placeholder" data-icon="link"></span>
+                    {% elif post['thumbnail'] == 'deferred' %}
+                    <span class="placeholder deferred @{post['blur']}" data-icon="link" data-deferred="SubPost-{{post['pid']}}"/>
+                    {% else %}
+                    <img alt="{{_('Thumbnail')}}" class="lazy @{post['blur']}" src="static/img/1x1.gif" data-src="{{config.site_thumbnail_host + "/" + post['thumbnail']}}"/>
+                    {% endif %}
+                    {% else %}
+                    <span class="placeholder" data-icon="chat"></span>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="pbody">
+        <div class="post-heading">
+            {% if announcement %}
+            <span class="announcement">{{_('Announcement')}}</span>
+            {% endif %}
+            {% if post['ptype'] == 3 %}
+                <span class="pollflair">{{_('Poll')}}</span>
+            {% endif %}
+            {% if post['nsfw'] %}
+                <div class="nsfw" alt="@{_('Not safe for work')}">{{_('NSFW')}}</div>
+            {% endif %}
+            {% if post['flair'] %}
+                <a class="postflair" href="@{url_for('sub.view_sub_hot', sub=post['sub'], flair=post['flair'])}">@{post['flair']}</a>
+            {% endif %}
+            {% if post['link'] == None %}
+                <a href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']}/@{func.slugify(post['title'])}" class="title @{post['blur']}">{{post['title']}}</a>
+            {% else %}
+                {% if (post['link']|split(":"))[0] == "http" %}
+                <span title="{{_('not https')}}" class="p-icon" data-icon="exclaim"></span>
+                {% endif %}
+                <a target="_blank" rel="noopener nofollow ugc" href="{{post['link']}}" class="title @{post['blur']}">{{post['title']}}</a> <a href="/domain/{{get_domain(post['link'])}}" class="domain">({{get_domain(post['link'])}})</a>
+            {% endif %}
+        </div>
+        <div class="author">
+            {% if post['link'] %}
+            {% if get_domain(post['link']|lower) in config.site_expando_sites %}
+            <div class="expando" data-pid="{{post['pid']}}" data-t="lnk" title="{{_('Embed video')}}" data-link="{{post['link']}}"><div data-icon="play" class="icon expando-btn"></div></div>
+            {% elif post['link']|split(".")|last in ['png', 'jpg', 'gif', 'tiff', 'bmp', 'jpeg'] %}
+            <div class="expando" data-pid="{{post['pid']}}"  data-t="lnk" title="{{_('Show image')}}" data-link="{{post['link']}}"><div data-icon="image" class="icon expando-btn"></div></div>
+            {% elif post['link']|split(".")|last in ['mp4', 'webm', 'gifv'] %}
+            <div class="expando" data-pid="{{post['pid']}}"  data-t="lnk" title="{{_('Play video')}}" data-link="{{post['link']}}"><div data-icon="play" class="icon expando-btn"></div></div>
+            {% endif %}
+            {% elif post['ptype'] == 3 %}
+            <div class="expando" data-pid="{{post['pid']}}" data-t="poll" title="{{_('Show poll')}}" data-link="None"><div data-icon="text" class="icon expando-btn"></div></div>
+            {% elif post['content'] != '' %}
+            <div class="expando" data-pid="{{post['pid']}}" data-t="txt" title="{{_('Show post content')}}" data-link="None"><div data-icon="text" class="icon expando-btn"></div></div>
+            {% endif %}
+
+
+            {% set timeago = '<time-ago datetime="' + post['posted'] + '"></time-ago>' %}
+            {% if post.userstatus == 10 and current_user.is_admin %}
+                {% set deleted_if_admin_view = _('[Deleted]') %}
+            {% else %}
+                {% set deleted_if_admin_view = '' %}
+            {% endif %}
+
+            {% if post.distinguish == 1 %}
+                {% set distinguish_text = _(' [speaking as mod]') %}
+            {% elif post.distinguish == 2 %}
+                {% set distinguish_text = _(' [speaking as admin]') %}
+            {% else %}
+                {% set distinguish_text = '' %}
+            {% endif %}
+
+            {% if post.user_flair %}
+                {% set flairspan = ' <span class="user_flair" data-flair-id="' + str(post['user_flair_id']) + '">' + post.user_flair|escape + '</span>' %}
+            {% else %}
+                {% set flairspan = '' %}
+            {% endif %}
+
+            <!--
+            @(
+            blocked_text = _(' [Blocked]') if post['blur'] == 'block-blur' else ''
+            ) -->
+
+            {% set userlink = '<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + deleted_if_admin_view + distinguish_text + '</a>' + flairspan %}
+
+            {% if post.userstatus != 10 or current_user.is_admin %}
+                {% set user_html = userlink %}
+            {% else %}
+                {% set user_html = '<a class="authorlink deleted">' + _('[Deleted]') + '</a>' %}
+            {% endif %}
+
+            {% if not sub %}
+                {{_p('posted {{timeago}} by {{user}} on {{sub}}', timeago=timeago, user=user_html, sub='<a href="/s/' + post['sub'] + '">' + post['sub'] + '</a>') }}
+            {% else %}
+                {{_('posted %(timeago)s by %(user)s', timeago=timeago, user=user_html) }}
+            {% endif %}
+
+            {% if sub %}
+                @if post['pid'] in func.getStickyPid(sub['sid']):
+                - <span class="stick">{{_('sticky')}}</span>
+                @end
+                @if post['pid'] in func.getWikiPid(sub['sid']):
+                - <span class="stick">{{_('wiki')}}</span>
+                @end
+            {% endif %}
+        </div>
+        <div class="links" data-sid="@{post['sid']}">
+            <a class="comments" href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']}/@{func.slugify(post['title'])}">
+                {% if post.comments > 0 %}
+                    {{_p('comments ({{comments}})', comments=post.comments)}}
+                {% else %}
+                    {{_('comment')}}
+                {% endif %}
+            </a>
+            {% if current_user.logged_in and not sub and not announcement %}
+                <span><a data-ac="block" class="unblk">{{_('block sub')}}</a></span>
+            {% endif %}
+            {% if current_user.logged_in and post.uid != current_user.uid %}
+                <a data-ac="report" data-pid="{{post['pid']}}" class="report-post">{{_('report')}}</a>
+            {% endif %}
+            <!-- todo
+            @if post['open_report_id']:
+            <li><a class="post-open-reports" href="@{url_for('mod.report_details', sub=post['sub'], report_type='post', report_id=post['open_report_id'])}">@{_('open reports (%(num)s)', num=post['open_reports'])}</a></li>
+            @end
+            -->
+        </div>
+    </div>
+</div>
+{% endmacro %}

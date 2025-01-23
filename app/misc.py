@@ -1275,6 +1275,7 @@ def getPostList(baseQuery, sort, page, page_size=25):
         else:
             hot = SubPost.score * 20 + (posted - 1134028003) / 1500
         posts = baseQuery.order_by(hot.desc()).limit(100).paginate(page, page_size)
+        print(posts.sql())
     return [add_blur(p) for p in posts.dicts()]
 
 

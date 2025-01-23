@@ -1,0 +1,116 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT\n            post.pid,\n            post.ptype,\n            post.title,\n            post.flair,\n            post.link,\n            post.thumbnail,\n            post.content,\n            post.posted,\n            post.score,\n            post.comments,\n            post.nsfw,\n            post.uid,\n            post.distinguish,\n            u.status userstatus,\n            u.name \"user\",\n            sub.name \"sub\",\n            sub_user_flair.flair \"user_flair?\"\n        FROM sub_post AS post\n        LEFT OUTER JOIN \"user\" u ON u.uid = post.uid\n        LEFT OUTER JOIN sub on sub.sid = post.sid\n        LEFT OUTER JOIN sub_user_flair ON sub_user_flair.sid = post.sid AND sub_user_flair.uid = post.uid\n        WHERE\n            post.deleted = 0 AND\n            sub.status = 0 AND\n            sub.sid IN (SELECT value FROM site_metadata WHERE key='default')\n        ORDER BY HOT(post.score, EXTRACT(EPOCH FROM post.posted)) DESC\n        LIMIT 25\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "pid",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "ptype",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 2,
+        "name": "title",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "flair",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "link",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "thumbnail",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 6,
+        "name": "content",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "posted",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 8,
+        "name": "score",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 9,
+        "name": "comments",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 10,
+        "name": "nsfw",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 11,
+        "name": "uid",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 12,
+        "name": "distinguish",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 13,
+        "name": "userstatus",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 14,
+        "name": "user",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 15,
+        "name": "sub",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 16,
+        "name": "user_flair?",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "77c709787e1388c338f7170c677f12bc4d5006ed66d84b8137965663f4322add"
+}

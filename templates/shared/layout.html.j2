@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="@{get_locale()}">
+  <head>
+    {% block head %}{%- endblock -%}
+    <meta charset="utf-8">
+    <meta name="keywords" content="forum, vote, comment, submit, throat, phuks, phuks.co"/>
+    <meta name="referrer" content="always"/>
+
+    {% block meta_description %}
+    <meta name="description" content="{{config.site_lema}}"/>
+    {% endblock -%}
+    <meta name="robots" content="index, follow"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <!-- mobile stuff -->
+    <meta name="theme-color" content="white"/>
+    <meta name="msapplication-navbutton-color" content="white"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="white-translucent"/>
+
+    <link rel="icon" href="static/img/icon.png">
+
+    <title>
+      {%- block title %}{%- endblock -%}
+      {% block lema -%}
+      {{-config.site_lema-}}
+      {%- endblock -%}
+    </title>
+
+    <link rel="stylesheet" type="text/css" href="{{asset_url_for('main.css') }}">
+  </head>
+
+<body class="
+    {%- if config.site_enable_totp and current_user.is_admin %}body_admin{% endif -%}
+    {%- if request.theme_mode == "dank" %}dark dank{% endif -%}
+    {%- if request.theme_mode == "dark" %}dark{% endif -%}
+  ">
+  {% if (config.site_enable_totp or config.auth_provider == "KEYCLOAK") and current_user.is_admin %}
+  <div class="admin_alert">{{_('Admin mode is currently enabled.')}}
+    <form method="POST" action="/admin/logout" id="adminlogout">
+      <button type="submit" class="btn_link">{{_('Disable')}}</button>
+    </form>
+  </div>
+  {% endif -%}
+  <div class="th-subbar pure-u-1">
+    <ul id="topbar">
+      <li><a href="/all">{{_('all')}}</a></li>
+      <li><a href="/all/new">{{_('new')}}</a></li>
+      {% if current_user.can_admin %}
+        <li><a href="@{url_for('admin.index')}">{{_('admin')}}</a></li>
+      {% endif -%}
+      <li>|</li>
+      {% if current_user.logged_in %}
+      <li class="editbar"><a href="/settings/subs" title="{{_('Customize this bar')}}" class="tx-icon" data-icon="edit"></a></li>
+      {% endif -%}
+      {%- for sub in request.subscriptions -%}
+        <li class="subinthebar"><a href="/s/{{ sub }}">{{ sub }}</a></li>
+      {% endfor -%}
+    </ul>
+    <div id="subsdropdown">
+      <div class="dropdown-toggle moremenu">
+        {{_('More')}} <span class="tx-icon" data-icon="down"></span>
+      </div>
+      <ul id="hiddensubs"></ul>
+    </div>
+  </div>
+
+  <div id="menu" class="th-navbar pure-g">
+    <div class="cw-brand pure-u-1 pure-u-md-3-24"> <!-- logo -->
+      <div class="pure-menu">
+        <a class="logocont" href="/">
+          {{THROAT_LOGO}}
+        </a>
+        <!-- TODO <span class="motto">@{func.get_motto()}</span> -->
+        @if config.site.front_page_submit or (request.view_args and request.view_args.get('sub')):
+        <a href="/submit/link@{(request.view_args and request.view_args.get('sub')) and ('/' + request.view_args['sub']) or ''}"><span id="createPostIcon" class="p-icon" data-icon="edit"></span></a>
+        @end
+        <a id="toggle" href="#" class="th-toggle">
+          <s class="bar"></s>
+          <s class="bar"></s>
+        </a>
+      </div>
+    </div>
+
+    <div id="th-uinfo" class="pure-u-1 pure-u-md-12-24"> <!-- class="pure-u-1 pure-u-md-8-24" -->
+      <div class="cw-items can-transform">
+        {% if not current_user.logged_in %}
+        <div id="toggledark" class="glyphbutton">
+          <span class="p-icon" data-icon="{% if request.theme_mode == "dark" %}sun{%else%}moon{%endif%}"></span>
+        </div>
+        <a href="@{url_for('auth.login', next=request.path)}" class="pure-button pure-button-primary">{{_('Log in')}}</a>
+        <a href="@{url_for('auth.register')}" class="pure-button button-secondary">{{_('Register')}}</a>
+        {% else %}
+        <a href="@{ url_for('user.view', user=current_user.name)}" class="smallcaps" id="unameb">@{current_user.name}</a>
+        <span class="separator"></span>
+        <abbr title="{{_('Score')}}" class="bold" id="postscore">@{current_user.score}</abbr>
+        <span class="separator"></span>
+        <div class="glyphbutton">
+          <a href="/settings"><span class="p-icon" data-icon="cog"></span></a>
+        </div>
+        <div class="glyphbutton sep ">
+          <a href="@{ url_for('messages.inbox_sort') }">
+            <span class="hasmail">
+              <span class="p-icon @{(current_user.notifications != 0) and 'hasmail' or ''}" data-icon="mail"></span>
+              <span id="mailcount" class="mailcount" @{(current_user.notifications == 0) and 'style="display:none;"' or ''!!html}>@{current_user.notifications}</span>
+            </span>
+          </a>
+        </div>
+        @if current_user.is_a_mod or current_user.can_admin:
+          <div class="glyphbutton">
+          <a href="@{ url_for('mod.index') }">
+            <span class="hasmail">
+                <span class="p-icon" data-icon="shield"></span>
+                <span id="modcount" class="mailcount" data-mod="@{current_user.mod_notifications_json()}" style="display:none"></span>
+              </span>
+            </a>
+          </div>
+        @end
+        <div id="toggledark" class="glyphbutton">
+          <span class="p-icon" data-icon="{% if request.theme_mode == "dark" %}sun{%else%}moon{%endif%}"></span>
+        </div>
+        <form method="POST" action="@{ url_for('do.logout') }" id="logout">
+          <button type="submit" class="pure-button button-secondary">{{_('Log out')}}</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% block content -%}
+  <div class="th-body pure-g">
+    <div class="pure-u-1 pure-u-md-18-24"> <!-- main -->
+        {% block main %}{%- endblock -%}
+    </div>
+    <div id="sidebar" class="sidebar pure-u-1 pure-u-md-6-24"> <!-- sidebar -->
+        {% block sidebar %}{% endblock -%}
+    </div>
+  </div>
+  {%- endblock -%}
+
+  <div class="footer">
+    {% block footer -%}
+      &copy; {{config.site_copyright}}
+      <br>
+      {%- for text in config.site_footer_links %}
+        <a href="{{config.site_footer_links[text]}}">{{text}}</a> |
+      {%- endfor %}
+        <a href="/license">{{_('License')}}</a>
+      <br>
+      {{_p('Served by {{hostname}}', hostname='foobar') }} | {{_('Page generated in __EXECUTION_TIME__ms')}}
+    {% endblock -%}
+  </div>
+  <script src="{{ asset_url_for('main.js') }}"></script>
+  <!-- todo <style>@{current_user.get_global_stylesheet()!!html}</style> -->
+  {% block pagefoot %}{%- endblock -%}
+  <label id="pagefoot-notifications-icon" data-value="{{config.site_notifications_on_icon}}" class="hide"></label>
+</body>
+</html>

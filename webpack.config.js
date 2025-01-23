@@ -12,7 +12,7 @@ module.exports = {
     main: ['./app/static/js/main.js'],
   },
   output: {
-    path: path.resolve(__dirname, 'app/static/gen'),
+    path: path.resolve(__dirname, 'static/gen'),
     filename: '[name].[chunkhash].js',
     chunkFilename: '[id].[chunkhash].js',
     publicPath: '/static/gen/'
@@ -72,8 +72,8 @@ module.exports = {
         filename: '[name].[chunkhash].css',
         chunkFilename: '[id].[chunkhash].css'
     }),
-    new ManifestRevisionPlugin('./app/manifest.json', {
-      rootAssetPath: './app/static/gen',
+    new ManifestRevisionPlugin('./manifest.json', {
+      rootAssetPath: './static/gen',
       ignorePaths: ['/static']
     })
   ],

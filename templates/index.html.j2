@@ -1,0 +1,89 @@
+{% extends "shared/layout" %}
+{% from "shared/post" import singlePost %}
+
+{% block sidebar %}
+<div id="sortbuttons" role="group" class="pure-button-group">
+  <div class="pure-g">
+      {% if page_name in ["home_all", "home_all_domain"] %}
+        <a href="@{url_for('home.all_hot')}" class="sbm-post pure-button button-xsmall {% if sort == 'hot' %}pure-button-primary{% endif %} pure-u-md-7-24">{{_('Hot')}}</a>
+        <a href="@{url_for('home.all_top')}" class="sbm-post pure-button button-xsmall {% if sort == 'top' %}pure-button-primary{% endif %} pure-u-md-7-24">{{_('Top')}}</a>
+        <a href="@{url_for('home.all_new')}" class="sbm-post pure-button button-xsmall {% if sort == 'new' %}pure-button-primary{% endif %} pure-u-md-7-24">{{_('New')}}</a>
+      {% elif page_name in ["home", "home_search"] %}
+        <a href="/hot" class="sbm-post pure-button button-xsmall {% if sort == 'hot' %}pure-button-primary{% endif %} pure-u-md-7-24">{{_('Hot')}}</a>
+        <a href="/top" class="sbm-post pure-button button-xsmall {% if sort == 'top' %}pure-button-primary{% endif %} pure-u-md-7-24">{{_('Top')}}</a>
+        <a href="/new" class="sbm-post pure-button button-xsmall {% if sort == 'new' %}pure-button-primary{% endif %} pure-u-md-7-24">{{_('New')}}</a>
+      {% endif %}
+  </div>
+</div>
+
+{% include 'shared/sidebar/home' %}
+
+{% if current_user.likes_scroll and page_name not in ["home_search", "home_all_domain"] %}
+  <hr />
+  <div class="footer">
+    &copy; {{config.site_copyright}}
+    <br>
+    {%- for text in config.site_footer_links %}
+    <a href="{{config.site_footer_links[text]}}">{{text}}</a> |
+    {%- endfor %}
+    <a href="/license">{{_('License')}}</a>
+    <br>
+    {{_p('Served by {{hostname}}', hostname='foobar') }} | {{_('Page generated in __EXECUTION_TIME__ms')}}
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block main %}
+<div id="container">
+  {% if page_name in ["home", "home_all"] %}
+    {% if announcement %} <!-- TODO -->
+      <div id="announcement-post">
+      @{ipost.singlePost(ann, False, announcement=True)!!html}
+      <hr/>
+      </div>
+    {% endif %}
+  {% endif %}
+
+  {% if not posts %}
+    <h1 class="noshit">{{_('There are no posts here, yet.')}}</h1>
+  {% endif %}
+  <div class="alldaposts">
+    {% for post in posts %}
+      {% if not announcement or announcement['pid'] != post['pid'] %}
+        {{ singlePost(post, False) }}
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% if current_user.likes_scroll or page_name in ["home_search", "home_all_domain"] %}
+    {% if page > 1 %}
+      <a href="@{url_for(sort_type, page=(page-1), **kw)}" class="pure-button">{{_('Previous page')}}</a>
+    {% endif %}
+    {% if posts|length == 25 %}
+      <a href="@{url_for(sort_type, page=(page+1), **kw)}" class="pure-button">{{_('Next page')}}</a>
+    {% endif %}
+  {% endif %}
+</div>
+  {% if current_user.likes_scroll and page_name not in ["home_search", "home_all_domain"] %}
+    {% block footer %}{% endblock %}
+  {% endif %}
+{% endblock %}
+
+{% block pagefoot %}
+  <label id="pagefoot-oindex" data-value="true" class="hide"></label>
+  @if "labrat" in current_user.prefs:
+    <label id="pagefoot-labrat" data-value="true" class="hide"></label>
+  @end
+  @if sort_type in ('home.all_new'):
+    <label id="pagefoot-blocked" data-value="@{current_user.blocksid}" class="hide"></label>
+  @end
+  <label id="pagefoot-admin" data-value="@{current_user.is_admin()}" class="hide"></label>
+  @if current_user.likes_scroll() and sort_type not in ('home.search', 'home.all_domain_new'):
+    @if sort_type.startswith("home.all_"):
+      <label id="pagefoot-moreuri" data-value="@{url_for('home.all_more', sort=sort_type.replace('home.all_', ''))}" class="hide"></label>
+    @elif sort_type.startswith("home."):
+      <label id="pagefoot-moreuri" data-value="@{url_for('home.home_more', sort=sort_type.replace('home.', ''))}" class="hide"></label>
+    @end
+  @end
+  <label id="pagefoot-nsfw" data-value="@{'nsfw' in current_user.prefs}" class="hide"></label>
+  <label id="pagefoot-nsfw-blur" data-value="@{'nsfw_blur' in current_user.prefs}" class="hide"></label>
+{% endblock %}
