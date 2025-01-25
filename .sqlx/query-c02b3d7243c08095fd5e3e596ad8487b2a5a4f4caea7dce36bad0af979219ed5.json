@@ -1,0 +1,62 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    obj_type \"obj_type!\",\n                    title \"title!\",\n                    score \"score!\",\n                    nsfw,\n                    posted \"posted!\",\n                    sub \"sub!\",\n                    sub_nsfw \"sub_nsfw!\",\n                    user_name \"user_name!\"\n                FROM ((\n                    SELECT\n                        'post' \"obj_type\",\n                        sub_post.title,\n                        sub_post.score,\n                        sub_post.nsfw,\n                        sub_post.posted,\n                        sub.name \"sub\",\n                        sub.nsfw \"sub_nsfw\",\n                        u.name \"user_name\"\n                    FROM sub_post\n                    INNER JOIN sub ON sub.sid = sub_post.sid\n                    INNER JOIN \"user\" AS u ON u.uid = sub_post.uid\n                    WHERE sub_post.nsfw = FALSE AND sub_post.deleted = 0\n                    ORDER BY sub_post.pid DESC\n                    LIMIT 50\n                )\n                UNION (\n                    SELECT\n                        'comment' \"obj_type\",\n                        sub_post_comment.content \"title\",\n                        sub_post_comment.score,\n                        sub_post.nsfw,\n                        sub_post_comment.time \"posted\",\n                        sub.name \"sub\",\n                        sub.nsfw \"sub_nsfw\",\n                        u.name \"user_name\"\n                    FROM sub_post_comment\n                    INNER JOIN sub_post ON sub_post.pid = sub_post_comment.pid\n                    INNER JOIN sub ON sub.sid = sub_post.sid\n                    INNER JOIN \"user\" AS u ON u.uid = sub_post_comment.uid\n                    WHERE sub_post_comment.status IS NULL AND sub_post.nsfw = FALSE\n                    ORDER BY sub_post_comment.time DESC\n                    LIMIT 50\n                )) ORDER BY \"posted\" DESC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "obj_type!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "title!",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "score!",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 3,
+        "name": "nsfw",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 4,
+        "name": "posted!",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 5,
+        "name": "sub!",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 6,
+        "name": "sub_nsfw!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 7,
+        "name": "user_name!",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "c02b3d7243c08095fd5e3e596ad8487b2a5a4f4caea7dce36bad0af979219ed5"
+}

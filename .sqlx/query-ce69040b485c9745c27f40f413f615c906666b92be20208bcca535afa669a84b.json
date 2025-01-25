@@ -1,0 +1,58 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                sub_post.title,\n                sub_post.score,\n                sub_post.nsfw,\n                sub_post.posted,\n                sub.name \"sub\",\n                sub.nsfw \"sub_nsfw\",\n                u.name \"user_name!\"\n            FROM sub_post\n            INNER JOIN sub ON sub.sid = sub_post.sid\n            INNER JOIN \"user\" AS u ON u.uid = sub_post.uid\n            WHERE sub_post.posted > $1 AND sub_post.nsfw = FALSE AND sub_post.deleted = 0\n            ORDER BY score DESC\n            LIMIT 5\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "title",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "score",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 2,
+        "name": "nsfw",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 3,
+        "name": "posted",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 4,
+        "name": "sub",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "sub_nsfw",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 6,
+        "name": "user_name!",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Timestamp"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "ce69040b485c9745c27f40f413f615c906666b92be20208bcca535afa669a84b"
+}
