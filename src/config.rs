@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use rocket::serde::{Serialize, Deserialize};
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct Config {
     site_lema: String,
@@ -14,6 +14,10 @@ pub struct Config {
     pub site_footer_links: HashMap<String, String>,
     site_thumbnail_host: String,
     site_expando_sites: Vec<String>,
+
+    site_top_posts_show_score: bool,
+    pub site_sitelog_public: bool,
+    pub site_recent_activity_enabled: bool,
 
     auth_provider: String,  // TODO: Enum
 }
@@ -47,6 +51,9 @@ impl Default for Config {
                 "instaud.io".into(),
                 "player.vimeo.com".into(),
             ],
+            site_top_posts_show_score: true,
+            site_sitelog_public: true,
+            site_recent_activity_enabled: false, // TODO: unfinished, depends on markdown!
 
             auth_provider: "".into(),
         }
